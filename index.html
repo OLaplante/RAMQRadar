@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAMQ Radar — Comprendre et optimiser sa facturation</title>
+<meta name="description" content="Calculez votre revenu, trouvez le bon code d'acte, classez les actes par $/heure et comparez vos scénarios de facturation RAMQ. Outil local, aucune donnée envoyée.">
+<meta name="theme-color" content="#051F58">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RAMQ Radar">
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CA">
+<meta property="og:site_name" content="RAMQ Radar">
+<meta property="og:title" content="RAMQ Radar — Comprendre et optimiser sa facturation">
+<meta property="og:description" content="Revenu annuel, recherche d'acte, top actes rentables et comparateur de scénarios. Tout reste dans votre navigateur.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RAMQ Radar">
+<meta name="twitter:description" content="Comprendre et optimiser sa facturation RAMQ.">
+<meta name="twitter:image" content="og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+/* Couleurs relevées au pixel sur le logo officiel RAMQ Radar */
+:root{
+  --navy:#051F58;         /* navy du mot-symbole */
+  --navy-2:#0B2E72;
+  --blue:#0055AB;         /* bleu médian de l'anneau */
+  --teal:#009097;
+  --green:#07AE70;        /* vert de la pointe de flèche */
+  --accent:#07AE70;
+  --bg:#F5F7FB;
+  --card:#FFFFFF;
+  --ink:#051F58;
+  --ink-soft:#5B6B85;
+  --line:#E1E7F0;
+  --danger:#E4574C;
+  --radius:18px;
+  --shadow: 0 10px 30px -12px rgba(5,31,88,.24);
+  --grad-main: linear-gradient(135deg, #001864 0%, #0055AB 45%, #009097 72%, #07AE70 100%);
+  --grad-dark: linear-gradient(160deg, #051F58 0%, #0B2E72 55%, #0F3D86 100%);
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+h1,h2,h3,.display{font-family:var(--font-display);letter-spacing:-0.01em;}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+button{font-family:inherit;}
+a{color:inherit;}
+:focus-visible{outline:3px solid #07AE70;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+
+/* ============ LOADING SCREEN ============ */
+#loading{
+  position:fixed;inset:0;z-index:999;
+  background:linear-gradient(160deg,#03163F 0%,#051F58 55%,#0A2E70 100%);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:26px;
+  transition:opacity .5s ease, visibility .5s ease;
+}
+#loading.hide{opacity:0;visibility:hidden;pointer-events:none;}
+
+.radar-scope{
+  position:relative;width:186px;height:186px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, rgba(7,174,112,.12) 0%, rgba(7,174,112,.04) 55%, transparent 75%);
+  border:1.5px solid rgba(63,215,155,.32);
+  overflow:hidden;
+}
+.scope-ring{position:absolute;border-radius:50%;border:1px solid rgba(63,215,155,.22);}
+.scope-ring.r1{inset:20px;}
+.scope-ring.r2{inset:46px;}
+.scope-cross{position:absolute;inset:0;}
+.scope-cross::before,.scope-cross::after{content:'';position:absolute;background:rgba(63,215,155,.18);}
+.scope-cross::before{left:0;right:0;top:50%;height:1px;}
+.scope-cross::after{top:0;bottom:0;left:50%;width:1px;}
+.scope-sweep{
+  position:absolute;inset:0;border-radius:50%;
+  animation:sweepspin 2.4s linear infinite;
+  transform-origin:50% 50%;
+}
+.scope-sweep::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg, rgba(63,215,155,0) 0deg, rgba(63,215,155,0) 268deg, rgba(63,215,155,.75) 355deg, rgba(63,215,155,0) 360deg);
+}
+@keyframes sweepspin{to{transform:rotate(360deg);}}
+.scope-logo{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:82px;height:82px;object-fit:contain;
+  background:#fff;border-radius:50%;padding:11px;
+  box-shadow:0 0 0 1px rgba(63,215,155,.30), 0 6px 22px rgba(0,0,0,.32);
+}
+.scope-blip{position:absolute;width:6px;height:6px;border-radius:50%;background:#3FD79B;box-shadow:0 0 10px 2px rgba(63,215,155,.75);opacity:0;}
+.scope-blip.b1{top:24%;left:70%;animation:blipfade 2.4s linear infinite;}
+.scope-blip.b2{top:74%;left:34%;animation:blipfade 2.4s linear infinite;animation-delay:.8s;}
+.scope-blip.b3{top:40%;left:16%;animation:blipfade 2.4s linear infinite;animation-delay:1.6s;}
+@keyframes blipfade{0%,100%{opacity:0;}4%{opacity:1;}30%{opacity:0;}}
+
+.loading-lockup{width:min(268px,62vw);height:auto;filter:brightness(0) invert(1);opacity:.94;}
+
+.progress-wrap{position:absolute;left:0;right:0;bottom:0;padding:0 34px 34px;display:flex;flex-direction:column;gap:8px;}
+.progress-track{height:5px;border-radius:4px;background:rgba(255,255,255,.14);overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:var(--grad-main);border-radius:4px;transition:width .12s linear;}
+.progress-pct{align-self:center;color:rgba(255,255,255,.6);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.05em;}
+
+/* ============ LAYOUT ============ */
+.app-header{
+  background:var(--grad-dark);
+  color:#fff;padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  position:sticky;top:0;z-index:50;
+}
+.brand{display:flex;align-items:center;gap:11px;cursor:pointer;background:none;border:none;color:#fff;padding:0;}
+.brand-mark{
+  width:38px;height:38px;flex:none;object-fit:contain;
+  background:#fff;border-radius:10px;padding:4px;
+}
+.brand-name{font-family:var(--font-display);font-weight:700;font-size:1.15rem;}
+.brand-name span{color:#3FD79B;}
+.header-actions{display:flex;gap:8px;}
+.icon-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;
+  width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.icon-btn:hover{background:rgba(255,255,255,.16);}
+
+main{max-width:1080px;margin:0 auto;padding:28px 20px 60px;}
+
+/* ============ HERO / DASHBOARD ============ */
+.hero{padding:36px 4px 8px;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;
+  color:var(--teal);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px;
+}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:0 0 10px;color:var(--navy);}
+.hero p{color:var(--ink-soft);font-size:1.02rem;max-width:60ch;margin:0 0 28px;}
+
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+@media (max-width:680px){.tiles{grid-template-columns:1fr;}}
+.tile{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  border:1px solid var(--line);
+  padding:26px 24px;cursor:pointer;text-align:left;position:relative;overflow:hidden;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.tile:hover{transform:translateY(-3px);box-shadow:0 16px 34px -14px rgba(11,31,58,.35);}
+.tile::after{
+  content:'';position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;
+  background:var(--tile-tint,var(--grad-main));opacity:.10;
+}
+.tile-icon{width:52px;height:52px;margin-bottom:14px;}
+.tile h3{font-size:1.15rem;margin:0 0 6px;color:var(--navy);}
+.tile p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.45;}
+.tile-arrow{position:absolute;right:22px;bottom:22px;color:var(--ink-soft);font-size:1.3rem;transition:transform .18s ease;}
+.tile:hover .tile-arrow{transform:translateX(4px);color:var(--blue);}
+
+/* ============ VIEWS ============ */
+.view{display:none;}
+.view.active{display:block;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.view-header{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.back-btn{
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--navy);
+  box-shadow:var(--shadow);flex:none;
+}
+.back-btn:hover{background:var(--bg);}
+.view-header h2{margin:0;color:var(--navy);font-size:1.5rem;}
+.view-header .sub{color:var(--ink-soft);font-size:.9rem;margin-top:2px;}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px;}
+.panel h4{margin:0 0 16px;color:var(--navy);font-size:1rem;}
+
+.field-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media (max-width:600px){.field-grid{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:.82rem;font-weight:600;color:var(--ink-soft);}
+.field input, .field select, .field textarea{
+  border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem;
+  font-family:var(--font-mono);color:var(--ink);background:#fbfcfe;
+}
+.field input:focus,.field select:focus{border-color:var(--blue);outline:none;}
+.field .hint{font-size:.76rem;color:var(--ink-soft);font-family:var(--font-body);}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;border:none;border-radius:10px;
+  padding:11px 18px;font-weight:600;font-size:.92rem;cursor:pointer;
+}
+.btn-primary{background:var(--grad-main);color:#fff;}
+.btn-primary:hover{filter:brightness(1.05);}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--navy);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-danger{background:#fdeceb;color:var(--danger);border:1.5px solid #f6c9c5;}
+.btn-sm{padding:7px 12px;font-size:.82rem;border-radius:8px;}
+
+/* Revenue result */
+.result-hero{
+  background:var(--grad-dark);color:#fff;border-radius:var(--radius);padding:26px;margin-bottom:20px;
+  display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;
+}
+.result-hero .big{font-family:var(--font-mono);font-size:clamp(1.8rem,4vw,2.5rem);font-weight:600;color:var(--green);}
+.result-hero .label{font-size:.82rem;color:#b9c6dd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+.bd-item{background:var(--bg);border-radius:12px;padding:14px 16px;border:1px solid var(--line);}
+.bd-item .label{font-size:.76rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;}
+.bd-item .val{font-family:var(--font-mono);font-size:1.15rem;font-weight:600;color:var(--navy);margin-top:2px;}
+.bar-track{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:10px;}
+.bar-fill{height:100%;background:var(--grad-main);border-radius:6px;}
+
+/* Search */
+.search-box{display:flex;gap:10px;margin-bottom:6px;}
+.search-box input{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;font-size:1rem;font-family:var(--font-body);}
+.search-box input:focus{border-color:var(--blue);outline:none;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;}
+.chip{
+  border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.82rem;cursor:pointer;background:#fff;color:var(--ink-soft);
+}
+.chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.result-list{display:flex;flex-direction:column;gap:12px;margin-top:16px;}
+.code-card{
+  border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;
+  background:#fff;
+}
+.code-card .code-id{
+  font-family:var(--font-mono);font-weight:600;background:var(--navy);color:#fff;border-radius:8px;padding:3px 9px;font-size:.8rem;display:inline-block;margin-bottom:6px;
+}
+.code-card .desc{font-weight:600;color:var(--navy);margin:0 0 4px;}
+.code-card .meta{color:var(--ink-soft);font-size:.84rem;}
+.code-card .price{text-align:right;font-family:var(--font-mono);}
+.code-card .price .amt{font-size:1.25rem;font-weight:700;color:var(--teal);}
+.code-card .price .rate{font-size:.78rem;color:var(--ink-soft);}
+.score-bar{width:100%;height:5px;border-radius:4px;background:var(--line);margin-top:8px;overflow:hidden;}
+.score-fill{height:100%;background:var(--grad-main);}
+.empty{color:var(--ink-soft);text-align:center;padding:30px 10px;font-size:.92rem;}
+
+/* Top actes table */
+table.rank{width:100%;border-collapse:collapse;}
+table.rank th{text-align:left;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding:8px 10px;border-bottom:2px solid var(--line);}
+table.rank td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:.92rem;}
+table.rank tr:hover td{background:var(--bg);}
+.rank-num{font-family:var(--font-mono);font-weight:700;color:var(--ink-soft);width:28px;}
+.rank-num.top1{color:var(--accent);}
+.rank-num.top2{color:#9AA6B8;}
+.rank-num.top3{color:#B98356;}
+.rate-cell{font-family:var(--font-mono);font-weight:700;color:var(--teal);}
+
+/* Comparateur */
+.scenario-card{border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;}
+.scenario-card h5{margin:0 0 10px;color:var(--navy);}
+.line-row{display:grid;grid-template-columns:1fr 90px 110px 32px;gap:8px;align-items:center;margin-bottom:8px;}
+.line-row input{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.88rem;}
+.line-row input.qty{font-family:var(--font-mono);}
+.line-row .del{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem;}
+.scenario-total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1.5px dashed var(--line);}
+.scenario-total .val{font-family:var(--font-mono);font-size:1.3rem;font-weight:700;color:var(--navy);}
+
+.compare-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px;}
+.compare-col{border:1.5px solid var(--line);border-radius:14px;padding:18px;background:#fff;}
+.compare-col.best{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,191,168,.15);}
+.compare-col h5{margin:0 0 12px;color:var(--navy);}
+.compare-col .total{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--teal);}
+.compare-line{display:flex;justify-content:space-between;font-size:.84rem;color:var(--ink-soft);padding:4px 0;border-bottom:1px dashed var(--line);}
+.badge-best{display:inline-block;background:var(--green);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:8px;}
+
+.saved-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.saved-pill{
+  border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;font-size:.84rem;cursor:pointer;display:flex;align-items:center;gap:8px;background:#fff;
+}
+.saved-pill.selected{border-color:var(--blue);background:#eef4ff;}
+.saved-pill .x{color:var(--danger);cursor:pointer;font-weight:700;}
+
+/* Admin codes */
+.admin-table-wrap{overflow-x:auto;}
+table.admin{width:100%;border-collapse:collapse;min-width:760px;}
+table.admin th{text-align:left;font-size:.74rem;text-transform:uppercase;color:var(--ink-soft);padding:8px;border-bottom:2px solid var(--line);}
+table.admin td{padding:8px;border-bottom:1px solid var(--line);font-size:.86rem;vertical-align:top;}
+table.admin input,table.admin select{width:100%;border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:.82rem;}
+.disclaimer{
+  background:#FFF7E0;border:1px solid #F2D98A;color:#7A5B00;border-radius:12px;padding:14px 16px;font-size:.85rem;line-height:1.5;margin-bottom:18px;
+}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.file-input{display:none;}
+
+footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20px 40px;}
+</style>
+</head>
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loading">
+  <div class="radar-scope">
+    <div class="scope-ring r1"></div>
+    <div class="scope-ring r2"></div>
+    <div class="scope-cross"></div>
+    <div class="scope-sweep"></div>
+    <div class="scope-blip b1"></div>
+    <div class="scope-blip b2"></div>
+    <div class="scope-blip b3"></div>
+    <img class="scope-logo" src="logo-mark.png" alt="RAMQ Radar">
+  </div>
+  <img class="loading-lockup" src="logo-lockup.png" alt="RAMQ Radar">
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-pct" id="progressPct">Chargement… 0 %</div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <button class="brand" id="brandHome" aria-label="Retour au tableau de bord">
+    <img class="brand-mark" src="logo-mark.png" alt="" width="34" height="34">
+    <span class="brand-name">RAMQ <span>Radar</span></span>
+  </button>
+  <div class="header-actions">
+    <button class="icon-btn" id="btnInstall" title="Installer l'application" aria-label="Installer l'application" style="display:none;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="icon-btn" id="btnSettings" title="Paramètres de ma pratique" aria-label="Paramètres de ma pratique">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h13M21 18h-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="6" r="2.3" fill="currentColor"/><circle cx="8" cy="12" r="2.3" fill="currentColor"/><circle cx="18" cy="18" r="2.3" fill="currentColor"/></svg>
+    </button>
+    <button class="icon-btn" id="btnAdmin" title="Base de codes" aria-label="Gérer la base de codes">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section id="view-dashboard" class="view active">
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span> Outil personnel — données locales seulement</div>
+      <h1>Repérez où votre facturation gagne (ou perd) du temps.</h1>
+      <p>Quatre outils pour comprendre, chercher et comparer votre facturation RAMQ — tout reste dans votre navigateur, rien n'est envoyé à un serveur.</p>
+    </div>
+
+    <div class="tiles">
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+        <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="0" y1="52" x2="52" y2="0">
+          <stop offset="0%" stop-color="#001864"/><stop offset="45%" stop-color="#0055AB"/><stop offset="100%" stop-color="#07AE70"/>
+        </linearGradient>
+      </defs></svg>
+
+      <button class="tile" data-view="revenu">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <rect x="4" y="30" width="10" height="16" rx="2.5" fill="url(#g1)"/>
+          <rect x="17" y="21" width="10" height="25" rx="2.5" fill="url(#g1)"/>
+          <rect x="30" y="12" width="10" height="34" rx="2.5" fill="url(#g1)"/>
+          <path d="M32 9 L48 9 L48 25" stroke="#07AE70" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M48 9 L38 19" stroke="#07AE70" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+        <h3>Revenu annuel</h3>
+        <p>Estimez votre revenu net à partir de votre volume de patients, vos tarifs et vos frais de bureau.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+
+      <button class="tile" data-view="recherche">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <circle cx="21" cy="21" r="14" stroke="url(#g1)" stroke-width="4" fill="none"/>
+          <path d="M31.5 31.5 L45 45" stroke="url(#g1)" stroke-width="5" stroke-linecap="round"/>
+          <path d="M14 21 h5 l2.5 -5 l3.5 10 l2.5 -5 h3.5" stroke="#07AE70" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <h3>Recherche d'acte</h3>
+        <p>D&#233;crivez ce que vous avez fait, on vous propose les codes RAMQ les plus probables.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+
+      <button class="tile" data-view="top">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <rect x="18" y="8" width="16" height="38" rx="2.5" fill="url(#g1)"/>
+          <rect x="3" y="22" width="14" height="24" rx="2.5" fill="url(#g1)" opacity=".55"/>
+          <rect x="35" y="29" width="14" height="17" rx="2.5" fill="url(#g1)" opacity=".38"/>
+          <circle cx="26" cy="17" r="5.4" fill="#fff"/>
+          <text x="26" y="21" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="#07AE70">$</text>
+        </svg>
+        <h3>Top actes rentables</h3>
+        <p>Classez les codes par $ / heure pour voir o&#249; votre temps vaut le plus.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+
+      <button class="tile" data-view="comparateur">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <rect x="24.4" y="7" width="3.2" height="35" rx="1.6" fill="url(#g1)"/>
+          <rect x="15" y="42" width="22" height="4" rx="2" fill="url(#g1)"/>
+          <path d="M8 14 H44" stroke="url(#g1)" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M8 14 L2 27 a6.6 6.6 0 0 0 12 0 Z" fill="url(#g1)" opacity=".45"/>
+          <path d="M44 14 L38 27 a6.6 6.6 0 0 0 12 0 Z" fill="#07AE70" opacity=".75"/>
+        </svg>
+        <h3>Comparateur</h3>
+        <p>Simulez et comparez plusieurs sc&#233;narios de facturation c&#244;te &#224; c&#244;te.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ REVENU ANNUEL ============ -->
+  <section id="view-revenu" class="view">
+    <div class="view-header">
+      <button class="back-btn" data-back>←</button>
+      <div><h2>Revenu annuel</h2><div class="sub">Une estimation, pas un chiffre officiel — utile pour comparer des scénarios.</div></div>
+    </div>
+
+    <div class="panel">
+      <h4>Vos paramètres</h4>
+      <div class="field-grid">
+        <div class="field">
+          <label for="rv-patients">Patients vus par jour</label>
+          <input type="number" id="rv-patients" value="22" min="0" step="1">
+        </div>
+        <div class="field">
+          <label for="rv-tarif">Tarif moyen par acte ($)</label>
+          <input type="number" id="rv-tarif" value="42" min="0" step="0.01">
+        </div>
+        <div class="field">
+          <label for="rv-jours">Jours travaillés / semaine</label>
+          <input type="number" id="rv-jours" value="4" min="0" max="7" step="0.5">
+        </div>
+        <div class="field">
+          <label for="rv-semaines">Semaines travaillées / année</label>
+          <input type="number" id="rv-semaines" value="46" min="0" max="52" step="1">
+        </div>
+        <div class="field">
+          <label for="rv-inscrits">Patients inscrits (forfaits)</label>
+          <input type="number" id="rv-inscrits" value="1000" min="0" step="1">
+        </div>
+        <div class="field">
+          <label for="rv-forfait">Forfait annuel moyen / patient inscrit ($)</label>
+          <input type="number" id="rv-forfait" value="18" min="0" step="0.01">
+          <span class="hint">Inclut inscription, vulnérabilité, suivi — ajustez selon votre clientèle.</span>
+        </div>
+        <div class="field">
+          <label for="rv-frais">Frais de bureau (% du brut)</label>
+          <input type="number" id="rv-frais" value="30" min="0" max="100" step="1">
+        </div>
+        <div class="field">
+          <label for="rv-impot">Taux d'imposition estimé (%)</label>
+          <input type="number" id="rv-impot" value="38" min="0" max="65" step="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="result-hero">
+      <div>
+        <div class="label">Revenu net estimé (après frais et impôt)</div>
+        <div class="big mono" id="rv-net">0 $</div>
+      </div>
+      <div>
+        <div class="label">Revenu brut annuel</div>
+        <div class="big mono" id="rv-brut" style="color:#fff;font-size:1.5rem;">0 $</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Décomposition</h4>
+      <div class="breakdown">
+        <div class="bd-item"><div class="label">Revenu d'actes</div><div class="val mono" id="rv-actes">0 $</div></div>
+        <div class="bd-item"><div class="label">Revenu de forfaits</div><div class="val mono" id="rv-forf">0 $</div></div>
+        <div class="bd-item"><div class="label">Frais de bureau</div><div class="val mono" id="rv-fraisval">0 $</div></div>
+        <div class="bd-item"><div class="label">Impôt estimé</div><div class="val mono" id="rv-impotval">0 $</div></div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="rv-bar" style="width:0%"></div></div>
+      <div class="hint" style="margin-top:8px;">Part du brut qui reste en net, après frais de bureau et impôt estimé.</div>
+    </div>
+  </section>
+
+  <!-- ============ RECHERCHE D'ACTE ============ -->
+  <section id="view-recherche" class="view">
+    <div class="view-header">
+      <button class="back-btn" data-back>←</button>
+      <div><h2>Recherche d'acte</h2><div class="sub">Recherche par mots-clés et synonymes — pas d'IA générative, vérifiez toujours au manuel officiel.</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="search-box">
+        <input type="text" id="sr-input" placeholder="Ex. : prise de sang, pansement, examen complet, visite à domicile…">
+      </div>
+      <div class="chips" id="sr-chips"></div>
+      <div class="result-list" id="sr-results"></div>
+    </div>
+  </section>
+
+  <!-- ============ TOP ACTES RENTABLES ============ -->
+  <section id="view-top" class="view">
+    <div class="view-header">
+      <button class="back-btn" data-back>←</button>
+      <div><h2>Top actes rentables</h2><div class="sub">Classement par $ / heure, selon le temps estimé de chaque acte.</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <select id="top-filter" class="field" style="border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;">
+          <option value="">Tous les types de pratique</option>
+        </select>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="rank">
+          <thead><tr><th>#</th><th>Code</th><th>Description</th><th>Tarif</th><th>Temps</th><th>$ / heure</th></tr></thead>
+          <tbody id="top-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPARATEUR ============ -->
+  <section id="view-comparateur" class="view">
+    <div class="view-header">
+      <button class="back-btn" data-back>←</button>
+      <div><h2>Comparateur de scénarios</h2><div class="sub">Construisez un scénario de facturation, sauvegardez-le, puis comparez.</div></div>
+    </div>
+
+    <div class="panel">
+      <h4>Nouveau scénario</h4>
+      <div class="field" style="margin-bottom:14px;max-width:320px;">
+        <label for="cp-name">Nom du scénario</label>
+        <input type="text" id="cp-name" placeholder="Ex. : Journée sans rendez-vous">
+      </div>
+      <div id="cp-lines"></div>
+      <button class="btn btn-ghost btn-sm" id="cp-addline">+ Ajouter une ligne</button>
+      <div class="scenario-total">
+        <span>Total du scénario</span>
+        <span class="val mono" id="cp-total">0 $</span>
+      </div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="cp-save">Enregistrer ce scénario</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Scénarios enregistrés — cliquez pour sélectionner (2 ou plus pour comparer)</h4>
+      <div class="saved-list" id="cp-saved"></div>
+      <div class="compare-grid" id="cp-compare"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ PARAMÈTRES DE LA PRATIQUE ============ -->
+<section id="view-settings" class="view">
+  <main style="padding-top:0;">
+    <div class="view-header" style="margin-top:28px;">
+      <button class="back-btn" data-back>←</button>
+      <div><h2>Paramètres de ma pratique</h2><div class="sub">Des valeurs fixes propres à votre pratique — elles préremplissent le calculateur et les filtres ailleurs dans l'app.</div></div>
+    </div>
+
+    <div class="panel">
+      <h4>Profil de pratique</h4>
+      <div class="field-grid">
+        <div class="field">
+          <label for="st-type">Type de pratique principal</label>
+          <select id="st-type">
+            <option value="">— Non précisé —</option>
+            <option value="GMF">GMF</option>
+            <option value="Cabinet">Cabinet privé</option>
+            <option value="Sans rendez-vous">Sans rendez-vous</option>
+            <option value="GAP">GAP</option>
+            <option value="Urgence">Urgence</option>
+            <option value="CHSLD">CHSLD</option>
+            <option value="Domicile">Domicile</option>
+            <option value="Télémédecine">Télémédecine</option>
+          </select>
+          <span class="hint">Sert de filtre par défaut dans « Recherche d'acte » et « Top actes rentables ».</span>
+        </div>
+        <div class="field">
+          <label for="st-patients">Patients vus par jour (défaut)</label>
+          <input type="number" id="st-patients" min="0" step="1" placeholder="ex. 22">
+        </div>
+        <div class="field">
+          <label for="st-tarif">Tarif moyen par acte ($) (défaut)</label>
+          <input type="number" id="st-tarif" min="0" step="0.01" placeholder="ex. 42.00">
+        </div>
+        <div class="field">
+          <label for="st-jours">Jours travaillés / semaine (défaut)</label>
+          <input type="number" id="st-jours" min="0" max="7" step="0.5" placeholder="ex. 4">
+        </div>
+        <div class="field">
+          <label for="st-semaines">Semaines travaillées / année (défaut)</label>
+          <input type="number" id="st-semaines" min="0" max="52" step="1" placeholder="ex. 46">
+        </div>
+        <div class="field">
+          <label for="st-inscrits">Patients inscrits (défaut)</label>
+          <input type="number" id="st-inscrits" min="0" step="1" placeholder="ex. 1000">
+        </div>
+        <div class="field">
+          <label for="st-forfait">Forfait annuel moyen / patient inscrit ($) (défaut)</label>
+          <input type="number" id="st-forfait" min="0" step="0.01" placeholder="ex. 18.00">
+        </div>
+        <div class="field">
+          <label for="st-frais">Frais de bureau (% du brut) (défaut)</label>
+          <input type="number" id="st-frais" min="0" max="100" step="1" placeholder="ex. 30">
+        </div>
+        <div class="field">
+          <label for="st-impot">Taux d'imposition estimé (%) (défaut)</label>
+          <input type="number" id="st-impot" min="0" max="65" step="1" placeholder="ex. 38">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-primary" id="st-save">Enregistrer mes paramètres</button>
+        <button class="btn btn-ghost" id="st-clear">Effacer</button>
+      </div>
+      <div id="st-saved-msg" class="hint" style="margin-top:10px;color:var(--teal);font-weight:600;display:none;">✓ Paramètres enregistrés — appliqués au calculateur de revenu.</div>
+    </div>
+  </main>
+</section>
+
+<!-- ============ ADMIN BASE DE CODES ============ -->
+<section id="view-admin" class="view">
+  <main style="padding-top:0;">
+    <div class="view-header" style="margin-top:28px;">
+      <button class="back-btn" data-back>←</button>
+      <div><h2>Base de codes RAMQ</h2><div class="sub">Ajoutez, modifiez ou supprimez des codes. Importez/exportez en JSON.</div></div>
+    </div>
+
+    <div class="disclaimer">
+      ⚠️ Les codes préfixés <strong>EX-</strong> sont des exemples fictifs livrés avec l'application. Remplacez-les par les tarifs exacts du
+      <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides" target="_blank" rel="noopener">manuel RAMQ officiel</a>,
+      qui change plusieurs fois par année. Cette base ne fait aucune vérification légale des tarifs saisis.
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary btn-sm" id="ad-add">+ Nouveau code</button>
+      <button class="btn btn-ghost btn-sm" id="ad-export">⤓ Exporter (JSON)</button>
+      <button class="btn btn-ghost btn-sm" id="ad-import-btn">⤒ Importer (JSON)</button>
+      <input type="file" id="ad-import" class="file-input" accept="application/json">
+      <button class="btn btn-danger btn-sm" id="ad-reset">↺ Réinitialiser aux exemples</button>
+    </div>
+
+    <div class="panel admin-table-wrap">
+      <table class="admin">
+        <thead>
+          <tr><th>Code</th><th>Description</th><th>Catégorie</th><th>Mots-clés (virgule)</th><th>Tarif $</th><th>Min.</th><th>Pratiques (virgule)</th><th></th></tr>
+        </thead>
+        <tbody id="ad-body"></tbody>
+      </table>
+    </div>
+  </main>
+</section>
+
+<footer>RAMQ Radar — application locale, aucune donnée envoyée à un serveur. Base de codes non officielle : vérifiez toujours au manuel RAMQ.</footer>
+
+<script>
+/* ============================================================
+   RAMQ RADAR — APP.JS (inline)
+   ============================================================ */
+
+/* ---------- Données d'exemple (préfixe EX-, À REMPLACER) ---------- */
+const DEFAULT_CODES = [
+  {code:"EX-00103", description:"Examen général (visite périodique)", category:"Visite", tags:["visite","examen","général","complet","périodique","bilan"], tariff:78.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00101", description:"Visite ordinaire au cabinet", tags:["visite","consultation","cabinet","suivi"], category:"Visite", tariff:38.10, duration_min:15, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00201", description:"Visite sans rendez-vous / sans inscription", tags:["sans rendez-vous","srv","gap","dépannage","visite courte"], category:"Visite", tariff:44.25, duration_min:12, practiceTypes:["Sans rendez-vous","GAP"]},
+  {code:"EX-00305", description:"Visite à domicile", tags:["domicile","maison","déplacement"], category:"Visite", tariff:96.00, duration_min:35, practiceTypes:["Domicile"]},
+  {code:"EX-00410", description:"Prélèvement sanguin veineux", tags:["prise de sang","prélèvement","sang","veineux","piqûre"], category:"Acte technique", tariff:14.30, duration_min:8, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00415", description:"Injection intramusculaire", tags:["injection","vaccin","piqûre","im"], category:"Acte technique", tariff:11.80, duration_min:6, practiceTypes:["Cabinet","GMF","Sans rendez-vous"]},
+  {code:"EX-00420", description:"Pansement complexe / soin de plaie", tags:["pansement","plaie","soin","bandage"], category:"Acte technique", tariff:26.75, duration_min:15, practiceTypes:["Cabinet","GMF","Urgence"]},
+  {code:"EX-00430", description:"Retrait de points de suture", tags:["points","suture","fils","retrait"], category:"Acte technique", tariff:16.20, duration_min:10, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00512", description:"Électrocardiogramme (ECG) — interprétation", tags:["ecg","électrocardiogramme","coeur","tracé"], category:"Acte technique", tariff:22.40, duration_min:10, practiceTypes:["Cabinet","GMF","Urgence"]},
+  {code:"EX-00605", description:"Suivi de grossesse — visite prénatale", tags:["grossesse","prénatal","enceinte","obstétrique"], category:"Suivi", tariff:52.60, duration_min:20, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-00710", description:"Consultation en santé mentale", tags:["santé mentale","anxiété","dépression","psychologique","counseling"], category:"Consultation", tariff:88.90, duration_min:30, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-00810", description:"Suivi de maladie chronique (diabète, HTA)", tags:["chronique","diabète","hypertension","suivi","maladie"], category:"Suivi", tariff:64.15, duration_min:20, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-00905", description:"Examen pédiatrique (0-5 ans)", tags:["enfant","pédiatrie","bébé","nourrisson","vaccin enfant"], category:"Visite", tariff:58.30, duration_min:20, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-01010", description:"Garde en disponibilité — heure supplémentaire", tags:["garde","disponibilité","urgence","heures suppl"], category:"Garde", tariff:120.00, duration_min:60, practiceTypes:["Urgence","GAP"]},
+  {code:"EX-01110", description:"Visite en CHSLD / soins de longue durée", tags:["chsld","longue durée","hébergement","personne âgée"], category:"Visite", tariff:71.40, duration_min:25, practiceTypes:["CHSLD"]},
+  {code:"EX-01205", description:"Consultation urgence mineure", tags:["urgence","mineure","salle d'urgence","triage"], category:"Urgence", tariff:68.00, duration_min:18, practiceTypes:["Urgence"]},
+  {code:"EX-01310", description:"Bilan préopératoire", tags:["préopératoire","chirurgie","bilan","avant chirurgie"], category:"Consultation", tariff:82.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-01405", description:"Rédaction de rapport / formulaire médical", tags:["rapport","formulaire","paperasse","assurance","cnesst"], category:"Administratif", tariff:34.00, duration_min:15, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-01500", description:"Prime de vulnérabilité — patient inscrit", tags:["vulnérabilité","prime","complexité","inscription"], category:"Prime", tariff:12.50, duration_min:0, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-01610", description:"Téléconsultation", tags:["télémédecine","téléphone","virtuel","vidéo"], category:"Consultation", tariff:36.75, duration_min:12, practiceTypes:["Cabinet","GMF","Télémédecine"]},
+];
+
+/* Petit dictionnaire de synonymes pour la recherche par mots-clés */
+const SYNONYMS = {
+  "piqure":"injection", "piqûre":"injection", "vaccin":"injection",
+  "prise":"prélèvement", "sang":"prélèvement",
+  "bebe":"pédiatrie", "bébé":"pédiatrie", "enfant":"pédiatrie",
+  "coeur":"ecg", "cœur":"ecg",
+  "plaie":"pansement", "bandage":"pansement",
+  "enceinte":"grossesse", "obstetrique":"grossesse", "obstétrique":"grossesse",
+  "diabete":"chronique", "diabète":"chronique", "tension":"chronique", "hypertension":"chronique",
+  "anxiete":"santé mentale", "anxiété":"santé mentale", "depression":"santé mentale", "dépression":"santé mentale",
+  "virtuel":"téléconsultation", "telephone":"téléconsultation", "téléphone":"téléconsultation", "video":"téléconsultation",
+  "personne agee":"chsld", "personne âgée":"chsld", "hebergement":"chsld", "hébergement":"chsld",
+};
+
+const STORAGE_CODES = "ramqradar_codes";
+const STORAGE_SCEN = "ramqradar_scenarios";
+const STORAGE_SETTINGS = "ramqradar_settings";
+
+const SETTINGS_FIELDS = ["type","patients","tarif","jours","semaines","inscrits","forfait","frais","impot"];
+
+function loadSettings(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_SETTINGS) || "null") || {}; }catch(e){ return {}; }
+}
+function saveSettingsFromForm(){
+  const s = {};
+  SETTINGS_FIELDS.forEach(f=>{ s[f] = $("#st-"+f).value; });
+  localStorage.setItem(STORAGE_SETTINGS, JSON.stringify(s));
+  return s;
+}
+function loadSettingsIntoForm(){
+  const s = loadSettings();
+  SETTINGS_FIELDS.forEach(f=>{ if(s[f]!==undefined) $("#st-"+f).value = s[f]; });
+}
+function applySettingsToRevenueDefaults(){
+  const s = loadSettings();
+  const map = {patients:"rv-patients", tarif:"rv-tarif", jours:"rv-jours", semaines:"rv-semaines", inscrits:"rv-inscrits", forfait:"rv-forfait", frais:"rv-frais", impot:"rv-impot"};
+  Object.entries(map).forEach(([sf, id])=>{
+    if(s[sf]!==undefined && s[sf]!=="") $("#"+id).value = s[sf];
+  });
+}
+
+/* ---------- Utilitaires ---------- */
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const fmtMoney = n => (isFinite(n)?n:0).toLocaleString('fr-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0});
+const fmtMoney2 = n => (isFinite(n)?n:0).toLocaleString('fr-CA',{style:'currency',currency:'CAD',maximumFractionDigits:2});
+const norm = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+
+function loadCodes(){
+  try{
+    const raw = localStorage.getItem(STORAGE_CODES);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  saveCodes(DEFAULT_CODES);
+  return JSON.parse(JSON.stringify(DEFAULT_CODES));
+}
+function saveCodes(codes){
+  localStorage.setItem(STORAGE_CODES, JSON.stringify(codes));
+}
+function loadScenarios(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_SCEN) || "[]"); }catch(e){ return []; }
+}
+function saveScenarios(list){
+  localStorage.setItem(STORAGE_SCEN, JSON.stringify(list));
+}
+
+let CODES = loadCodes();
+let SELECTED_COMPARE = [];
+
+/* ---------- Navigation ---------- */
+function showView(name){
+  $$(".view").forEach(v=>v.classList.remove("active"));
+  const el = document.getElementById("view-"+name);
+  if(el) el.classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(name==="recherche") renderSearch();
+  if(name==="top") renderTop();
+  if(name==="comparateur") renderComparateur();
+  if(name==="admin") renderAdmin();
+}
+$$(".tile").forEach(t=>t.addEventListener("click", ()=>showView(t.dataset.view)));
+$$("[data-back]").forEach(b=>b.addEventListener("click", ()=>showView("dashboard")));
+$("#brandHome").addEventListener("click", ()=>showView("dashboard"));
+$("#btnAdmin").addEventListener("click", ()=>showView("admin"));
+$("#btnSettings").addEventListener("click", ()=>{ loadSettingsIntoForm(); showView("settings"); });
+
+/* ============================================================
+   1. REVENU ANNUEL
+   ============================================================ */
+function computeRevenue(){
+  const patients = parseFloat($("#rv-patients").value)||0;
+  const tarif = parseFloat($("#rv-tarif").value)||0;
+  const jours = parseFloat($("#rv-jours").value)||0;
+  const semaines = parseFloat($("#rv-semaines").value)||0;
+  const inscrits = parseFloat($("#rv-inscrits").value)||0;
+  const forfait = parseFloat($("#rv-forfait").value)||0;
+  const fraisPct = parseFloat($("#rv-frais").value)||0;
+  const impotPct = parseFloat($("#rv-impot").value)||0;
+
+  const revenuActes = patients * tarif * jours * semaines;
+  const revenuForfaits = inscrits * forfait;
+  const brut = revenuActes + revenuForfaits;
+  const frais = brut * (fraisPct/100);
+  const netAvantImpot = brut - frais;
+  const impot = Math.max(0, netAvantImpot) * (impotPct/100);
+  const net = netAvantImpot - impot;
+
+  $("#rv-brut").textContent = fmtMoney(brut);
+  $("#rv-net").textContent = fmtMoney(net);
+  $("#rv-actes").textContent = fmtMoney(revenuActes);
+  $("#rv-forf").textContent = fmtMoney(revenuForfaits);
+  $("#rv-fraisval").textContent = fmtMoney(frais);
+  $("#rv-impotval").textContent = fmtMoney(impot);
+  const pct = brut>0 ? Math.max(0,Math.min(100, (net/brut)*100)) : 0;
+  $("#rv-bar").style.width = pct+"%";
+}
+$$("#view-revenu input").forEach(i=>i.addEventListener("input", computeRevenue));
+
+$("#st-save").addEventListener("click", ()=>{
+  saveSettingsFromForm();
+  applySettingsToRevenueDefaults();
+  computeRevenue();
+  const msg = $("#st-saved-msg");
+  msg.style.display = "block";
+  setTimeout(()=>{ msg.style.display = "none"; }, 3000);
+});
+$("#st-clear").addEventListener("click", ()=>{
+  if(!confirm("Effacer les paramètres de pratique enregistrés ?")) return;
+  localStorage.removeItem(STORAGE_SETTINGS);
+  SETTINGS_FIELDS.forEach(f=> $("#st-"+f).value = "");
+});
+
+/* ============================================================
+   2. RECHERCHE D'ACTE
+   ============================================================ */
+const ALL_PRACTICE_TYPES = () => Array.from(new Set(CODES.flatMap(c=>c.practiceTypes||[]))).sort();
+
+let activePracticeFilter = (loadSettings().type) || "";
+
+function renderSearchChips(){
+  const wrap = $("#sr-chips");
+  wrap.innerHTML = "";
+  const mkChip = (label,val)=>{
+    const c = document.createElement("button");
+    c.className = "chip"+(activePracticeFilter===val?" active":"");
+    c.textContent = label;
+    c.addEventListener("click", ()=>{ activePracticeFilter = val; renderSearchChips(); renderSearch(); });
+    return c;
+  };
+  wrap.appendChild(mkChip("Toutes les pratiques",""));
+  ALL_PRACTICE_TYPES().forEach(pt=>wrap.appendChild(mkChip(pt,pt)));
+}
+
+function scoreCode(query, code){
+  if(!query) return 0;
+  const q = norm(query);
+  const words = q.split(/[\s,]+/).filter(Boolean).map(w=>SYNONYMS[w]?norm(SYNONYMS[w]):w);
+  if(!words.length) return 0;
+  const haystackTags = (code.tags||[]).map(norm);
+  const haystackDesc = norm(code.description);
+  const haystackCat = norm(code.category||"");
+  let score = 0;
+  words.forEach(w=>{
+    if(haystackTags.some(t=>t.includes(w)||w.includes(t))) score += 3;
+    if(haystackDesc.includes(w)) score += 2;
+    if(haystackCat.includes(w)) score += 1;
+  });
+  return score;
+}
+
+function renderSearch(){
+  const query = $("#sr-input").value.trim();
+  let list = CODES.slice();
+  if(activePracticeFilter) list = list.filter(c=>(c.practiceTypes||[]).includes(activePracticeFilter));
+
+  let results;
+  if(!query){
+    results = list.slice(0, 6).map(c=>({code:c, score:0}));
+  } else {
+    results = list.map(c=>({code:c, score:scoreCode(query,c)})).filter(r=>r.score>0);
+    results.sort((a,b)=>b.score-a.score);
+    results = results.slice(0,8);
+  }
+
+  const container = $("#sr-results");
+  container.innerHTML = "";
+  if(!results.length){
+    container.innerHTML = `<div class="empty">Aucun code ne correspond. Essayez d'autres mots-clés, ou vérifiez directement au manuel RAMQ.</div>`;
+    return;
+  }
+  const maxScore = Math.max(...results.map(r=>r.score),1);
+  results.forEach(r=>{
+    const c = r.code;
+    const rate = c.duration_min>0 ? (c.tariff/(c.duration_min/60)) : c.tariff;
+    const div = document.createElement("div");
+    div.className = "code-card";
+    div.innerHTML = `
+      <div style="flex:1;min-width:220px;">
+        <span class="code-id">${c.code}</span>
+        <p class="desc">${c.description}</p>
+        <div class="meta">${c.category||""} · ${(c.practiceTypes||[]).join(", ")} · ${c.duration_min} min</div>
+        ${r.score>0?`<div class="score-bar"><div class="score-fill" style="width:${Math.round(r.score/maxScore*100)}%"></div></div>`:""}
+      </div>
+      <div class="price">
+        <div class="amt">${fmtMoney2(c.tariff)}</div>
+        <div class="rate">≈ ${fmtMoney(rate)}/h</div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+$("#sr-input").addEventListener("input", renderSearch);
+
+/* ============================================================
+   3. TOP ACTES RENTABLES
+   ============================================================ */
+function renderTopFilterOptions(){
+  const sel = $("#top-filter");
+  const current = sel.value;
+  sel.innerHTML = `<option value="">Tous les types de pratique</option>` +
+    ALL_PRACTICE_TYPES().map(pt=>`<option value="${pt}">${pt}</option>`).join("");
+  sel.value = current;
+}
+function renderTop(){
+  renderTopFilterOptions();
+  const filter = $("#top-filter").value;
+  let list = CODES.slice();
+  if(filter) list = list.filter(c=>(c.practiceTypes||[]).includes(filter));
+  list = list.map(c=>({...c, rate: c.duration_min>0 ? c.tariff/(c.duration_min/60) : c.tariff}));
+  list.sort((a,b)=>b.rate-a.rate);
+
+  const tbody = $("#top-body");
+  tbody.innerHTML = "";
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">Aucun code pour ce filtre.</td></tr>`;
+    return;
+  }
+  list.forEach((c,i)=>{
+    const tr = document.createElement("tr");
+    const rankClass = i===0?"top1":i===1?"top2":i===2?"top3":"";
+    tr.innerHTML = `
+      <td class="rank-num ${rankClass}">${i+1}</td>
+      <td class="mono">${c.code}</td>
+      <td>${c.description}</td>
+      <td class="mono">${fmtMoney2(c.tariff)}</td>
+      <td class="mono">${c.duration_min} min</td>
+      <td class="rate-cell">${fmtMoney(c.rate)}/h</td>`;
+    tbody.appendChild(tr);
+  });
+}
+$("#top-filter").addEventListener("change", renderTop);
+
+/* ============================================================
+   4. COMPARATEUR
+   ============================================================ */
+function newLineRow(data={desc:"",amount:"",qty:1}){
+  const row = document.createElement("div");
+  row.className = "line-row";
+  row.innerHTML = `
+    <input type="text" placeholder="Description (ex. visite, code, prime...)" class="desc" value="${data.desc}">
+    <input type="number" placeholder="$" class="amount" step="0.01" value="${data.amount}">
+    <input type="number" placeholder="Qté" class="qty" step="1" min="1" value="${data.qty}">
+    <button class="del" title="Retirer">✕</button>`;
+  row.querySelector(".del").addEventListener("click", ()=>{ row.remove(); computeScenarioTotal(); });
+  row.querySelectorAll("input").forEach(i=>i.addEventListener("input", computeScenarioTotal));
+  return row;
+}
+function computeScenarioTotal(){
+  let total = 0;
+  $$("#cp-lines .line-row").forEach(r=>{
+    const amt = parseFloat(r.querySelector(".amount").value)||0;
+    const qty = parseFloat(r.querySelector(".qty").value)||0;
+    total += amt*qty;
+  });
+  $("#cp-total").textContent = fmtMoney2(total);
+  return total;
+}
+function resetScenarioForm(){
+  $("#cp-name").value = "";
+  $("#cp-lines").innerHTML = "";
+  $("#cp-lines").appendChild(newLineRow());
+  computeScenarioTotal();
+}
+$("#cp-addline").addEventListener("click", ()=>{ $("#cp-lines").appendChild(newLineRow()); });
+
+$("#cp-save").addEventListener("click", ()=>{
+  const name = $("#cp-name").value.trim() || "Scénario sans nom";
+  const lines = $$("#cp-lines .line-row").map(r=>({
+    desc: r.querySelector(".desc").value.trim(),
+    amount: parseFloat(r.querySelector(".amount").value)||0,
+    qty: parseFloat(r.querySelector(".qty").value)||0,
+  })).filter(l=>l.desc || l.amount);
+  if(!lines.length){ alert("Ajoutez au moins une ligne avant d'enregistrer."); return; }
+  const scenarios = loadScenarios();
+  scenarios.push({id: "sc_"+Date.now(), name, lines, createdAt: new Date().toISOString()});
+  saveScenarios(scenarios);
+  resetScenarioForm();
+  renderComparateur();
+});
+
+function renderComparateur(){
+  if(!$("#cp-lines").children.length) resetScenarioForm();
+  const scenarios = loadScenarios();
+  const savedWrap = $("#cp-saved");
+  savedWrap.innerHTML = "";
+  if(!scenarios.length){
+    savedWrap.innerHTML = `<div class="empty">Aucun scénario enregistré pour l'instant.</div>`;
+  }
+  scenarios.forEach(s=>{
+    const pill = document.createElement("div");
+    pill.className = "saved-pill"+(SELECTED_COMPARE.includes(s.id)?" selected":"");
+    pill.innerHTML = `<span>${s.name}</span><span class="x" title="Supprimer">✕</span>`;
+    pill.querySelector("span:first-child").addEventListener("click", ()=>{
+      if(SELECTED_COMPARE.includes(s.id)) SELECTED_COMPARE = SELECTED_COMPARE.filter(id=>id!==s.id);
+      else SELECTED_COMPARE.push(s.id);
+      renderComparateur();
+    });
+    pill.querySelector(".x").addEventListener("click", (e)=>{
+      e.stopPropagation();
+      if(!confirm(`Supprimer le scénario "${s.name}" ?`)) return;
+      saveScenarios(scenarios.filter(x=>x.id!==s.id));
+      SELECTED_COMPARE = SELECTED_COMPARE.filter(id=>id!==s.id);
+      renderComparateur();
+    });
+    savedWrap.appendChild(pill);
+  });
+
+  const compareWrap = $("#cp-compare");
+  compareWrap.innerHTML = "";
+  const selected = scenarios.filter(s=>SELECTED_COMPARE.includes(s.id));
+  if(selected.length < 2){
+    compareWrap.innerHTML = selected.length===0 ? "" : `<div class="empty">Sélectionnez au moins un deuxième scénario pour comparer.</div>`;
+    return;
+  }
+  const totals = selected.map(s=>s.lines.reduce((sum,l)=>sum+l.amount*l.qty,0));
+  const maxTotal = Math.max(...totals);
+  selected.forEach((s,idx)=>{
+    const col = document.createElement("div");
+    col.className = "compare-col"+(totals[idx]===maxTotal?" best":"");
+    col.innerHTML = `
+      ${totals[idx]===maxTotal?'<span class="badge-best">Le plus payant</span>':''}
+      <h5>${s.name}</h5>
+      <div class="total">${fmtMoney2(totals[idx])}</div>
+      <div style="margin-top:12px;">
+        ${s.lines.map(l=>`<div class="compare-line"><span>${l.desc||"(sans nom)"} ×${l.qty}</span><span class="mono">${fmtMoney2(l.amount*l.qty)}</span></div>`).join("")}
+      </div>`;
+    compareWrap.appendChild(col);
+  });
+}
+
+/* ============================================================
+   ADMIN — BASE DE CODES
+   ============================================================ */
+function renderAdmin(){
+  const tbody = $("#ad-body");
+  tbody.innerHTML = "";
+  CODES.forEach((c, idx)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input value="${c.code}" data-f="code"></td>
+      <td><input value="${c.description}" data-f="description"></td>
+      <td><input value="${c.category||''}" data-f="category"></td>
+      <td><input value="${(c.tags||[]).join(', ')}" data-f="tags"></td>
+      <td><input type="number" step="0.01" value="${c.tariff}" data-f="tariff"></td>
+      <td><input type="number" step="1" value="${c.duration_min}" data-f="duration_min"></td>
+      <td><input value="${(c.practiceTypes||[]).join(', ')}" data-f="practiceTypes"></td>
+      <td><button class="btn btn-danger btn-sm" data-del>✕</button></td>`;
+    tr.querySelectorAll("input").forEach(inp=>{
+      inp.addEventListener("change", ()=>{
+        const f = inp.dataset.f;
+        if(f==="tags" || f==="practiceTypes"){
+          CODES[idx][f] = inp.value.split(",").map(s=>s.trim()).filter(Boolean);
+        } else if(f==="tariff" || f==="duration_min"){
+          CODES[idx][f] = parseFloat(inp.value)||0;
+        } else {
+          CODES[idx][f] = inp.value;
+        }
+        saveCodes(CODES);
+      });
+    });
+    tr.querySelector("[data-del]").addEventListener("click", ()=>{
+      if(!confirm(`Supprimer le code ${c.code} ?`)) return;
+      CODES.splice(idx,1);
+      saveCodes(CODES);
+      renderAdmin();
+    });
+    tbody.appendChild(tr);
+  });
+}
+$("#ad-add").addEventListener("click", ()=>{
+  CODES.push({code:"EX-NOUVEAU", description:"Nouvel acte", category:"", tags:[], tariff:0, duration_min:10, practiceTypes:[]});
+  saveCodes(CODES);
+  renderAdmin();
+});
+$("#ad-reset").addEventListener("click", ()=>{
+  if(!confirm("Réinitialiser la base aux exemples de départ ? Vos codes personnalisés seront perdus.")) return;
+  CODES = JSON.parse(JSON.stringify(DEFAULT_CODES));
+  saveCodes(CODES);
+  renderAdmin();
+});
+$("#ad-export").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(CODES, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "ramqradar-codes.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+$("#ad-import-btn").addEventListener("click", ()=> $("#ad-import").click());
+$("#ad-import").addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!Array.isArray(parsed)) throw new Error("Le fichier doit contenir un tableau de codes.");
+      CODES = parsed;
+      saveCodes(CODES);
+      renderAdmin();
+      alert(`${parsed.length} codes importés avec succès.`);
+    }catch(err){
+      alert("Fichier invalide : "+err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function runLoadingProgress(cb){
+  const fill = document.getElementById("progressFill");
+  const pct = document.getElementById("progressPct");
+  let p = 0;
+  const steps = [12, 28, 44, 61, 77, 89, 100];
+  let i = 0;
+  const tick = ()=>{
+    p = steps[i];
+    fill.style.width = p+"%";
+    pct.textContent = "Chargement… "+p+" %";
+    i++;
+    if(i < steps.length){ setTimeout(tick, 130 + Math.random()*110); }
+    else { setTimeout(cb, 280); }
+  };
+  tick();
+}
+
+/* Raccourcis du manifest : ?vue=revenu, ?vue=recherche, ?vue=top, ?vue=comparateur */
+function openViewFromUrl(){
+  const v = new URLSearchParams(location.search).get("vue");
+  const allowed = ["revenu","recherche","top","comparateur","settings","admin"];
+  if(v && allowed.includes(v)) showView(v);
+}
+
+/* Installation PWA */
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById("btnInstall");
+  if(btn) btn.style.display = "flex";
+});
+document.getElementById("btnInstall").addEventListener("click", async ()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById("btnInstall").style.display = "none";
+});
+
+window.addEventListener("load", ()=>{
+  applySettingsToRevenueDefaults();
+  computeRevenue();
+  renderSearchChips();
+  loadSettingsIntoForm();
+  openViewFromUrl();
+  runLoadingProgress(()=>{
+    document.getElementById("loading").classList.add("hide");
+  });
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js").catch(()=>{ /* hors ligne indisponible, l'app fonctionne quand même */ });
+  }
+});
+</script>
+</body>
+</html>
