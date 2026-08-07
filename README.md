@@ -18,6 +18,7 @@ Aucune étape de build. Aucune dépendance à installer.
 | Fichier | Rôle |
 |---|---|
 | `index.html` | L'application complète (HTML + CSS + JS en un seul fichier) |
+| `ramq-data.js` | Base officielle intégrée : onglet B, version du 6 août 2026 |
 | `manifest.json` | Manifeste PWA (installation, icônes, raccourcis) |
 | `sw.js` | Service worker — cache hors ligne |
 | `favicon.ico`, `icon-*.png`, `apple-touch-icon.png` | Icônes |
@@ -31,45 +32,55 @@ Aucune étape de build. Aucune dépendance à installer.
 Dans `sw.js`, en haut du fichier :
 
 ```js
-const CACHE_NAME = "ramq-radar-v1";
+const CACHE_NAME = "ramq-radar-v2";
 ```
 
 **Passer à `v2`, `v3`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
 qui ont déjà installé l'application continueront de servir l'ancienne version
 depuis leur cache, et vos modifications seront invisibles.
 
-### Remplacer les codes d'exemple
+### Données RAMQ intégrées
 
-L'application est livrée avec 20 codes fictifs préfixés `EX-`. Ce sont des
-placeholders : les montants et les durées sont inventés.
+L'application est livrée avec 214 codes et 291 tarifs contextuels tirés des
+[tableaux-synthèses RAMQ de l'onglet B](https://www.ramq.gouv.qc.ca/fr/professionnels/media/32176),
+mis à jour le 6 août 2026. Le périmètre couvre les consultations, examens et
+visites. Les variantes de tarif sont séparées selon l'âge, le profil du patient,
+le nombre de patients inscrits et le lieu de service.
 
-Pour mettre les vrais tarifs :
+Cette base ne remplace pas le manuel complet : les notes, règles, modificateurs,
+maxima et les codes des autres onglets doivent encore être vérifiés dans le
+[manuel des médecins omnipraticiens](https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides).
+
+Pour modifier ou compléter la base :
 
 1. Ouvrir l'app → icône ⚙ (à droite dans l'en-tête) → **Base de codes RAMQ**.
 2. Modifier les lignes directement, ou **Importer (JSON)** un fichier préparé.
 3. **Exporter (JSON)** pour se faire une sauvegarde.
 
-Source officielle : [manuel des médecins omnipraticiens (RAMQ)](https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides).
-Les tarifs changent plusieurs fois par année — la base n'est pas synchronisée
-automatiquement.
+Les tarifs changent plusieurs fois par année : la base n'est pas synchronisée
+automatiquement et sa version est affichée dans l'application.
 
 Format d'un code :
 
 ```json
 {
-  "code": "00103",
-  "description": "Examen général",
-  "category": "Visite",
-  "tags": ["visite", "examen", "complet"],
-  "tariff": 78.50,
-  "duration_min": 25,
-  "practiceTypes": ["Cabinet", "GMF"]
+  "code": "15803",
+  "description": "Suivi — patient non vulnérable de moins de 80 ans",
+  "context": "Cabinet/GMF, ou domicile lié aux activités du médecin en cabinet",
+  "category": "Visite sur rendez-vous",
+  "tags": ["visite", "rendez-vous", "patient inscrit"],
+  "tariff": 42.85,
+  "duration_min": 0,
+  "practiceTypes": ["Cabinet", "GMF"],
+  "source_page": 5,
+  "data_version": "2026-08-06"
 }
 ```
 
-`tags` alimente la recherche par mots-clés. `duration_min` sert au calcul du
-$ / heure dans « Top actes rentables » — mettre `0` pour un forfait ou une
-prime sans durée.
+`tags`, `context` et `practiceTypes` alimentent la recherche. `duration_min`
+reste à `0` lorsque la RAMQ ne publie pas de période explicite; aucune durée
+clinique n'est inventée. Le classement en équivalent horaire ne retient que les
+codes facturés par périodes de 15 ou 30 minutes dans le document source.
 
 ## Données locales
 

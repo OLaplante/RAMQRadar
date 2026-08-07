@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAMQ Radar — Comprendre et optimiser sa facturation</title>
-<meta name="description" content="Calculez votre revenu, trouvez le bon code d'acte, classez les actes par $/heure et comparez vos scénarios de facturation RAMQ. Outil local, aucune donnée envoyée.">
+<meta name="description" content="Calculez votre revenu, trouvez les codes RAMQ de consultation, examen et visite, et comparez vos scénarios. Outil local, aucune donnée envoyée.">
 <meta name="theme-color" content="#051F58">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -394,8 +394,8 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
           <circle cx="26" cy="17" r="5.4" fill="#fff"/>
           <text x="26" y="21" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="#07AE70">$</text>
         </svg>
-        <h3>Top actes rentables</h3>
-        <p>Classez les codes par $ / heure pour voir o&#249; votre temps vaut le plus.</p>
+        <h3>Tarifs par période</h3>
+        <p>Comparez les codes pour lesquels la RAMQ publie une période de facturation explicite.</p>
         <span class="tile-arrow">&#8594;</span>
       </button>
 
@@ -493,7 +493,7 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
 
     <div class="panel">
       <div class="search-box">
-        <input type="text" id="sr-input" placeholder="Ex. : prise de sang, pansement, examen complet, visite à domicile…">
+        <input type="text" id="sr-input" placeholder="Ex. : 15803, examen complet, patient vulnérable, visite à domicile…">
       </div>
       <div class="chips" id="sr-chips"></div>
       <div class="result-list" id="sr-results"></div>
@@ -504,7 +504,7 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
   <section id="view-top" class="view">
     <div class="view-header">
       <button class="back-btn" data-back>←</button>
-      <div><h2>Top actes rentables</h2><div class="sub">Classement par $ / heure, selon le temps estimé de chaque acte.</div></div>
+      <div><h2>Tarifs avec période publiée</h2><div class="sub">Équivalent horaire calculé seulement lorsque la RAMQ indique explicitement une période de 15 ou 30 minutes.</div></div>
     </div>
 
     <div class="panel">
@@ -573,11 +573,15 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
             <option value="GMF">GMF</option>
             <option value="Cabinet">Cabinet privé</option>
             <option value="Sans rendez-vous">Sans rendez-vous</option>
-            <option value="GAP">GAP</option>
             <option value="Urgence">Urgence</option>
+            <option value="Clinique externe">Clinique externe</option>
+            <option value="CLSC">CLSC</option>
+            <option value="GMF-U">GMF-U</option>
+            <option value="CHSGS">CHSGS</option>
             <option value="CHSLD">CHSLD</option>
             <option value="Domicile">Domicile</option>
-            <option value="Télémédecine">Télémédecine</option>
+            <option value="Psychiatrie">Psychiatrie</option>
+            <option value="Centre de réadaptation">Centre de réadaptation</option>
           </select>
           <span class="hint">Sert de filtre par défaut dans « Recherche d'acte » et « Top actes rentables ».</span>
         </div>
@@ -632,9 +636,10 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
     </div>
 
     <div class="disclaimer">
-      ⚠️ Les codes préfixés <strong>EX-</strong> sont des exemples fictifs livrés avec l'application. Remplacez-les par les tarifs exacts du
-      <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides" target="_blank" rel="noopener">manuel RAMQ officiel</a>,
-      qui change plusieurs fois par année. Cette base ne fait aucune vérification légale des tarifs saisis.
+      Données intégrées : <strong>214 codes et 291 tarifs contextuels</strong> du tableau-synthèse officiel de l'onglet B
+      (consultation, examen et visite), <strong>mis à jour le 6 août 2026</strong>.
+      <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/media/32176" target="_blank" rel="noopener">Consulter la source RAMQ</a>.
+      Les règles, notes, modificateurs et autres sections du manuel demeurent déterminants avant de facturer.
     </div>
 
     <div class="toolbar">
@@ -642,13 +647,13 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
       <button class="btn btn-ghost btn-sm" id="ad-export">⤓ Exporter (JSON)</button>
       <button class="btn btn-ghost btn-sm" id="ad-import-btn">⤒ Importer (JSON)</button>
       <input type="file" id="ad-import" class="file-input" accept="application/json">
-      <button class="btn btn-danger btn-sm" id="ad-reset">↺ Réinitialiser aux exemples</button>
+      <button class="btn btn-danger btn-sm" id="ad-reset">↺ Réinitialiser aux données RAMQ</button>
     </div>
 
     <div class="panel admin-table-wrap">
       <table class="admin">
         <thead>
-          <tr><th>Code</th><th>Description</th><th>Catégorie</th><th>Mots-clés (virgule)</th><th>Tarif $</th><th>Min.</th><th>Pratiques (virgule)</th><th></th></tr>
+          <tr><th>Code</th><th>Description</th><th>Contexte tarifaire</th><th>Catégorie</th><th>Mots-clés (virgule)</th><th>Tarif $</th><th>Min.</th><th>Pratiques (virgule)</th><th></th></tr>
         </thead>
         <tbody id="ad-body"></tbody>
       </table>
@@ -656,36 +661,13 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
   </main>
 </section>
 
-<footer>RAMQ Radar — application locale, aucune donnée envoyée à un serveur. Base de codes non officielle : vérifiez toujours au manuel RAMQ.</footer>
+<footer>RAMQ Radar — application locale, aucune donnée envoyée à un serveur. Données de l'onglet B tirées du tableau RAMQ du 6 août 2026; vérifiez toujours les règles du manuel officiel.</footer>
 
+<script src="ramq-data.js"></script>
 <script>
 /* ============================================================
    RAMQ RADAR — APP.JS (inline)
    ============================================================ */
-
-/* ---------- Données d'exemple (préfixe EX-, À REMPLACER) ---------- */
-const DEFAULT_CODES = [
-  {code:"EX-00103", description:"Examen général (visite périodique)", category:"Visite", tags:["visite","examen","général","complet","périodique","bilan"], tariff:78.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00101", description:"Visite ordinaire au cabinet", tags:["visite","consultation","cabinet","suivi"], category:"Visite", tariff:38.10, duration_min:15, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00201", description:"Visite sans rendez-vous / sans inscription", tags:["sans rendez-vous","srv","gap","dépannage","visite courte"], category:"Visite", tariff:44.25, duration_min:12, practiceTypes:["Sans rendez-vous","GAP"]},
-  {code:"EX-00305", description:"Visite à domicile", tags:["domicile","maison","déplacement"], category:"Visite", tariff:96.00, duration_min:35, practiceTypes:["Domicile"]},
-  {code:"EX-00410", description:"Prélèvement sanguin veineux", tags:["prise de sang","prélèvement","sang","veineux","piqûre"], category:"Acte technique", tariff:14.30, duration_min:8, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00415", description:"Injection intramusculaire", tags:["injection","vaccin","piqûre","im"], category:"Acte technique", tariff:11.80, duration_min:6, practiceTypes:["Cabinet","GMF","Sans rendez-vous"]},
-  {code:"EX-00420", description:"Pansement complexe / soin de plaie", tags:["pansement","plaie","soin","bandage"], category:"Acte technique", tariff:26.75, duration_min:15, practiceTypes:["Cabinet","GMF","Urgence"]},
-  {code:"EX-00430", description:"Retrait de points de suture", tags:["points","suture","fils","retrait"], category:"Acte technique", tariff:16.20, duration_min:10, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00512", description:"Électrocardiogramme (ECG) — interprétation", tags:["ecg","électrocardiogramme","coeur","tracé"], category:"Acte technique", tariff:22.40, duration_min:10, practiceTypes:["Cabinet","GMF","Urgence"]},
-  {code:"EX-00605", description:"Suivi de grossesse — visite prénatale", tags:["grossesse","prénatal","enceinte","obstétrique"], category:"Suivi", tariff:52.60, duration_min:20, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-00710", description:"Consultation en santé mentale", tags:["santé mentale","anxiété","dépression","psychologique","counseling"], category:"Consultation", tariff:88.90, duration_min:30, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-00810", description:"Suivi de maladie chronique (diabète, HTA)", tags:["chronique","diabète","hypertension","suivi","maladie"], category:"Suivi", tariff:64.15, duration_min:20, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-00905", description:"Examen pédiatrique (0-5 ans)", tags:["enfant","pédiatrie","bébé","nourrisson","vaccin enfant"], category:"Visite", tariff:58.30, duration_min:20, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-01010", description:"Garde en disponibilité — heure supplémentaire", tags:["garde","disponibilité","urgence","heures suppl"], category:"Garde", tariff:120.00, duration_min:60, practiceTypes:["Urgence","GAP"]},
-  {code:"EX-01110", description:"Visite en CHSLD / soins de longue durée", tags:["chsld","longue durée","hébergement","personne âgée"], category:"Visite", tariff:71.40, duration_min:25, practiceTypes:["CHSLD"]},
-  {code:"EX-01205", description:"Consultation urgence mineure", tags:["urgence","mineure","salle d'urgence","triage"], category:"Urgence", tariff:68.00, duration_min:18, practiceTypes:["Urgence"]},
-  {code:"EX-01310", description:"Bilan préopératoire", tags:["préopératoire","chirurgie","bilan","avant chirurgie"], category:"Consultation", tariff:82.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-01405", description:"Rédaction de rapport / formulaire médical", tags:["rapport","formulaire","paperasse","assurance","cnesst"], category:"Administratif", tariff:34.00, duration_min:15, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-01500", description:"Prime de vulnérabilité — patient inscrit", tags:["vulnérabilité","prime","complexité","inscription"], category:"Prime", tariff:12.50, duration_min:0, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-01610", description:"Téléconsultation", tags:["télémédecine","téléphone","virtuel","vidéo"], category:"Consultation", tariff:36.75, duration_min:12, practiceTypes:["Cabinet","GMF","Télémédecine"]},
-];
 
 /* Petit dictionnaire de synonymes pour la recherche par mots-clés */
 const SYNONYMS = {
@@ -702,6 +684,7 @@ const SYNONYMS = {
 };
 
 const STORAGE_CODES = "ramqradar_codes";
+const STORAGE_DATA_VERSION = "ramqradar_data_version";
 const STORAGE_SCEN = "ramqradar_scenarios";
 const STORAGE_SETTINGS = "ramqradar_settings";
 
@@ -738,13 +721,18 @@ const norm = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/[\u
 function loadCodes(){
   try{
     const raw = localStorage.getItem(STORAGE_CODES);
-    if(raw) return JSON.parse(raw);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      const containsLegacyExamples = Array.isArray(parsed) && parsed.some(c=>/^EX-/.test(c.code||""));
+      if(Array.isArray(parsed) && !containsLegacyExamples) return parsed;
+    }
   }catch(e){}
   saveCodes(DEFAULT_CODES);
   return JSON.parse(JSON.stringify(DEFAULT_CODES));
 }
 function saveCodes(codes){
   localStorage.setItem(STORAGE_CODES, JSON.stringify(codes));
+  localStorage.setItem(STORAGE_DATA_VERSION, RAMQ_DATA_META.version);
 }
 function loadScenarios(){
   try{ return JSON.parse(localStorage.getItem(STORAGE_SCEN) || "[]"); }catch(e){ return []; }
@@ -825,6 +813,7 @@ $("#st-clear").addEventListener("click", ()=>{
 const ALL_PRACTICE_TYPES = () => Array.from(new Set(CODES.flatMap(c=>c.practiceTypes||[]))).sort();
 
 let activePracticeFilter = (loadSettings().type) || "";
+if(activePracticeFilter && !ALL_PRACTICE_TYPES().includes(activePracticeFilter)) activePracticeFilter = "";
 
 function renderSearchChips(){
   const wrap = $("#sr-chips");
@@ -848,11 +837,18 @@ function scoreCode(query, code){
   const haystackTags = (code.tags||[]).map(norm);
   const haystackDesc = norm(code.description);
   const haystackCat = norm(code.category||"");
+  const haystackCode = norm(code.code||"");
+  const haystackContext = norm(code.context||"");
+  const haystackPractice = norm((code.practiceTypes||[]).join(" "));
   let score = 0;
   words.forEach(w=>{
+    if(haystackCode===w) score += 12;
+    else if(haystackCode.includes(w)) score += 7;
     if(haystackTags.some(t=>t.includes(w)||w.includes(t))) score += 3;
     if(haystackDesc.includes(w)) score += 2;
     if(haystackCat.includes(w)) score += 1;
+    if(haystackContext.includes(w)) score += 1;
+    if(haystackPractice.includes(w)) score += 1;
   });
   return score;
 }
@@ -860,7 +856,7 @@ function scoreCode(query, code){
 function renderSearch(){
   const query = $("#sr-input").value.trim();
   let list = CODES.slice();
-  if(activePracticeFilter) list = list.filter(c=>(c.practiceTypes||[]).includes(activePracticeFilter));
+  if(activePracticeFilter) list = list.filter(c=>(c.practiceTypes||[]).includes(activePracticeFilter) || (c.practiceTypes||[]).includes("Tout lieu"));
 
   let results;
   if(!query){
@@ -868,7 +864,7 @@ function renderSearch(){
   } else {
     results = list.map(c=>({code:c, score:scoreCode(query,c)})).filter(r=>r.score>0);
     results.sort((a,b)=>b.score-a.score);
-    results = results.slice(0,8);
+    results = results.slice(0,12);
   }
 
   const container = $("#sr-results");
@@ -880,19 +876,21 @@ function renderSearch(){
   const maxScore = Math.max(...results.map(r=>r.score),1);
   results.forEach(r=>{
     const c = r.code;
-    const rate = c.duration_min>0 ? (c.tariff/(c.duration_min/60)) : c.tariff;
+    const hasOfficialDuration = c.duration_min>0;
+    const rate = hasOfficialDuration ? (c.tariff/(c.duration_min/60)) : null;
     const div = document.createElement("div");
     div.className = "code-card";
     div.innerHTML = `
       <div style="flex:1;min-width:220px;">
         <span class="code-id">${c.code}</span>
         <p class="desc">${c.description}</p>
-        <div class="meta">${c.category||""} · ${(c.practiceTypes||[]).join(", ")} · ${c.duration_min} min</div>
+        <div class="meta">${c.category||""} · ${c.context||(c.practiceTypes||[]).join(", ")}${hasOfficialDuration?` · ${c.duration_min} min`:""}</div>
+        ${c.source_page?`<div class="hint">Source : tableau RAMQ, p. ${c.source_page} · ${c.data_version||RAMQ_DATA_META.version}</div>`:""}
         ${r.score>0?`<div class="score-bar"><div class="score-fill" style="width:${Math.round(r.score/maxScore*100)}%"></div></div>`:""}
       </div>
       <div class="price">
         <div class="amt">${fmtMoney2(c.tariff)}</div>
-        <div class="rate">≈ ${fmtMoney(rate)}/h</div>
+        <div class="rate">${hasOfficialDuration?`≈ ${fmtMoney(rate)}/h`:`Durée non publiée`}</div>
       </div>`;
     container.appendChild(div);
   });
@@ -913,14 +911,14 @@ function renderTop(){
   renderTopFilterOptions();
   const filter = $("#top-filter").value;
   let list = CODES.slice();
-  if(filter) list = list.filter(c=>(c.practiceTypes||[]).includes(filter));
-  list = list.map(c=>({...c, rate: c.duration_min>0 ? c.tariff/(c.duration_min/60) : c.tariff}));
+  if(filter) list = list.filter(c=>(c.practiceTypes||[]).includes(filter) || (c.practiceTypes||[]).includes("Tout lieu"));
+  list = list.filter(c=>c.duration_min>0).map(c=>({...c, rate:c.tariff/(c.duration_min/60)}));
   list.sort((a,b)=>b.rate-a.rate);
 
   const tbody = $("#top-body");
   tbody.innerHTML = "";
   if(!list.length){
-    tbody.innerHTML = `<tr><td colspan="6" class="empty">Aucun code pour ce filtre.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">Aucun code avec une période de facturation explicitement publiée pour ce filtre.</td></tr>`;
     return;
   }
   list.forEach((c,i)=>{
@@ -1047,6 +1045,7 @@ function renderAdmin(){
     tr.innerHTML = `
       <td><input value="${c.code}" data-f="code"></td>
       <td><input value="${c.description}" data-f="description"></td>
+      <td><input value="${c.context||''}" data-f="context"></td>
       <td><input value="${c.category||''}" data-f="category"></td>
       <td><input value="${(c.tags||[]).join(', ')}" data-f="tags"></td>
       <td><input type="number" step="0.01" value="${c.tariff}" data-f="tariff"></td>
@@ -1076,12 +1075,12 @@ function renderAdmin(){
   });
 }
 $("#ad-add").addEventListener("click", ()=>{
-  CODES.push({code:"EX-NOUVEAU", description:"Nouvel acte", category:"", tags:[], tariff:0, duration_min:10, practiceTypes:[]});
+  CODES.push({code:"NOUVEAU", description:"Nouvel acte", context:"Ajout local", category:"", tags:[], tariff:0, duration_min:0, practiceTypes:[]});
   saveCodes(CODES);
   renderAdmin();
 });
 $("#ad-reset").addEventListener("click", ()=>{
-  if(!confirm("Réinitialiser la base aux exemples de départ ? Vos codes personnalisés seront perdus.")) return;
+  if(!confirm("Réinitialiser la base aux données RAMQ du 6 août 2026 ? Vos codes personnalisés seront perdus.")) return;
   CODES = JSON.parse(JSON.stringify(DEFAULT_CODES));
   saveCodes(CODES);
   renderAdmin();
