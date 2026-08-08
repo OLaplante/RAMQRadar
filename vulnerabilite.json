@@ -1,0 +1,500 @@
+{
+  "metadata": {
+    "titre": "Impact financier de la vulnérabilité — visites",
+    "source": "Manuel des omnipraticiens — Rémunération à l'acte, onglet B",
+    "version_source": "2026-06-05",
+    "methode": "Écart entre le code « patient vulnérable » et son équivalent « patient non vulnérable » pour un même acte, un même lieu et un même seuil de clientèle.",
+    "double_extraction": "Chaque tarif est confirmé par deux extractions indépendantes du même PDF (empreinte SHA-256 identique).",
+    "paires": 21,
+    "codes_ecartes": 1
+  },
+  "avertissement_critique": {
+    "titre": "Ce que ce tableau ne contient PAS",
+    "points": [
+      "La LISTE des groupes de vulnérabilité reconnus n'est pas dans le manuel à l'acte. Elle se trouve à l'Entente particulière EP 40 (Brochure no 1), document non disponible ici.",
+      "Les montants du forfait annuel de prise en charge de la clientèle vulnérable ne sont pas publiés dans le manuel à l'acte : ils dépendent du groupe de vulnérabilité et du lieu.",
+      "Les montants des forfaits de responsabilité 15169, 15170 et 15171 ne figurent pas dans le manuel à l'acte : il n'y est fait que des renvois. Ils relèvent de l'EP 40.",
+      "Les écarts ci-dessous ne couvrent donc QUE la tarification des visites, pas la rémunération totale liée à la vulnérabilité."
+    ]
+  },
+  "exigences_connues": {
+    "source": "EP 40 (Brochure no 1) et page officielle RAMQ « Forfaits et suppléments pour l'inscription individuelle », consultée le 2026-08-07",
+    "statut": "Règles confirmées à la source. Montants des forfaits non publiés.",
+    "definition_vulnerabilite": [
+      "Un patient est vulnérable s'il présente AU MOINS UN des problèmes de santé décrits au paragraphe 5.01 de l'EP 40.",
+      "La vulnérabilité fondée sur l'ÂGE a été abolie le 1er novembre 2016 : un patient de 70 ans et plus sans problème de santé identifié n'est plus vulnérable.",
+      "Les problèmes de santé sont désignés par des codes de catégorie (ex. 01 et 20 en santé mentale, 05 diabète, 06, 11, 13 anticoagulothérapie). Le code 10 (premier épisode de dépression majeure ou de trouble anxieux majeur) a un terme de 24 mois à revalider.",
+      "Les catégories sont réparties en quatre groupes de vulnérabilité, qui déterminent le montant du forfait annuel."
+    ],
+    "tarif_majore_de_visite": [
+      "C'est la seule mesure couverte par le tableau ci-dessous.",
+      "Le tarif « patient vulnérable » peut être facturé par le médecin auprès duquel le patient est inscrit, ou par un médecin du même groupe de pratique.",
+      "Le patient doit être vu à son lieu d'inscription par un médecin du groupe de pratique de ce lieu.",
+      "Le tarif est aussi modulé par le seuil de clientèle inscrite (moins de 500 patients, ou 500 et plus)."
+    ],
+    "forfait_annuel_prise_en_charge": [
+      "Versé automatiquement, sans facturation, 30 jours après la fin de chaque trimestre.",
+      "S'ajoute au forfait d'inscription générale.",
+      "Le patient doit être inscrit ET actif : rencontré pour une visite, une intervention clinique ou une psychothérapie dans les 12 mois précédant le 1er janvier de l'année de versement.",
+      "Le montant varie selon le groupe de vulnérabilité et le lieu de suivi — voir EP 40, paragraphe 6.02."
+    ],
+    "forfait_responsabilite_15169_15170_15171": [
+      "Le patient vulnérable doit être vu pour un examen, une intervention clinique ou une psychothérapie.",
+      "Par son médecin de famille, un médecin du même groupe de pratique, ou un médecin réputé membre du GMF participant au sans rendez-vous du GMF.",
+      "UN SEUL forfait est payable par patient lors d'une même séance.",
+      "Facturable à tarif horaire ou honoraires fixes; en mode mixte en GMF-U durant l'acte d'intervention de supervision; à l'acte ou mixte avec un acte diagnostique et thérapeutique (incluant l'examen ou la visite) ou une chirurgie de 60 $ ou plus; à l'acte ou mixte avec une intervention clinique ou une psychothérapie individuelle.",
+      "Facturé selon le lieu du service. En cabinet et à domicile, inscrire le lieu de dispensation approprié.",
+      "Facturer l'un de ces codes dispense de mettre à jour le registre des consultations."
+    ],
+    "supplements_patient_sans_medecin_de_famille": [
+      "19957 — patient non vulnérable, attribué ou non.",
+      "19958 — patient vulnérable NON attribué par le GAMF.",
+      "19959 — patient vulnérable attribué par le GAMF, transfert en bloc ou inscription collective.",
+      "19960 — patient TRÈS vulnérable attribué : catégories 01 ou 20 combinées à 11, ou catégorie 06.",
+      "Un seul des suppléments des paragraphes 4.12 A, B, C et 13.01 est facturable pour un même patient.",
+      "Payable une seule fois par patient, par médecin de famille, lors de la 1re visite sur rendez-vous ou en accès adapté.",
+      "Attention : la RAMQ peut récupérer la moitié ou la totalité du supplément (motifs au paragraphe 13.02 de l'EP 40)."
+    ]
+  },
+  "paires": [
+    {
+      "acte": "Visite d'un patient en perte sévère d'autonomie",
+      "contexte": "Visite à domicile — perte sévère d'autonomie, sans égard à l'âge",
+      "seuil_clientele": "",
+      "code_non_vulnerable": "15782",
+      "code_vulnerable": "15784",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 102.55,
+          "tarif_vulnerable": 113.15,
+          "ecart": 10.6,
+          "ecart_pct": 10.3
+        }
+      }
+    },
+    {
+      "acte": "Visite d'un patient en perte sévère d'autonomie — Premier patient",
+      "contexte": "Visite à domicile — perte sévère d'autonomie, sans égard à l'âge",
+      "seuil_clientele": "",
+      "code_non_vulnerable": "15781",
+      "code_vulnerable": "15783",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 133.25,
+          "tarif_vulnerable": 143.85,
+          "ecart": 10.6,
+          "ecart_pct": 8.0
+        }
+      }
+    },
+    {
+      "acte": "Visite ponctuelle complexe",
+      "contexte": "Sans rendez-vous, ou sur rendez-vous pour un patient non inscrit — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15778",
+      "code_vulnerable": "15780",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 56.05,
+          "tarif_vulnerable": 66.65,
+          "ecart": 10.6,
+          "ecart_pct": 18.9
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 42.15,
+          "tarif_vulnerable": 50.35,
+          "ecart": 8.2,
+          "ecart_pct": 19.5
+        }
+      }
+    },
+    {
+      "acte": "Visite ponctuelle complexe",
+      "contexte": "Sans rendez-vous, ou sur rendez-vous pour un patient non inscrit — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15777",
+      "code_vulnerable": "15779",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 48.5,
+          "tarif_vulnerable": 59.1,
+          "ecart": 10.6,
+          "ecart_pct": 21.9
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 36.45,
+          "tarif_vulnerable": 44.65,
+          "ecart": 8.2,
+          "ecart_pct": 22.5
+        }
+      }
+    },
+    {
+      "acte": "Visite ponctuelle mineure",
+      "contexte": "Sans rendez-vous, ou sur rendez-vous pour un patient non inscrit — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15770",
+      "code_vulnerable": "15772",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 28.05,
+          "tarif_vulnerable": 38.65,
+          "ecart": 10.6,
+          "ecart_pct": 37.8
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 21.05,
+          "tarif_vulnerable": 29.3,
+          "ecart": 8.25,
+          "ecart_pct": 39.2
+        }
+      }
+    },
+    {
+      "acte": "Visite ponctuelle mineure",
+      "contexte": "Sans rendez-vous, ou sur rendez-vous pour un patient non inscrit — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15769",
+      "code_vulnerable": "15771",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 24.25,
+          "tarif_vulnerable": 34.9,
+          "ecart": 10.65,
+          "ecart_pct": 43.9
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 18.25,
+          "tarif_vulnerable": 26.45,
+          "ecart": 8.2,
+          "ecart_pct": 44.9
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge",
+      "contexte": "Sur rendez-vous — 80 ans ou plus",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15816",
+      "code_vulnerable": "15836",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 118.5,
+          "tarif_vulnerable": 129.15,
+          "ecart": 10.65,
+          "ecart_pct": 9.0
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 89.15,
+          "tarif_vulnerable": 97.3,
+          "ecart": 8.15,
+          "ecart_pct": 9.1
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge",
+      "contexte": "Sur rendez-vous — 80 ans ou plus",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15815",
+      "code_vulnerable": "15835",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 101.8,
+          "tarif_vulnerable": 112.4,
+          "ecart": 10.6,
+          "ecart_pct": 10.4
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 76.55,
+          "tarif_vulnerable": 84.8,
+          "ecart": 8.25,
+          "ecart_pct": 10.8
+        }
+      }
+    },
+    {
+      "acte": "Visite de suivi",
+      "contexte": "Sur rendez-vous — 80 ans ou plus",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15818",
+      "code_vulnerable": "15838",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 58.25,
+          "tarif_vulnerable": 68.85,
+          "ecart": 10.6,
+          "ecart_pct": 18.2
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 43.8,
+          "tarif_vulnerable": 51.95,
+          "ecart": 8.15,
+          "ecart_pct": 18.6
+        }
+      }
+    },
+    {
+      "acte": "Visite de suivi",
+      "contexte": "Sur rendez-vous — 80 ans ou plus",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15817",
+      "code_vulnerable": "15837",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 50.65,
+          "tarif_vulnerable": 61.3,
+          "ecart": 10.65,
+          "ecart_pct": 21.0
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 38.15,
+          "tarif_vulnerable": 46.3,
+          "ecart": 8.15,
+          "ecart_pct": 21.4
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge de grossesse au-delà du premier trimestre",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15810",
+      "code_vulnerable": "15830",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 97.75,
+          "tarif_vulnerable": 108.4,
+          "ecart": 10.65,
+          "ecart_pct": 10.9
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 73.55,
+          "tarif_vulnerable": 81.75,
+          "ecart": 8.2,
+          "ecart_pct": 11.1
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge de grossesse au-delà du premier trimestre",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15809",
+      "code_vulnerable": "15829",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 85.75,
+          "tarif_vulnerable": 96.35,
+          "ecart": 10.6,
+          "ecart_pct": 12.4
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 64.5,
+          "tarif_vulnerable": 72.65,
+          "ecart": 8.15,
+          "ecart_pct": 12.6
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, avec",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15808",
+      "code_vulnerable": "15828",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 97.75,
+          "tarif_vulnerable": 108.4,
+          "ecart": 10.65,
+          "ecart_pct": 10.9
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 73.55,
+          "tarif_vulnerable": 81.75,
+          "ecart": 8.2,
+          "ecart_pct": 11.1
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, avec",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15807",
+      "code_vulnerable": "15827",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 85.75,
+          "tarif_vulnerable": 96.35,
+          "ecart": 10.6,
+          "ecart_pct": 12.4
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 64.5,
+          "tarif_vulnerable": 72.65,
+          "ecart": 8.15,
+          "ecart_pct": 12.6
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, sans",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15806",
+      "code_vulnerable": "15826",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 151.15,
+          "tarif_vulnerable": 161.75,
+          "ecart": 10.6,
+          "ecart_pct": 7.0
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 113.65,
+          "tarif_vulnerable": 121.85,
+          "ecart": 8.2,
+          "ecart_pct": 7.2
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, sans",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15805",
+      "code_vulnerable": "15825",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 132.8,
+          "tarif_vulnerable": 143.4,
+          "ecart": 10.6,
+          "ecart_pct": 8.0
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 99.9,
+          "tarif_vulnerable": 108.05,
+          "ecart": 8.15,
+          "ecart_pct": 8.2
+        }
+      }
+    },
+    {
+      "acte": "Visite de prise en charge",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15802",
+      "code_vulnerable": "15822",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 99.4,
+          "tarif_vulnerable": 110.0,
+          "ecart": 10.6,
+          "ecart_pct": 10.7
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 74.75,
+          "tarif_vulnerable": 82.9,
+          "ecart": 8.15,
+          "ecart_pct": 10.9
+        }
+      }
+    },
+    {
+      "acte": "Visite de suivi de grossesse",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15811",
+      "code_vulnerable": "15831",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 50.2,
+          "tarif_vulnerable": 60.8,
+          "ecart": 10.6,
+          "ecart_pct": 21.1
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 37.75,
+          "tarif_vulnerable": 45.95,
+          "ecart": 8.2,
+          "ecart_pct": 21.7
+        }
+      }
+    },
+    {
+      "acte": "Visite de suivi",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15804",
+      "code_vulnerable": "15824",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 49.15,
+          "tarif_vulnerable": 59.8,
+          "ecart": 10.65,
+          "ecart_pct": 21.7
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 36.95,
+          "tarif_vulnerable": 45.2,
+          "ecart": 8.25,
+          "ecart_pct": 22.3
+        }
+      }
+    },
+    {
+      "acte": "Visite périodique pédiatrique",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
+      "code_non_vulnerable": "15814",
+      "code_vulnerable": "15834",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 75.85,
+          "tarif_vulnerable": 86.45,
+          "ecart": 10.6,
+          "ecart_pct": 14.0
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 57.0,
+          "tarif_vulnerable": 65.2,
+          "ecart": 8.2,
+          "ecart_pct": 14.4
+        }
+      }
+    },
+    {
+      "acte": "Visite périodique pédiatrique",
+      "contexte": "Sur rendez-vous — moins de 80 ans",
+      "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
+      "code_non_vulnerable": "15813",
+      "code_vulnerable": "15833",
+      "lieux": {
+        "Cabinet": {
+          "tarif_non_vulnerable": 66.9,
+          "tarif_vulnerable": 77.55,
+          "ecart": 10.65,
+          "ecart_pct": 15.9
+        },
+        "CLSC / GMF-U": {
+          "tarif_non_vulnerable": 50.3,
+          "tarif_vulnerable": 58.55,
+          "ecart": 8.25,
+          "ecart_pct": 16.4
+        }
+      }
+    }
+  ],
+  "codes_ecartes": [
+    {
+      "code": "15832",
+      "motif": "1 montant(s) trouvé(s) au lieu de 2 : [51.1]. Mise en page atypique — à confirmer au manuel.",
+      "montants_vus_dans_le_corpus": [
+        51.1,
+        67.6
+      ]
+    }
+  ]
+}

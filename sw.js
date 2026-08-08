@@ -2,12 +2,11 @@
    Cache versionné : incrémentez CACHE_NAME à chaque déploiement,
    sinon les navigateurs qui ont déjà installé l'app garderont l'ancienne version. */
 
-const CACHE_NAME = "ramq-radar-v2";
+const CACHE_NAME = "ramq-radar-v4";
 
 const ASSETS = [
   "./",
   "./index.html",
-  "./ramq-data.js",
   "./manifest.json",
   "./favicon.ico",
   "./icon-32.png",
@@ -16,15 +15,21 @@ const ASSETS = [
   "./icon-maskable-192.png",
   "./icon-maskable-512.png",
   "./apple-touch-icon.png",
-  "./logo-mark.png",
-  "./logo-lockup.png",
   "./og-image.png",
+  "./vulnerabilite.json",
 ];
 
 self.addEventListener("install", (event) => {
+  // cache.addAll() est tout-ou-rien : un seul fichier manquant fait échouer
+  // l'installation entière et le mode hors ligne casse silencieusement.
+  // On met donc chaque ressource en cache indépendamment.
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
+      .then((cache) => Promise.all(
+        ASSETS.map((url) => cache.add(url).catch((err) => {
+          console.warn("[sw] ressource ignorée :", url, err);
+        }))
+      ))
       .then(() => self.skipWaiting())
   );
 });

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAMQ Radar — Comprendre et optimiser sa facturation</title>
-<meta name="description" content="Calculez votre revenu, trouvez les codes RAMQ de consultation, examen et visite, et comparez vos scénarios. Outil local, aucune donnée envoyée.">
+<meta name="description" content="Calculez votre revenu, trouvez le bon code d'acte, classez les actes par $/heure et comparez vos scénarios de facturation RAMQ. Outil local, aucune donnée envoyée.">
 <meta name="theme-color" content="#051F58">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -71,57 +71,6 @@ button{font-family:inherit;}
 a{color:inherit;}
 :focus-visible{outline:3px solid #07AE70;outline-offset:2px;}
 @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
-
-/* ============ LOADING SCREEN ============ */
-#loading{
-  position:fixed;inset:0;z-index:999;
-  background:linear-gradient(160deg,#03163F 0%,#051F58 55%,#0A2E70 100%);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:26px;
-  transition:opacity .5s ease, visibility .5s ease;
-}
-#loading.hide{opacity:0;visibility:hidden;pointer-events:none;}
-
-.radar-scope{
-  position:relative;width:186px;height:186px;border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, rgba(7,174,112,.12) 0%, rgba(7,174,112,.04) 55%, transparent 75%);
-  border:1.5px solid rgba(63,215,155,.32);
-  overflow:hidden;
-}
-.scope-ring{position:absolute;border-radius:50%;border:1px solid rgba(63,215,155,.22);}
-.scope-ring.r1{inset:20px;}
-.scope-ring.r2{inset:46px;}
-.scope-cross{position:absolute;inset:0;}
-.scope-cross::before,.scope-cross::after{content:'';position:absolute;background:rgba(63,215,155,.18);}
-.scope-cross::before{left:0;right:0;top:50%;height:1px;}
-.scope-cross::after{top:0;bottom:0;left:50%;width:1px;}
-.scope-sweep{
-  position:absolute;inset:0;border-radius:50%;
-  animation:sweepspin 2.4s linear infinite;
-  transform-origin:50% 50%;
-}
-.scope-sweep::before{
-  content:'';position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(from 0deg, rgba(63,215,155,0) 0deg, rgba(63,215,155,0) 268deg, rgba(63,215,155,.75) 355deg, rgba(63,215,155,0) 360deg);
-}
-@keyframes sweepspin{to{transform:rotate(360deg);}}
-.scope-logo{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:82px;height:82px;object-fit:contain;
-  background:#fff;border-radius:50%;padding:11px;
-  box-shadow:0 0 0 1px rgba(63,215,155,.30), 0 6px 22px rgba(0,0,0,.32);
-}
-.scope-blip{position:absolute;width:6px;height:6px;border-radius:50%;background:#3FD79B;box-shadow:0 0 10px 2px rgba(63,215,155,.75);opacity:0;}
-.scope-blip.b1{top:24%;left:70%;animation:blipfade 2.4s linear infinite;}
-.scope-blip.b2{top:74%;left:34%;animation:blipfade 2.4s linear infinite;animation-delay:.8s;}
-.scope-blip.b3{top:40%;left:16%;animation:blipfade 2.4s linear infinite;animation-delay:1.6s;}
-@keyframes blipfade{0%,100%{opacity:0;}4%{opacity:1;}30%{opacity:0;}}
-
-.loading-lockup{width:min(268px,62vw);height:auto;filter:brightness(0) invert(1);opacity:.94;}
-
-.progress-wrap{position:absolute;left:0;right:0;bottom:0;padding:0 34px 34px;display:flex;flex-direction:column;gap:8px;}
-.progress-track{height:5px;border-radius:4px;background:rgba(255,255,255,.14);overflow:hidden;}
-.progress-fill{height:100%;width:0%;background:var(--grad-main);border-radius:4px;transition:width .12s linear;}
-.progress-pct{align-self:center;color:rgba(255,255,255,.6);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.05em;}
 
 /* ============ LAYOUT ============ */
 .app-header{
@@ -303,42 +252,599 @@ table.admin input,table.admin select{width:100%;border:1px solid var(--line);bor
 .file-input{display:none;}
 
 footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20px 40px;}
+
+/* ---- Vulnérabilité ---- */
+.tile-wide{grid-column:1 / -1;}
+.vu-warn{border-left:4px solid var(--accent);background:#FFFDF5;}
+.vu-warn h4{margin:0 0 .5rem;color:#8A5A00;}
+.vu-warn ul{margin:0;padding-left:1.15rem;}
+.vu-warn li{margin:.3rem 0;font-size:.9rem;line-height:1.45;}
+.vu-exi{margin-bottom:1rem;}
+.vu-exi h5{margin:0 0 .35rem;font-size:.88rem;color:var(--navy);}
+.vu-exi ul{margin:0;padding-left:1.15rem;}
+.vu-exi li{margin:.22rem 0;font-size:.87rem;line-height:1.45;color:var(--ink-soft);}
+.vu-filters{display:flex;gap:.6rem;margin-bottom:.9rem;flex-wrap:wrap;}
+.vu-filters input{flex:1;min-width:190px;}
+.vu-tbl{width:100%;border-collapse:collapse;font-size:.86rem;}
+.vu-tbl th{text-align:left;padding:.55rem .5rem;border-bottom:2px solid var(--line);
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.vu-tbl td{padding:.6rem .5rem;border-bottom:1px solid var(--line);vertical-align:top;}
+.vu-tbl .num{text-align:right;font-family:var(--font-mono);white-space:nowrap;}
+.vu-tbl .delta{color:var(--green);font-weight:600;}
+.code-pill{display:inline-block;background:var(--navy);color:#fff;border-radius:5px;
+  padding:.1rem .34rem;font-family:var(--font-mono);font-size:.74rem;}
+.code-pill.vuln{background:var(--green);}
+.vu-ec{padding:.4rem 0;font-size:.85rem;border-bottom:1px solid var(--line);}
+.small{font-size:.8rem;}
+.muted{color:var(--ink-soft);}
+@media(max-width:640px){
+  /* Six colonnes sont illisibles sur un téléphone : on empile en cartes. */
+  .vu-tbl thead{display:none;}
+  .vu-tbl,.vu-tbl tbody,.vu-tbl tr,.vu-tbl td{display:block;width:100%;}
+  .vu-tbl tr{border:1px solid var(--line);border-radius:12px;
+    padding:.7rem .8rem;margin-bottom:.7rem;background:#fff;}
+  .vu-tbl td{border:none;padding:.15rem 0;text-align:left;}
+  .vu-tbl td.num{text-align:left;}
+  .vu-tbl td[data-lbl]::before{content:attr(data-lbl);
+    display:inline-block;min-width:8.5rem;color:var(--ink-soft);
+    font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;}
+  .vu-tbl td.delta{margin-top:.3rem;font-size:1rem;}
+  .vu-tbl td.delta::before{color:var(--ink-soft);}
+}
+
+/* ---- Mon profil (mobile d'abord) ---- */
+.pf-switch{display:flex;flex-wrap:wrap;gap:8px;}
+.pf-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;
+  border:1px solid var(--line);border-radius:999px;background:#fff;
+  font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink-soft);
+  min-height:40px;}
+.pf-chip.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+.pf-ava{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  background:rgba(0,0,0,.07);color:var(--ink-soft);flex:none;}
+.pf-chip.on .pf-ava{background:rgba(255,255,255,.20);color:#fff;}
+.pf-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.btn-sm{padding:9px 13px;font-size:13px;min-height:40px;}
+.btn-ghost.danger{color:var(--danger);border-color:rgba(228,87,76,.35);}
+.pf-derived{margin-top:10px;padding:11px 13px;border-radius:10px;
+  background:#F0F6FF;font-size:13.5px;line-height:1.45;}
+
+.chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.chk{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--line);
+  border-radius:9px;font-size:13.5px;background:#fff;min-height:42px;}
+.chk input{width:18px;height:18px;accent-color:var(--blue);flex:none;}
+.chk span{line-height:1.25;}
+
+.dur-row{display:flex;align-items:center;gap:9px;padding:8px 0;
+  border-bottom:1px solid var(--line);}
+.dur-nom{flex:1;font-size:14.5px;font-weight:500;}
+.dur-nom-in{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);
+  border-radius:8px;font-family:inherit;font-size:14px;}
+.dur-in,.dur-in-sur{width:74px;flex:none;padding:9px 8px;text-align:right;
+  border:1px solid var(--line);border-radius:8px;
+  font-family:var(--font-mono);font-size:14.5px;font-weight:600;}
+.dur-u{font-size:12.5px;color:var(--ink-soft);width:26px;flex:none;}
+.dur-del{width:32px;height:32px;flex:none;border:none;background:none;
+  color:var(--danger);font-size:20px;line-height:1;}
+
+/* Le titre du tableau de bord */
+.hero h1{font-size:34px;letter-spacing:-.03em;}
+
+@media(min-width:700px){ .chk-grid{grid-template-columns:1fr 1fr 1fr;} }
+@media(max-width:420px){
+  .chk-grid{grid-template-columns:1fr;}
+  .hero h1{font-size:30px;}
+}
+
+/* Sections pliables du profil */
+.pf-fold{padding:0;}
+.pf-fold>summary{list-style:none;cursor:pointer;padding:16px 18px;
+  font-family:var(--font-display);font-weight:700;font-size:15.5px;color:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;min-height:52px;}
+.pf-fold>summary::-webkit-details-marker{display:none;}
+.pf-fold>summary::after{content:"+";font-family:var(--font-mono);font-size:19px;
+  font-weight:600;color:var(--ink-soft);}
+.pf-fold[open]>summary::after{content:"\2013";}
+.pf-fold[open]>summary{border-bottom:1px solid var(--line);}
+.pf-fold>*:not(summary){padding-left:18px;padding-right:18px;}
+.pf-fold>*:nth-last-child(1):not(summary){padding-bottom:18px;}
+.pf-fold>summary:focus-visible{outline:3px solid #07AE70;outline-offset:-3px;}
+/* Respiration entre les champs */
+#view-settings .field{margin-bottom:16px;}
+#view-settings .field:last-child{margin-bottom:0;}
+#view-settings .hint{display:block;margin-top:5px;}
+#view-settings label{display:block;margin-bottom:6px;font-size:12.5px;font-weight:600;}
+
+/* Le bouton retour occupait une ligne entière au-dessus du titre sur mobile.
+   On le remet en ligne avec le titre pour récupérer l'espace. */
+@media(max-width:620px){
+  .view-header{display:flex;align-items:flex-start;gap:11px;margin-bottom:16px;}
+  .view-header .back-btn{flex:none;margin-top:1px;}
+  .view-header h2{margin:0;font-size:22px;letter-spacing:-.022em;}
+  .view-header .sub{margin-top:5px;font-size:13.5px;line-height:1.45;}
+  /* La bannière occupe déjà le haut de l'écran : le contenu n'a pas besoin
+     d'un grand retrait supplémentaire sur téléphone. */
+  main{padding:16px 16px 90px;}
+}
+
+/* ============ BANNIÈRE D'EN-TÊTE ============ */
+/* Ratio 2:1 sur grand écran, plus haute en proportion sur téléphone pour que
+   le titre reste lisible. Le radar est ancré en bas à droite et déborde. */
+.app-header{
+  position:relative;overflow:hidden;
+  background:linear-gradient(105deg,#02112A 0%,#02132E 55%,#031A38 100%);
+  padding:0;display:block;min-height:0;
+}
+.bnr-radar{
+  position:absolute;right:0;top:0;height:100%;width:min(66%,620px);
+  pointer-events:none;
+}
+.bnr-text{
+  position:relative;z-index:2;display:block;text-align:left;
+  background:none;border:none;color:#fff;font-family:inherit;
+  padding:30px 20px 30px;width:100%;cursor:pointer;
+}
+.bnr-title{
+  display:block;font-family:var(--font-display);font-weight:700;
+  font-size:clamp(30px,8.6vw,54px);line-height:1;letter-spacing:-.028em;color:#fff;
+}
+.bnr-title span{color:#98E9EE;font-weight:600;}
+.bnr-tag{
+  display:block;margin-top:10px;font-size:clamp(14px,3.9vw,21px);
+  font-weight:400;color:rgba(255,255,255,.93);letter-spacing:-.005em;
+}
+.bnr-kicker{
+  display:block;margin-top:13px;font-size:clamp(9.5px,2.5vw,12px);
+  font-weight:600;letter-spacing:.19em;text-transform:uppercase;color:#3DB3BA;
+}
+.bnr-kicker i{font-style:normal;padding:0 4px;}
+.app-header .header-actions{
+  position:absolute;top:14px;right:14px;z-index:3;display:flex;gap:8px;
+}
+.app-header .icon-btn{
+  background:rgba(255,255,255,.09);border:1px solid rgba(152,233,238,.26);
+  color:#CDEFF2;width:40px;height:40px;border-radius:11px;
+  display:grid;place-items:center;
+}
+.app-header .icon-btn:active{background:rgba(255,255,255,.18);}
+
+/* Version compacte : hors du tableau de bord, la bannière se replie en bandeau
+   pour ne pas voler l'écran à chaque navigation. */
+body.vue-interne .bnr-text{padding:14px 20px 14px;}
+body.vue-interne .bnr-title{font-size:clamp(19px,5vw,24px);}
+body.vue-interne .bnr-tag,
+body.vue-interne .bnr-kicker{display:none;}
+body.vue-interne .bnr-radar{width:min(46%,320px);opacity:.72;}
+body.vue-interne .app-header .header-actions{top:50%;transform:translateY(-50%);}
+body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px;}
+.app-header,.bnr-text,.bnr-title,.bnr-radar{transition:padding .22s ease,font-size .22s ease,width .22s ease;}
+@media (prefers-reduced-motion:reduce){
+  .app-header,.bnr-text,.bnr-title,.bnr-radar{transition:none;}
+}
+
+/* Le tableau de bord n'a plus de hero : on récupère l'espace. */
+#view-dashboard{padding-top:20px;}
+/* Sur téléphone, les boutons d'action entraient en collision avec le mot
+   « Radar ». On dégage le haut du bloc de titre de la hauteur des boutons. */
+@media(max-width:620px){
+  .bnr-text{padding:62px 18px 24px;}
+  .bnr-radar{width:78%;opacity:.9;}
+  body.vue-interne .bnr-text{padding:14px 96px 14px 18px;}
+}
+@media(max-width:360px){
+  .bnr-title{font-size:27px;}
+  .bnr-tag{font-size:13.5px;}
+}
+
+/* Balayage continu du radar, ancré sur le centre (1000,275) du viewBox. */
+.bnr-sweep{transform-box:view-box;transform-origin:1000px 275px;
+  animation:bnrTurn 5.5s linear infinite;}
+@keyframes bnrTurn{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion:reduce){
+  .bnr-sweep{animation:none;transform:rotate(-18deg);}
+}
+
+/* « Radar » en dégradé bleu vers vert. */
+.bnr-title span{
+  background:linear-gradient(100deg,#7FD9F5 0%,#3FD7C9 48%,#34D38A 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:#3FD7C9;
+  font-weight:600;
+}
 </style>
 </head>
 <body>
 
 <!-- ============ LOADING SCREEN ============ -->
-<div id="loading">
-  <div class="radar-scope">
-    <div class="scope-ring r1"></div>
-    <div class="scope-ring r2"></div>
-    <div class="scope-cross"></div>
-    <div class="scope-sweep"></div>
-    <div class="scope-blip b1"></div>
-    <div class="scope-blip b2"></div>
-    <div class="scope-blip b3"></div>
-    <img class="scope-logo" src="logo-mark.png" alt="RAMQ Radar">
-  </div>
-  <img class="loading-lockup" src="logo-lockup.png" alt="RAMQ Radar">
-  <div class="progress-wrap">
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-pct" id="progressPct">Chargement… 0 %</div>
-  </div>
-</div>
-
 <!-- ============ HEADER ============ -->
-<header class="app-header">
-  <button class="brand" id="brandHome" aria-label="Retour au tableau de bord">
-    <img class="brand-mark" src="logo-mark.png" alt="" width="34" height="34">
-    <span class="brand-name">RAMQ <span>Radar</span></span>
+<header class="app-header" id="appHeader">
+
+  <!-- Bloc radar : reconstruit en SVG plutôt qu'en image, pour rester net à
+       toute densité, s'adapter au téléphone, et permettre de semer des « $ »
+       à la limite du perceptible là où la bannière d'origine avait des points. -->
+  <svg class="bnr-radar" viewBox="0 0 1000 500" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- Le faisceau : bord avant net, traîne qui s'éteint derrière. -->
+      <!-- Dégradés ancrés sur le centre du radar en coordonnées absolues.
+           Un dégradé linéaire tournerait avec le faisceau et viendrait délaver
+           le texte à chaque passage ; ici la clarté ne dépend que de la
+           distance à l'émetteur, ce qui est aussi le comportement réel. -->
+      <radialGradient id="bnrBeam" cx="1000" cy="275" r="1100" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#5CFFEC" stop-opacity=".85"/>
+        <stop offset="18%" stop-color="#22E3D0" stop-opacity=".52"/>
+        <stop offset="42%" stop-color="#12B9B4" stop-opacity=".22"/>
+        <stop offset="70%" stop-color="#0C8E93" stop-opacity=".06"/>
+        <stop offset="100%" stop-color="#0A6E7C" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Lueur turquoise au coeur du radar, comme sur la bannière. -->
+      <radialGradient id="bnrTrail" cx="1000" cy="275" r="1100" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#12C9BE" stop-opacity=".20"/>
+        <stop offset="30%" stop-color="#0FA8A6" stop-opacity=".10"/>
+        <stop offset="65%" stop-color="#0C8E93" stop-opacity=".03"/>
+        <stop offset="100%" stop-color="#0A6E7C" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Lueur turquoise du coeur : c'est l'élément le plus vif de la
+           bannière d'origine, elle ne doit pas tourner avec le faisceau. -->
+      <radialGradient id="bnrGlow" cx="1000" cy="275" r="520" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#5CFFEC" stop-opacity=".60"/>
+        <stop offset="12%" stop-color="#25E6D2" stop-opacity=".40"/>
+        <stop offset="34%" stop-color="#0FC9BC" stop-opacity=".22"/>
+        <stop offset="65%" stop-color="#0A6E7C" stop-opacity=".09"/>
+        <stop offset="100%" stop-color="#02112A" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <rect width="1000" height="500" fill="url(#bnrGlow)"/>
+
+    <!-- Arcs pleins, rayons relevés sur la bannière fournie -->
+    <g fill="none" stroke="#1E8C93" stroke-width="1.5" opacity=".70">
+      <circle cx="1000" cy="275" r="145"/><circle cx="1000" cy="275" r="195"/>
+      <circle cx="1000" cy="275" r="250"/><circle cx="1000" cy="275" r="325"/>
+      <circle cx="1000" cy="275" r="410"/>
+    </g>
+    <!-- Arcs pointillés intercalés -->
+    <g fill="none" stroke="#1E8C93" stroke-width="1.1" opacity=".34" stroke-dasharray="3 8">
+      <circle cx="1000" cy="275" r="172"/><circle cx="1000" cy="275" r="220"/>
+      <circle cx="1000" cy="275" r="288"/><circle cx="1000" cy="275" r="365"/>
+      <circle cx="1000" cy="275" r="460"/>
+    </g>
+
+    <!-- Champ de « $ » à la limite du perceptible, à la place des points -->
+    <g font-family="'IBM Plex Mono', monospace" font-weight="600" class="bnr-dollars">
+<text x="-4.4" y="48.1" font-size="6.7" fill="#3FD8CB" opacity="0.044">$</text>
+<text x="-0.8" y="75.3" font-size="8.4" fill="#3FD8CB" opacity="0.061">$</text>
+<text x="-4.5" y="123.6" font-size="8.8" fill="#7FF4E2" opacity="0.096">$</text>
+<text x="-4.4" y="187.6" font-size="5.6" fill="#1E8C93" opacity="0.025">$</text>
+<text x="0.9" y="215.5" font-size="5.5" fill="#1E8C93" opacity="0.032">$</text>
+<text x="-3.5" y="311.9" font-size="6.1" fill="#1E8C93" opacity="0.033">$</text>
+<text x="-4.8" y="479.6" font-size="9.9" fill="#7FF4E2" opacity="0.093">$</text>
+<text x="20.5" y="92.8" font-size="7.7" fill="#3FD8CB" opacity="0.057">$</text>
+<text x="22.9" y="239.0" font-size="5.1" fill="#1E8C93" opacity="0.016">$</text>
+<text x="19.5" y="283.0" font-size="8.1" fill="#7FF4E2" opacity="0.107">$</text>
+<text x="27.7" y="313.1" font-size="7.2" fill="#3FD8CB" opacity="0.052">$</text>
+<text x="23.7" y="359.8" font-size="8.7" fill="#7FF4E2" opacity="0.106">$</text>
+<text x="27.3" y="380.6" font-size="5.3" fill="#1E8C93" opacity="0.028">$</text>
+<text x="21.6" y="454.7" font-size="6.6" fill="#1E8C93" opacity="0.028">$</text>
+<text x="51.2" y="2.4" font-size="5.1" fill="#1E8C93" opacity="0.024">$</text>
+<text x="43.3" y="21.8" font-size="5.9" fill="#1E8C93" opacity="0.038">$</text>
+<text x="46.6" y="69.2" font-size="7.7" fill="#3FD8CB" opacity="0.048">$</text>
+<text x="49.5" y="123.0" font-size="6.6" fill="#1E8C93" opacity="0.037">$</text>
+<text x="50.5" y="143.8" font-size="6.6" fill="#1E8C93" opacity="0.023">$</text>
+<text x="52.5" y="194.2" font-size="10.3" fill="#7FF4E2" opacity="0.097">$</text>
+<text x="48.5" y="260.3" font-size="6.1" fill="#1E8C93" opacity="0.031">$</text>
+<text x="51.3" y="309.1" font-size="7.7" fill="#3FD8CB" opacity="0.049">$</text>
+<text x="45.6" y="335.2" font-size="5.9" fill="#1E8C93" opacity="0.023">$</text>
+<text x="48.6" y="506.8" font-size="5.6" fill="#1E8C93" opacity="0.021">$</text>
+<text x="75.8" y="124.4" font-size="6.7" fill="#1E8C93" opacity="0.038">$</text>
+<text x="67.7" y="165.4" font-size="6.8" fill="#1E8C93" opacity="0.034">$</text>
+<text x="70.4" y="309.0" font-size="6.1" fill="#1E8C93" opacity="0.015">$</text>
+<text x="71.4" y="331.2" font-size="5.1" fill="#1E8C93" opacity="0.027">$</text>
+<text x="68.0" y="381.7" font-size="5.3" fill="#1E8C93" opacity="0.021">$</text>
+<text x="72.7" y="458.0" font-size="9.1" fill="#7FF4E2" opacity="0.123">$</text>
+<text x="93.4" y="68.1" font-size="8.8" fill="#7FF4E2" opacity="0.100">$</text>
+<text x="94.1" y="98.6" font-size="5.7" fill="#1E8C93" opacity="0.019">$</text>
+<text x="91.2" y="117.5" font-size="5.4" fill="#1E8C93" opacity="0.028">$</text>
+<text x="95.7" y="148.3" font-size="6.0" fill="#1E8C93" opacity="0.025">$</text>
+<text x="95.0" y="238.5" font-size="9.9" fill="#7FF4E2" opacity="0.093">$</text>
+<text x="93.6" y="260.6" font-size="6.3" fill="#1E8C93" opacity="0.036">$</text>
+<text x="93.8" y="285.4" font-size="5.9" fill="#1E8C93" opacity="0.019">$</text>
+<text x="94.1" y="358.6" font-size="7.5" fill="#3FD8CB" opacity="0.056">$</text>
+<text x="93.0" y="384.0" font-size="7.3" fill="#3FD8CB" opacity="0.045">$</text>
+<text x="91.4" y="403.2" font-size="7.6" fill="#3FD8CB" opacity="0.060">$</text>
+<text x="99.8" y="454.9" font-size="6.4" fill="#1E8C93" opacity="0.019">$</text>
+<text x="121.8" y="73.9" font-size="8.9" fill="#7FF4E2" opacity="0.096">$</text>
+<text x="117.5" y="211.7" font-size="6.5" fill="#1E8C93" opacity="0.020">$</text>
+<text x="121.2" y="289.4" font-size="9.9" fill="#7FF4E2" opacity="0.102">$</text>
+<text x="118.0" y="312.7" font-size="9.7" fill="#7FF4E2" opacity="0.103">$</text>
+<text x="121.9" y="337.8" font-size="5.9" fill="#1E8C93" opacity="0.026">$</text>
+<text x="116.2" y="363.9" font-size="5.0" fill="#1E8C93" opacity="0.037">$</text>
+<text x="119.5" y="405.7" font-size="6.2" fill="#1E8C93" opacity="0.020">$</text>
+<text x="123.9" y="482.0" font-size="5.0" fill="#1E8C93" opacity="0.027">$</text>
+<text x="142.2" y="27.4" font-size="5.2" fill="#1E8C93" opacity="0.035">$</text>
+<text x="143.3" y="117.8" font-size="8.7" fill="#7FF4E2" opacity="0.130">$</text>
+<text x="148.4" y="141.5" font-size="5.7" fill="#1E8C93" opacity="0.020">$</text>
+<text x="144.5" y="218.2" font-size="6.5" fill="#1E8C93" opacity="0.026">$</text>
+<text x="145.4" y="237.9" font-size="5.9" fill="#1E8C93" opacity="0.018">$</text>
+<text x="140.7" y="332.6" font-size="5.4" fill="#1E8C93" opacity="0.027">$</text>
+<text x="140.4" y="380.9" font-size="7.0" fill="#3FD8CB" opacity="0.045">$</text>
+<text x="144.2" y="454.8" font-size="10.4" fill="#7FF4E2" opacity="0.103">$</text>
+<text x="147.6" y="501.2" font-size="7.4" fill="#3FD8CB" opacity="0.054">$</text>
+<text x="165.5" y="116.1" font-size="6.9" fill="#1E8C93" opacity="0.031">$</text>
+<text x="167.6" y="168.5" font-size="6.8" fill="#1E8C93" opacity="0.021">$</text>
+<text x="169.5" y="190.0" font-size="7.9" fill="#3FD8CB" opacity="0.061">$</text>
+<text x="168.8" y="238.9" font-size="5.6" fill="#1E8C93" opacity="0.015">$</text>
+<text x="171.8" y="287.8" font-size="7.9" fill="#3FD8CB" opacity="0.071">$</text>
+<text x="169.7" y="335.2" font-size="5.5" fill="#1E8C93" opacity="0.037">$</text>
+<text x="170.4" y="408.0" font-size="6.6" fill="#1E8C93" opacity="0.022">$</text>
+<text x="169.7" y="508.5" font-size="8.4" fill="#3FD8CB" opacity="0.048">$</text>
+<text x="188.4" y="-4.5" font-size="8.3" fill="#3FD8CB" opacity="0.069">$</text>
+<text x="190.8" y="94.7" font-size="8.7" fill="#7FF4E2" opacity="0.090">$</text>
+<text x="190.5" y="124.6" font-size="5.7" fill="#1E8C93" opacity="0.020">$</text>
+<text x="195.1" y="242.7" font-size="10.3" fill="#7FF4E2" opacity="0.093">$</text>
+<text x="190.2" y="333.8" font-size="6.3" fill="#1E8C93" opacity="0.037">$</text>
+<text x="196.4" y="355.2" font-size="6.9" fill="#1E8C93" opacity="0.038">$</text>
+<text x="191.9" y="412.3" font-size="6.6" fill="#1E8C93" opacity="0.033">$</text>
+<text x="194.7" y="433.1" font-size="8.1" fill="#3FD8CB" opacity="0.053">$</text>
+<text x="189.5" y="475.6" font-size="7.0" fill="#1E8C93" opacity="0.023">$</text>
+<text x="195.8" y="508.9" font-size="9.2" fill="#7FF4E2" opacity="0.095">$</text>
+<text x="218.1" y="-0.5" font-size="7.8" fill="#3FD8CB" opacity="0.061">$</text>
+<text x="212.2" y="51.4" font-size="6.5" fill="#1E8C93" opacity="0.024">$</text>
+<text x="213.0" y="69.5" font-size="9.4" fill="#7FF4E2" opacity="0.132">$</text>
+<text x="217.5" y="148.9" font-size="6.7" fill="#1E8C93" opacity="0.035">$</text>
+<text x="220.1" y="163.4" font-size="10.4" fill="#7FF4E2" opacity="0.099">$</text>
+<text x="219.7" y="215.5" font-size="5.2" fill="#1E8C93" opacity="0.038">$</text>
+<text x="217.0" y="241.2" font-size="6.9" fill="#3FD8CB" opacity="0.046">$</text>
+<text x="213.0" y="283.1" font-size="5.6" fill="#1E8C93" opacity="0.019">$</text>
+<text x="216.5" y="361.4" font-size="9.0" fill="#7FF4E2" opacity="0.123">$</text>
+<text x="243.8" y="-0.4" font-size="9.6" fill="#7FF4E2" opacity="0.116">$</text>
+<text x="238.7" y="48.0" font-size="8.4" fill="#3FD8CB" opacity="0.058">$</text>
+<text x="244.7" y="93.0" font-size="6.0" fill="#1E8C93" opacity="0.038">$</text>
+<text x="236.6" y="170.9" font-size="8.2" fill="#3FD8CB" opacity="0.067">$</text>
+<text x="240.2" y="214.8" font-size="8.3" fill="#3FD8CB" opacity="0.065">$</text>
+<text x="235.4" y="267.4" font-size="6.3" fill="#1E8C93" opacity="0.029">$</text>
+<text x="242.8" y="383.6" font-size="5.3" fill="#1E8C93" opacity="0.018">$</text>
+<text x="238.8" y="508.5" font-size="6.5" fill="#1E8C93" opacity="0.039">$</text>
+<text x="260.6" y="100.0" font-size="6.0" fill="#1E8C93" opacity="0.019">$</text>
+<text x="268.2" y="117.1" font-size="5.1" fill="#1E8C93" opacity="0.024">$</text>
+<text x="265.8" y="172.0" font-size="6.1" fill="#1E8C93" opacity="0.019">$</text>
+<text x="262.9" y="267.0" font-size="5.7" fill="#1E8C93" opacity="0.032">$</text>
+<text x="266.6" y="287.4" font-size="6.6" fill="#1E8C93" opacity="0.018">$</text>
+<text x="264.9" y="337.6" font-size="8.4" fill="#7FF4E2" opacity="0.101">$</text>
+<text x="268.0" y="380.3" font-size="5.0" fill="#1E8C93" opacity="0.017">$</text>
+<text x="260.3" y="484.4" font-size="9.6" fill="#7FF4E2" opacity="0.095">$</text>
+<text x="285.5" y="76.0" font-size="5.5" fill="#1E8C93" opacity="0.027">$</text>
+<text x="283.6" y="98.8" font-size="5.3" fill="#1E8C93" opacity="0.042">$</text>
+<text x="289.4" y="147.1" font-size="6.6" fill="#3FD8CB" opacity="0.059">$</text>
+<text x="285.3" y="236.1" font-size="9.9" fill="#7FF4E2" opacity="0.125">$</text>
+<text x="290.9" y="312.2" font-size="5.4" fill="#1E8C93" opacity="0.046">$</text>
+<text x="291.8" y="331.2" font-size="8.4" fill="#3FD8CB" opacity="0.077">$</text>
+<text x="290.2" y="480.7" font-size="6.7" fill="#3FD8CB" opacity="0.067">$</text>
+<text x="292.1" y="500.4" font-size="8.9" fill="#7FF4E2" opacity="0.147">$</text>
+<text x="308.4" y="-4.7" font-size="6.4" fill="#1E8C93" opacity="0.033">$</text>
+<text x="316.1" y="100.4" font-size="6.6" fill="#3FD8CB" opacity="0.055">$</text>
+<text x="315.3" y="145.3" font-size="9.9" fill="#7FF4E2" opacity="0.118">$</text>
+<text x="307.2" y="189.6" font-size="5.6" fill="#1E8C93" opacity="0.030">$</text>
+<text x="314.0" y="288.4" font-size="6.6" fill="#1E8C93" opacity="0.022">$</text>
+<text x="308.7" y="307.0" font-size="5.0" fill="#1E8C93" opacity="0.048">$</text>
+<text x="331.9" y="3.9" font-size="8.3" fill="#3FD8CB" opacity="0.058">$</text>
+<text x="334.5" y="94.3" font-size="6.5" fill="#1E8C93" opacity="0.039">$</text>
+<text x="339.9" y="165.4" font-size="8.2" fill="#3FD8CB" opacity="0.084">$</text>
+<text x="332.5" y="188.6" font-size="6.8" fill="#3FD8CB" opacity="0.076">$</text>
+<text x="333.0" y="313.4" font-size="6.6" fill="#3FD8CB" opacity="0.072">$</text>
+<text x="358.1" y="1.3" font-size="7.9" fill="#3FD8CB" opacity="0.081">$</text>
+<text x="361.8" y="76.3" font-size="5.8" fill="#1E8C93" opacity="0.045">$</text>
+<text x="359.9" y="100.7" font-size="6.6" fill="#1E8C93" opacity="0.026">$</text>
+<text x="364.4" y="120.2" font-size="6.4" fill="#1E8C93" opacity="0.039">$</text>
+<text x="358.6" y="235.6" font-size="7.3" fill="#3FD8CB" opacity="0.060">$</text>
+<text x="364.4" y="312.3" font-size="5.4" fill="#1E8C93" opacity="0.035">$</text>
+<text x="357.5" y="503.3" font-size="8.7" fill="#7FF4E2" opacity="0.161">$</text>
+<text x="385.3" y="115.1" font-size="5.5" fill="#1E8C93" opacity="0.045">$</text>
+<text x="380.0" y="140.4" font-size="5.3" fill="#1E8C93" opacity="0.034">$</text>
+<text x="388.0" y="170.9" font-size="6.6" fill="#1E8C93" opacity="0.044">$</text>
+<text x="387.8" y="264.6" font-size="7.5" fill="#3FD8CB" opacity="0.070">$</text>
+<text x="379.6" y="287.7" font-size="6.1" fill="#1E8C93" opacity="0.040">$</text>
+<text x="385.8" y="436.3" font-size="6.0" fill="#1E8C93" opacity="0.040">$</text>
+<text x="406.3" y="118.2" font-size="6.6" fill="#1E8C93" opacity="0.046">$</text>
+<text x="408.5" y="163.5" font-size="10.3" fill="#7FF4E2" opacity="0.155">$</text>
+<text x="407.6" y="290.6" font-size="9.9" fill="#7FF4E2" opacity="0.146">$</text>
+<text x="429.1" y="20.5" font-size="8.3" fill="#7FF4E2" opacity="0.182">$</text>
+<text x="429.4" y="98.3" font-size="9.8" fill="#7FF4E2" opacity="0.200">$</text>
+<text x="435.6" y="122.3" font-size="5.9" fill="#1E8C93" opacity="0.052">$</text>
+<text x="434.2" y="163.1" font-size="5.2" fill="#1E8C93" opacity="0.057">$</text>
+<text x="430.1" y="194.3" font-size="5.1" fill="#1E8C93" opacity="0.044">$</text>
+<text x="434.0" y="363.3" font-size="6.7" fill="#1E8C93" opacity="0.064">$</text>
+<text x="429.8" y="451.0" font-size="8.1" fill="#3FD8CB" opacity="0.094">$</text>
+<text x="455.7" y="117.1" font-size="5.9" fill="#1E8C93" opacity="0.057">$</text>
+<text x="456.9" y="212.9" font-size="8.9" fill="#7FF4E2" opacity="0.216">$</text>
+<text x="454.4" y="336.2" font-size="10.2" fill="#7FF4E2" opacity="0.239">$</text>
+<text x="455.9" y="360.7" font-size="6.9" fill="#1E8C93" opacity="0.044">$</text>
+<text x="453.5" y="403.4" font-size="8.1" fill="#7FF4E2" opacity="0.159">$</text>
+<text x="460.5" y="460.1" font-size="5.2" fill="#1E8C93" opacity="0.041">$</text>
+<text x="478.9" y="-0.5" font-size="5.4" fill="#1E8C93" opacity="0.062">$</text>
+<text x="481.5" y="100.9" font-size="10.3" fill="#7FF4E2" opacity="0.220">$</text>
+<text x="482.6" y="140.1" font-size="7.5" fill="#3FD8CB" opacity="0.082">$</text>
+<text x="476.7" y="165.4" font-size="6.4" fill="#1E8C93" opacity="0.027">$</text>
+<text x="481.3" y="287.5" font-size="6.3" fill="#1E8C93" opacity="0.049">$</text>
+<text x="476.4" y="309.2" font-size="5.3" fill="#1E8C93" opacity="0.051">$</text>
+<text x="478.2" y="412.0" font-size="6.8" fill="#1E8C93" opacity="0.029">$</text>
+<text x="477.9" y="453.6" font-size="8.5" fill="#3FD8CB" opacity="0.124">$</text>
+<text x="484.3" y="476.0" font-size="6.5" fill="#1E8C93" opacity="0.028">$</text>
+<text x="477.9" y="508.8" font-size="5.3" fill="#1E8C93" opacity="0.038">$</text>
+<text x="501.2" y="48.7" font-size="9.8" fill="#7FF4E2" opacity="0.221">$</text>
+<text x="501.0" y="67.8" font-size="5.5" fill="#1E8C93" opacity="0.047">$</text>
+<text x="507.1" y="120.8" font-size="9.0" fill="#7FF4E2" opacity="0.231">$</text>
+<text x="503.8" y="219.7" font-size="7.2" fill="#3FD8CB" opacity="0.127">$</text>
+<text x="507.2" y="315.7" font-size="6.5" fill="#1E8C93" opacity="0.046">$</text>
+<text x="501.2" y="404.8" font-size="6.6" fill="#3FD8CB" opacity="0.123">$</text>
+<text x="500.0" y="434.0" font-size="9.4" fill="#7FF4E2" opacity="0.216">$</text>
+<text x="504.2" y="458.0" font-size="5.1" fill="#1E8C93" opacity="0.058">$</text>
+<text x="530.8" y="118.4" font-size="8.5" fill="#3FD8CB" opacity="0.106">$</text>
+<text x="532.6" y="196.3" font-size="7.2" fill="#3FD8CB" opacity="0.121">$</text>
+<text x="528.0" y="235.2" font-size="6.9" fill="#1E8C93" opacity="0.067">$</text>
+<text x="525.7" y="313.8" font-size="6.2" fill="#1E8C93" opacity="0.074">$</text>
+<text x="532.5" y="357.9" font-size="6.2" fill="#1E8C93" opacity="0.035">$</text>
+<text x="532.6" y="384.1" font-size="5.3" fill="#1E8C93" opacity="0.055">$</text>
+<text x="524.2" y="404.3" font-size="7.0" fill="#3FD8CB" opacity="0.097">$</text>
+<text x="550.1" y="-2.6" font-size="6.2" fill="#1E8C93" opacity="0.044">$</text>
+<text x="549.8" y="76.9" font-size="5.1" fill="#1E8C93" opacity="0.036">$</text>
+<text x="555.7" y="95.4" font-size="8.0" fill="#3FD8CB" opacity="0.109">$</text>
+<text x="554.4" y="140.5" font-size="7.7" fill="#3FD8CB" opacity="0.125">$</text>
+<text x="551.6" y="362.2" font-size="7.3" fill="#3FD8CB" opacity="0.120">$</text>
+<text x="552.0" y="407.4" font-size="7.7" fill="#3FD8CB" opacity="0.093">$</text>
+<text x="556.1" y="499.1" font-size="6.8" fill="#1E8C93" opacity="0.051">$</text>
+<text x="579.3" y="240.1" font-size="6.6" fill="#1E8C93" opacity="0.068">$</text>
+<text x="576.0" y="308.9" font-size="5.7" fill="#1E8C93" opacity="0.063">$</text>
+<text x="580.9" y="337.4" font-size="7.1" fill="#3FD8CB" opacity="0.141">$</text>
+<text x="577.9" y="355.0" font-size="6.3" fill="#1E8C93" opacity="0.062">$</text>
+<text x="572.1" y="476.0" font-size="6.2" fill="#1E8C93" opacity="0.069">$</text>
+<text x="579.1" y="499.6" font-size="6.4" fill="#1E8C93" opacity="0.045">$</text>
+<text x="598.5" y="-3.3" font-size="9.5" fill="#7FF4E2" opacity="0.259">$</text>
+<text x="599.8" y="242.9" font-size="8.5" fill="#7FF4E2" opacity="0.239">$</text>
+<text x="599.0" y="307.7" font-size="5.5" fill="#1E8C93" opacity="0.052">$</text>
+<text x="596.9" y="333.8" font-size="8.9" fill="#7FF4E2" opacity="0.269">$</text>
+<text x="596.6" y="362.1" font-size="6.8" fill="#3FD8CB" opacity="0.147">$</text>
+<text x="598.8" y="436.6" font-size="5.5" fill="#1E8C93" opacity="0.058">$</text>
+<text x="621.1" y="3.7" font-size="5.5" fill="#1E8C93" opacity="0.056">$</text>
+<text x="622.2" y="97.6" font-size="6.0" fill="#1E8C93" opacity="0.052">$</text>
+<text x="622.0" y="115.7" font-size="7.9" fill="#3FD8CB" opacity="0.101">$</text>
+<text x="620.3" y="189.8" font-size="5.7" fill="#1E8C93" opacity="0.070">$</text>
+<text x="625.3" y="260.8" font-size="6.4" fill="#1E8C93" opacity="0.076">$</text>
+<text x="619.4" y="283.4" font-size="7.3" fill="#3FD8CB" opacity="0.117">$</text>
+<text x="625.8" y="382.5" font-size="5.6" fill="#1E8C93" opacity="0.076">$</text>
+<text x="619.5" y="429.4" font-size="6.8" fill="#1E8C93" opacity="0.044">$</text>
+<text x="644.3" y="98.6" font-size="5.5" fill="#1E8C93" opacity="0.077">$</text>
+<text x="648.4" y="141.5" font-size="6.9" fill="#3FD8CB" opacity="0.126">$</text>
+<text x="649.7" y="189.4" font-size="6.9" fill="#1E8C93" opacity="0.061">$</text>
+<text x="644.4" y="240.6" font-size="6.5" fill="#1E8C93" opacity="0.067">$</text>
+<text x="645.1" y="331.6" font-size="7.4" fill="#3FD8CB" opacity="0.149">$</text>
+<text x="646.6" y="380.7" font-size="9.9" fill="#7FF4E2" opacity="0.322">$</text>
+<text x="669.5" y="-2.5" font-size="10.1" fill="#7FF4E2" opacity="0.271">$</text>
+<text x="675.5" y="52.3" font-size="6.5" fill="#1E8C93" opacity="0.079">$</text>
+<text x="670.7" y="123.3" font-size="9.6" fill="#7FF4E2" opacity="0.276">$</text>
+<text x="667.8" y="217.9" font-size="6.7" fill="#3FD8CB" opacity="0.174">$</text>
+<text x="667.4" y="239.4" font-size="6.7" fill="#1E8C93" opacity="0.037">$</text>
+<text x="672.6" y="382.5" font-size="9.2" fill="#7FF4E2" opacity="0.255">$</text>
+<text x="693.3" y="216.7" font-size="5.2" fill="#1E8C93" opacity="0.074">$</text>
+<text x="696.6" y="362.7" font-size="5.5" fill="#1E8C93" opacity="0.041">$</text>
+<text x="715.4" y="49.0" font-size="5.2" fill="#1E8C93" opacity="0.081">$</text>
+<text x="724.3" y="73.8" font-size="8.2" fill="#3FD8CB" opacity="0.135">$</text>
+<text x="720.8" y="92.1" font-size="8.5" fill="#7FF4E2" opacity="0.315">$</text>
+<text x="723.0" y="235.4" font-size="5.8" fill="#1E8C93" opacity="0.082">$</text>
+<text x="715.8" y="310.3" font-size="5.1" fill="#1E8C93" opacity="0.076">$</text>
+<text x="715.1" y="384.8" font-size="10.5" fill="#7FF4E2" opacity="0.286">$</text>
+<text x="724.6" y="484.9" font-size="6.7" fill="#1E8C93" opacity="0.081">$</text>
+<text x="744.5" y="95.1" font-size="8.5" fill="#3FD8CB" opacity="0.131">$</text>
+<text x="743.8" y="118.7" font-size="6.8" fill="#3FD8CB" opacity="0.135">$</text>
+<text x="743.5" y="168.7" font-size="8.8" fill="#7FF4E2" opacity="0.246">$</text>
+<text x="744.8" y="235.8" font-size="5.7" fill="#1E8C93" opacity="0.105">$</text>
+<text x="741.8" y="309.6" font-size="9.8" fill="#7FF4E2" opacity="0.278">$</text>
+<text x="741.2" y="335.0" font-size="6.3" fill="#1E8C93" opacity="0.096">$</text>
+<text x="747.8" y="406.4" font-size="8.3" fill="#3FD8CB" opacity="0.152">$</text>
+<text x="745.4" y="436.2" font-size="7.8" fill="#3FD8CB" opacity="0.165">$</text>
+<text x="743.1" y="457.8" font-size="8.1" fill="#7FF4E2" opacity="0.276">$</text>
+<text x="770.2" y="46.3" font-size="9.9" fill="#7FF4E2" opacity="0.241">$</text>
+<text x="769.6" y="121.0" font-size="6.4" fill="#1E8C93" opacity="0.056">$</text>
+<text x="770.6" y="146.8" font-size="5.9" fill="#1E8C93" opacity="0.103">$</text>
+<text x="763.9" y="259.3" font-size="9.4" fill="#7FF4E2" opacity="0.317">$</text>
+<text x="772.2" y="332.6" font-size="7.0" fill="#1E8C93" opacity="0.058">$</text>
+<text x="771.0" y="383.6" font-size="6.5" fill="#1E8C93" opacity="0.048">$</text>
+<text x="769.3" y="477.2" font-size="7.0" fill="#3FD8CB" opacity="0.140">$</text>
+<text x="790.0" y="4.9" font-size="6.7" fill="#1E8C93" opacity="0.046">$</text>
+<text x="795.2" y="45.8" font-size="5.3" fill="#1E8C93" opacity="0.092">$</text>
+<text x="792.8" y="99.8" font-size="6.6" fill="#1E8C93" opacity="0.063">$</text>
+<text x="796.9" y="142.0" font-size="8.0" fill="#7FF4E2" opacity="0.377">$</text>
+<text x="789.3" y="311.3" font-size="8.8" fill="#7FF4E2" opacity="0.393">$</text>
+<text x="788.4" y="359.3" font-size="6.5" fill="#1E8C93" opacity="0.052">$</text>
+<text x="794.3" y="453.7" font-size="6.6" fill="#3FD8CB" opacity="0.117">$</text>
+<text x="818.2" y="47.0" font-size="7.3" fill="#3FD8CB" opacity="0.185">$</text>
+<text x="814.9" y="71.1" font-size="6.2" fill="#1E8C93" opacity="0.040">$</text>
+<text x="814.8" y="117.4" font-size="10.0" fill="#7FF4E2" opacity="0.360">$</text>
+<text x="814.2" y="196.7" font-size="6.0" fill="#1E8C93" opacity="0.103">$</text>
+<text x="816.9" y="220.9" font-size="5.8" fill="#1E8C93" opacity="0.096">$</text>
+<text x="817.1" y="265.8" font-size="5.4" fill="#1E8C93" opacity="0.083">$</text>
+<text x="815.8" y="333.2" font-size="6.0" fill="#1E8C93" opacity="0.081">$</text>
+<text x="816.3" y="363.1" font-size="9.2" fill="#7FF4E2" opacity="0.374">$</text>
+<text x="819.3" y="435.2" font-size="8.3" fill="#7FF4E2" opacity="0.282">$</text>
+<text x="838.4" y="70.8" font-size="6.6" fill="#3FD8CB" opacity="0.160">$</text>
+<text x="836.8" y="98.2" font-size="8.2" fill="#3FD8CB" opacity="0.136">$</text>
+<text x="841.2" y="166.7" font-size="7.9" fill="#3FD8CB" opacity="0.155">$</text>
+<text x="840.8" y="244.2" font-size="5.7" fill="#1E8C93" opacity="0.097">$</text>
+<text x="841.7" y="262.3" font-size="6.1" fill="#1E8C93" opacity="0.073">$</text>
+<text x="842.7" y="458.7" font-size="8.1" fill="#3FD8CB" opacity="0.122">$</text>
+<text x="866.1" y="-0.2" font-size="6.2" fill="#1E8C93" opacity="0.064">$</text>
+<text x="859.1" y="76.9" font-size="7.0" fill="#3FD8CB" opacity="0.142">$</text>
+<text x="863.2" y="115.5" font-size="6.7" fill="#1E8C93" opacity="0.098">$</text>
+<text x="861.6" y="141.0" font-size="5.9" fill="#1E8C93" opacity="0.070">$</text>
+<text x="864.6" y="211.5" font-size="6.1" fill="#1E8C93" opacity="0.076">$</text>
+<text x="863.4" y="315.8" font-size="6.6" fill="#3FD8CB" opacity="0.189">$</text>
+<text x="865.7" y="405.9" font-size="6.8" fill="#1E8C93" opacity="0.054">$</text>
+<text x="861.1" y="428.0" font-size="5.8" fill="#1E8C93" opacity="0.109">$</text>
+<text x="865.9" y="476.5" font-size="6.7" fill="#1E8C93" opacity="0.044">$</text>
+<text x="886.2" y="0.6" font-size="6.7" fill="#1E8C93" opacity="0.059">$</text>
+<text x="887.3" y="121.8" font-size="6.8" fill="#1E8C93" opacity="0.053">$</text>
+<text x="888.0" y="196.3" font-size="6.2" fill="#1E8C93" opacity="0.111">$</text>
+<text x="888.4" y="211.9" font-size="8.2" fill="#3FD8CB" opacity="0.216">$</text>
+<text x="885.3" y="244.2" font-size="5.7" fill="#1E8C93" opacity="0.121">$</text>
+<text x="892.4" y="265.6" font-size="7.0" fill="#3FD8CB" opacity="0.178">$</text>
+<text x="889.0" y="359.6" font-size="6.3" fill="#1E8C93" opacity="0.054">$</text>
+<text x="886.7" y="409.6" font-size="8.8" fill="#7FF4E2" opacity="0.403">$</text>
+<text x="884.2" y="503.7" font-size="5.7" fill="#1E8C93" opacity="0.074">$</text>
+<text x="909.0" y="-1.0" font-size="10.2" fill="#7FF4E2" opacity="0.264">$</text>
+<text x="912.0" y="27.9" font-size="6.6" fill="#1E8C93" opacity="0.072">$</text>
+<text x="912.7" y="49.9" font-size="5.5" fill="#1E8C93" opacity="0.052">$</text>
+<text x="909.9" y="99.9" font-size="6.2" fill="#1E8C93" opacity="0.060">$</text>
+<text x="914.8" y="122.1" font-size="8.5" fill="#3FD8CB" opacity="0.179">$</text>
+<text x="911.6" y="196.2" font-size="5.8" fill="#1E8C93" opacity="0.079">$</text>
+<text x="908.4" y="261.0" font-size="8.5" fill="#3FD8CB" opacity="0.232">$</text>
+<text x="915.5" y="362.9" font-size="5.3" fill="#1E8C93" opacity="0.074">$</text>
+<text x="937.2" y="333.9" font-size="7.4" fill="#3FD8CB" opacity="0.207">$</text>
+<text x="937.6" y="363.1" font-size="6.6" fill="#1E8C93" opacity="0.051">$</text>
+<text x="932.6" y="504.3" font-size="9.1" fill="#7FF4E2" opacity="0.375">$</text>
+<text x="963.9" y="73.7" font-size="6.9" fill="#1E8C93" opacity="0.074">$</text>
+<text x="960.9" y="336.8" font-size="7.8" fill="#3FD8CB" opacity="0.214">$</text>
+<text x="957.8" y="362.6" font-size="7.0" fill="#1E8C93" opacity="0.081">$</text>
+<text x="961.9" y="429.8" font-size="6.6" fill="#1E8C93" opacity="0.106">$</text>
+<text x="956.7" y="502.1" font-size="8.4" fill="#3FD8CB" opacity="0.150">$</text>
+<text x="988.6" y="-3.1" font-size="5.6" fill="#1E8C93" opacity="0.052">$</text>
+<text x="983.4" y="20.1" font-size="8.4" fill="#3FD8CB" opacity="0.145">$</text>
+<text x="986.8" y="94.1" font-size="6.1" fill="#1E8C93" opacity="0.078">$</text>
+<text x="985.7" y="122.5" font-size="7.6" fill="#3FD8CB" opacity="0.212">$</text>
+<text x="981.9" y="145.3" font-size="6.7" fill="#1E8C93" opacity="0.050">$</text>
+<text x="981.7" y="189.4" font-size="6.4" fill="#1E8C93" opacity="0.108">$</text>
+<text x="988.0" y="428.3" font-size="9.3" fill="#7FF4E2" opacity="0.335">$</text>
+<text x="983.0" y="480.7" font-size="6.7" fill="#1E8C93" opacity="0.098">$</text>
+<text x="1010.0" y="73.1" font-size="10.1" fill="#7FF4E2" opacity="0.344">$</text>
+<text x="1005.7" y="93.1" font-size="10.4" fill="#7FF4E2" opacity="0.362">$</text>
+<text x="1003.7" y="147.4" font-size="8.3" fill="#7FF4E2" opacity="0.378">$</text>
+<text x="1008.5" y="195.1" font-size="5.4" fill="#1E8C93" opacity="0.058">$</text>
+<text x="1006.3" y="484.9" font-size="5.9" fill="#1E8C93" opacity="0.052">$</text>
+    </g>
+
+    <!-- Balayage continu : le secteur tourne autour du centre du radar. -->
+    <g class="bnr-sweep">
+      <!-- Traîne large : un vrai radar laisse derrière lui un secteur qui
+           s'éteint, ce qui garde le balayage lisible même quand le bord avant
+           est sorti du cadre. -->
+      <path d="M1000 275 L-100 275 A1100 1100 0 0 1 449 -678 Z" fill="url(#bnrTrail)"/>
+      <path d="M1000 275 L-100 275 A1100 1100 0 0 1 -71 -244 Z" fill="url(#bnrBeam)"/>
+      <line x1="1000" y1="275" x2="-100" y2="275" stroke="#7BFFEE" stroke-width="2.4" opacity=".70"/>
+    </g>
+    <!-- Reprise de la lueur par-dessus le balayage : le coeur reste incandescent -->
+    <circle cx="1000" cy="275" r="240" fill="url(#bnrGlow)" opacity=".85"/>
+    <circle cx="1000" cy="275" r="6" fill="#B6FFF4" opacity=".95"/>
+  </svg>
+
+  <!-- Titre : cliquable, ramène au tableau de bord -->
+  <button class="bnr-text" id="brandHome" aria-label="Retour au tableau de bord">
+    <span class="bnr-title">RAMQ <span>Radar</span></span>
+    <span class="bnr-tag">Comprendre. Comparer. Optimiser.</span>
+    <span class="bnr-kicker">Médecine familiale <i>•</i> Québec</span>
   </button>
+
   <div class="header-actions">
     <button class="icon-btn" id="btnInstall" title="Installer l'application" aria-label="Installer l'application" style="display:none;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button class="icon-btn" id="btnSettings" title="Paramètres de ma pratique" aria-label="Paramètres de ma pratique">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h13M21 18h-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="6" r="2.3" fill="currentColor"/><circle cx="8" cy="12" r="2.3" fill="currentColor"/><circle cx="18" cy="18" r="2.3" fill="currentColor"/></svg>
-    </button>
+    <button class="icon-btn" id="btnSettings" title="Mon profil" aria-label="Mon profil"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.7" stroke="currentColor" stroke-width="1.9"/><path d="M4.8 20.5c0-4 3.2-7.2 7.2-7.2s7.2 3.2 7.2 7.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></button>
     <button class="icon-btn" id="btnAdmin" title="Base de codes" aria-label="Gérer la base de codes">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.5"/></svg>
     </button>
@@ -349,18 +855,23 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
 
   <!-- ============ DASHBOARD ============ -->
   <section id="view-dashboard" class="view active">
-    <div class="hero">
-      <div class="eyebrow"><span class="dot"></span> Outil personnel — données locales seulement</div>
-      <h1>Repérez où votre facturation gagne (ou perd) du temps.</h1>
-      <p>Quatre outils pour comprendre, chercher et comparer votre facturation RAMQ — tout reste dans votre navigateur, rien n'est envoyé à un serveur.</p>
-    </div>
-
     <div class="tiles">
       <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
         <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="0" y1="52" x2="52" y2="0">
           <stop offset="0%" stop-color="#001864"/><stop offset="45%" stop-color="#0055AB"/><stop offset="100%" stop-color="#07AE70"/>
         </linearGradient>
       </defs></svg>
+
+      <button class="tile" data-view="recherche">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <circle cx="21" cy="21" r="14" stroke="url(#g1)" stroke-width="4" fill="none"/>
+          <path d="M31.5 31.5 L45 45" stroke="url(#g1)" stroke-width="5" stroke-linecap="round"/>
+          <path d="M14 21 h5 l2.5 -5 l3.5 10 l2.5 -5 h3.5" stroke="#07AE70" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <h3>Recherche d'acte</h3>
+        <p>D&#233;crivez ce que vous avez fait, on vous propose les codes RAMQ les plus probables.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
 
       <button class="tile" data-view="revenu">
         <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
@@ -375,17 +886,6 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
         <span class="tile-arrow">&#8594;</span>
       </button>
 
-      <button class="tile" data-view="recherche">
-        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-          <circle cx="21" cy="21" r="14" stroke="url(#g1)" stroke-width="4" fill="none"/>
-          <path d="M31.5 31.5 L45 45" stroke="url(#g1)" stroke-width="5" stroke-linecap="round"/>
-          <path d="M14 21 h5 l2.5 -5 l3.5 10 l2.5 -5 h3.5" stroke="#07AE70" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-        <h3>Recherche d'acte</h3>
-        <p>D&#233;crivez ce que vous avez fait, on vous propose les codes RAMQ les plus probables.</p>
-        <span class="tile-arrow">&#8594;</span>
-      </button>
-
       <button class="tile" data-view="top">
         <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
           <rect x="18" y="8" width="16" height="38" rx="2.5" fill="url(#g1)"/>
@@ -394,8 +894,8 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
           <circle cx="26" cy="17" r="5.4" fill="#fff"/>
           <text x="26" y="21" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="#07AE70">$</text>
         </svg>
-        <h3>Tarifs par période</h3>
-        <p>Comparez les codes pour lesquels la RAMQ publie une période de facturation explicite.</p>
+        <h3>Top actes rentables</h3>
+        <p>Classez les codes par $ / heure pour voir o&#249; votre temps vaut le plus.</p>
         <span class="tile-arrow">&#8594;</span>
       </button>
 
@@ -409,6 +909,19 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
         </svg>
         <h3>Comparateur</h3>
         <p>Simulez et comparez plusieurs sc&#233;narios de facturation c&#244;te &#224; c&#244;te.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+
+      <button class="tile tile-wide" data-view="vulnerabilite">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <path d="M26 6 L44 12 v16 c0 10-8 15.5-18 18-10-2.5-18-8-18-18 V12 Z"
+                stroke="url(#g1)" stroke-width="3.4" stroke-linejoin="round" fill="none"/>
+          <path d="M15 27 h5.5 l3 -7 l4 13 l3 -6 h6.5"
+                stroke="#07AE70" stroke-width="3" stroke-linecap="round"
+                stroke-linejoin="round" fill="none"/>
+        </svg>
+        <h3>Vuln&#233;rabilit&#233;</h3>
+        <p>Les codes vuln&#233;rable et non vuln&#233;rable c&#244;te &#224; c&#244;te, l'&#233;cart en dollars, et les exigences pour y avoir droit.</p>
         <span class="tile-arrow">&#8594;</span>
       </button>
     </div>
@@ -493,7 +1006,7 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
 
     <div class="panel">
       <div class="search-box">
-        <input type="text" id="sr-input" placeholder="Ex. : 15803, examen complet, patient vulnérable, visite à domicile…">
+        <input type="text" id="sr-input" placeholder="Ex. : prise de sang, pansement, examen complet, visite à domicile…">
       </div>
       <div class="chips" id="sr-chips"></div>
       <div class="result-list" id="sr-results"></div>
@@ -504,7 +1017,7 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
   <section id="view-top" class="view">
     <div class="view-header">
       <button class="back-btn" data-back>←</button>
-      <div><h2>Tarifs avec période publiée</h2><div class="sub">Équivalent horaire calculé seulement lorsque la RAMQ indique explicitement une période de 15 ou 30 minutes.</div></div>
+      <div><h2>Top actes rentables</h2><div class="sub">Classement par $ / heure, selon le temps estimé de chaque acte.</div></div>
     </div>
 
     <div class="panel">
@@ -553,81 +1066,199 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
     </div>
   </section>
 
-</main>
 
-<!-- ============ PARAMÈTRES DE LA PRATIQUE ============ -->
-<section id="view-settings" class="view">
-  <main style="padding-top:0;">
-    <div class="view-header" style="margin-top:28px;">
-      <button class="back-btn" data-back>←</button>
-      <div><h2>Paramètres de ma pratique</h2><div class="sub">Des valeurs fixes propres à votre pratique — elles préremplissent le calculateur et les filtres ailleurs dans l'app.</div></div>
+<!-- ============ VULNÉRABILITÉ ============ -->
+<section id="view-vulnerabilite" class="view">
+  <div class="view-header">
+    <button class="back-btn" data-back aria-label="Retour">&#8592;</button>
+    <div>
+      <h2>Vuln&#233;rabilit&#233;</h2>
+      <p class="view-sub" id="vu-sub">&#201;cart tarifaire entre patient vuln&#233;rable et non vuln&#233;rable.</p>
     </div>
+  </div>
 
-    <div class="panel">
-      <h4>Profil de pratique</h4>
-      <div class="field-grid">
-        <div class="field">
-          <label for="st-type">Type de pratique principal</label>
-          <select id="st-type">
-            <option value="">— Non précisé —</option>
-            <option value="GMF">GMF</option>
-            <option value="Cabinet">Cabinet privé</option>
-            <option value="Sans rendez-vous">Sans rendez-vous</option>
-            <option value="Urgence">Urgence</option>
-            <option value="Clinique externe">Clinique externe</option>
-            <option value="CLSC">CLSC</option>
-            <option value="GMF-U">GMF-U</option>
-            <option value="CHSGS">CHSGS</option>
-            <option value="CHSLD">CHSLD</option>
-            <option value="Domicile">Domicile</option>
-            <option value="Psychiatrie">Psychiatrie</option>
-            <option value="Centre de réadaptation">Centre de réadaptation</option>
-          </select>
-          <span class="hint">Sert de filtre par défaut dans « Recherche d'acte » et « Top actes rentables ».</span>
-        </div>
-        <div class="field">
-          <label for="st-patients">Patients vus par jour (défaut)</label>
-          <input type="number" id="st-patients" min="0" step="1" placeholder="ex. 22">
-        </div>
-        <div class="field">
-          <label for="st-tarif">Tarif moyen par acte ($) (défaut)</label>
-          <input type="number" id="st-tarif" min="0" step="0.01" placeholder="ex. 42.00">
-        </div>
-        <div class="field">
-          <label for="st-jours">Jours travaillés / semaine (défaut)</label>
-          <input type="number" id="st-jours" min="0" max="7" step="0.5" placeholder="ex. 4">
-        </div>
-        <div class="field">
-          <label for="st-semaines">Semaines travaillées / année (défaut)</label>
-          <input type="number" id="st-semaines" min="0" max="52" step="1" placeholder="ex. 46">
-        </div>
-        <div class="field">
-          <label for="st-inscrits">Patients inscrits (défaut)</label>
-          <input type="number" id="st-inscrits" min="0" step="1" placeholder="ex. 1000">
-        </div>
-        <div class="field">
-          <label for="st-forfait">Forfait annuel moyen / patient inscrit ($) (défaut)</label>
-          <input type="number" id="st-forfait" min="0" step="0.01" placeholder="ex. 18.00">
-        </div>
-        <div class="field">
-          <label for="st-frais">Frais de bureau (% du brut) (défaut)</label>
-          <input type="number" id="st-frais" min="0" max="100" step="1" placeholder="ex. 30">
-        </div>
-        <div class="field">
-          <label for="st-impot">Taux d'imposition estimé (%) (défaut)</label>
-          <input type="number" id="st-impot" min="0" max="65" step="1" placeholder="ex. 38">
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:20px;">
-        <button class="btn btn-primary" id="st-save">Enregistrer mes paramètres</button>
-        <button class="btn btn-ghost" id="st-clear">Effacer</button>
-      </div>
-      <div id="st-saved-msg" class="hint" style="margin-top:10px;color:var(--teal);font-weight:600;display:none;">✓ Paramètres enregistrés — appliqués au calculateur de revenu.</div>
+  <div class="card vu-warn" id="vu-warn"></div>
+
+  <div class="card">
+    <h4>Exigences pour appliquer la vuln&#233;rabilit&#233;</h4>
+    <div id="vu-exigences"></div>
+  </div>
+
+  <div class="card">
+    <h4>&#201;cart tarifaire, acte par acte</h4>
+    <div class="vu-filters">
+      <input type="search" id="vu-search" placeholder="Filtrer&#8230; (ex. suivi, grossesse, p&#233;diatrique)">
+      <select id="vu-lieu">
+        <option value="">Tous les lieux</option>
+        <option value="Cabinet">Cabinet</option>
+        <option value="CLSC / GMF-U">CLSC / GMF-U</option>
+      </select>
     </div>
-  </main>
+    <div id="vu-table"></div>
+  </div>
+
+  <div class="card" id="vu-ecartes-card" style="display:none;">
+    <h4>Codes volontairement non publi&#233;s</h4>
+    <p class="muted small">Ces codes ont une mise en page atypique dans le manuel. Plut&#244;t que d'afficher une valeur potentiellement d&#233;cal&#233;e, ils sont &#233;cart&#233;s.</p>
+    <div id="vu-ecartes"></div>
+  </div>
 </section>
 
-<!-- ============ ADMIN BASE DE CODES ============ -->
+
+<!-- ============ MON PROFIL ============ -->
+<section id="view-settings" class="view">
+  <div class="view-header">
+    <button class="back-btn" data-back aria-label="Retour">&#8592;</button>
+    <div>
+      <h2>Mon profil</h2>
+      <div class="sub">Vos donn&#233;es de pratique. Elles pr&#233;remplissent les calculs et personnalisent le classement en $ / heure. Tout reste dans ce navigateur.</div>
+    </div>
+  </div>
+
+  <!-- Commutateur de profils -->
+  <div class="panel">
+    <h4>Profils</h4>
+    <div id="pf-switch" class="pf-switch"></div>
+    <div class="pf-actions">
+      <button class="btn btn-ghost btn-sm" id="pf-add">+ Nouveau profil</button>
+      <button class="btn btn-ghost btn-sm" id="pf-dup">Dupliquer</button>
+      <button class="btn btn-ghost btn-sm danger" id="pf-del">Supprimer</button>
+    </div>
+    <div class="field" style="margin-top:12px;">
+      <label for="pf-nom">Nom du profil</label>
+      <input type="text" id="pf-nom" placeholder="ex. GMF-U des Mont&#233;r&#233;giennes">
+    </div>
+  </div>
+
+  <!-- Milieu de pratique -->
+  <div class="panel">
+    <h4>Milieu de pratique</h4>
+    <div class="field">
+      <label for="pf-milieuPrincipal">Milieu principal</label>
+      <select id="pf-milieuPrincipal">
+        <option value="">&#8212; Non pr&#233;cis&#233; &#8212;</option>
+        <option value="Cabinet">Cabinet priv&#233;</option>
+        <option value="GMF">GMF</option>
+        <option value="GMF-U">GMF-U</option>
+        <option value="CLSC">CLSC</option>
+        <option value="CHSLD">CHSLD</option>
+        <option value="Domicile">Domicile</option>
+        <option value="Urgence">Urgence</option>
+        <option value="Sans rendez-vous">Sans rendez-vous</option>
+      </select>
+      <span class="hint">Sert de filtre par d&#233;faut dans la recherche d'acte.</span>
+    </div>
+    <div class="field">
+      <label>Tous mes milieux</label>
+      <div id="pf-milieux" class="chk-grid"></div>
+    </div>
+    <div class="field">
+      <label for="pf-statutGmf">Statut GMF</label>
+      <select id="pf-statutGmf">
+        <option value="">Aucun</option>
+        <option value="GMF">Membre d'un GMF</option>
+        <option value="GMF-U">Membre d'un GMF-U</option>
+      </select>
+      <span class="hint">Le tarif CLSC / GMF-U s'applique en GMF-U en &#233;tablissement.</span>
+    </div>
+    <div class="field">
+      <label for="pf-amp">Activit&#233;s m&#233;dicales particuli&#232;res (AMP)</label>
+      <input type="text" id="pf-amp" placeholder="ex. urgence 1 quart / semaine, CHSLD">
+    </div>
+    <div class="field">
+      <label>Autres activit&#233;s exerc&#233;es</label>
+      <div id="pf-activites" class="chk-grid"></div>
+    </div>
+  </div>
+
+  <!-- Clientèle -->
+  <div class="panel">
+    <h4>Client&#232;le inscrite</h4>
+    <div class="field-grid">
+      <div class="field">
+        <label for="pf-inscrits">Patients inscrits</label>
+        <input type="number" id="pf-inscrits" min="0" step="1" inputmode="numeric" placeholder="ex. 1000">
+      </div>
+      <div class="field">
+        <label for="pf-partVuln">Part vuln&#233;rable (%)</label>
+        <input type="number" id="pf-partVuln" min="0" max="100" step="1" inputmode="numeric" placeholder="ex. 35">
+      </div>
+    </div>
+    <div id="pf-seuil" class="pf-derived"></div>
+  </div>
+
+  <!-- Durées de rendez-vous : le cœur de la personnalisation -->
+  <div class="panel">
+    <h4>Dur&#233;e habituelle de mes rendez-vous</h4>
+    <p class="hint" style="margin:0 0 12px;">Le manuel RAMQ donne les tarifs mais jamais la dur&#233;e. Ce sont donc <strong>vos</strong> dur&#233;es qui rendent le calcul en $ / heure r&#233;el plut&#243;t que th&#233;orique.</p>
+    <div id="pf-durees"></div>
+    <div class="pf-actions" style="margin-top:10px;">
+      <button class="btn btn-ghost btn-sm" id="pf-duree-add">+ Ajouter un type</button>
+    </div>
+  </div>
+
+  <!-- Volume et temps -->
+  <div class="panel">
+    <h4>Volume et temps de travail</h4>
+    <div class="field-grid">
+      <div class="field">
+        <label for="pf-patients">Patients vus par jour</label>
+        <input type="number" id="pf-patients" min="0" step="1" inputmode="numeric" placeholder="ex. 22">
+      </div>
+      <div class="field">
+        <label for="pf-jours">Jours travaill&#233;s / semaine</label>
+        <input type="number" id="pf-jours" min="0" max="7" step="0.5" inputmode="decimal" placeholder="ex. 4">
+      </div>
+      <div class="field">
+        <label for="pf-semaines">Semaines travaill&#233;es / ann&#233;e</label>
+        <input type="number" id="pf-semaines" min="0" max="52" step="1" inputmode="numeric" placeholder="ex. 46">
+      </div>
+      <div class="field">
+        <label for="pf-tarif">Tarif moyen par acte ($)</label>
+        <input type="number" id="pf-tarif" min="0" step="0.01" inputmode="decimal" placeholder="ex. 42.00">
+      </div>
+    </div>
+  </div>
+
+  <!-- Frais et impôt -->
+  <div class="panel">
+    <h4>Frais et imp&#244;t</h4>
+    <div class="field">
+      <label for="pf-fraisMode">Mode de saisie des frais</label>
+      <select id="pf-fraisMode">
+        <option value="pct">Pourcentage du brut</option>
+        <option value="mois">Montant fixe par mois</option>
+        <option value="jour">Location &#224; la journ&#233;e</option>
+      </select>
+    </div>
+    <div class="field-grid">
+      <div class="field">
+        <label for="pf-frais" id="pf-fraisLabel">Frais de bureau (% du brut)</label>
+        <input type="number" id="pf-frais" min="0" step="0.01" inputmode="decimal" placeholder="ex. 30">
+      </div>
+      <div class="field">
+        <label for="pf-forfait">Forfait annuel moyen / patient inscrit ($)</label>
+        <input type="number" id="pf-forfait" min="0" step="0.01" inputmode="decimal" placeholder="ex. 18.00">
+      </div>
+      <div class="field">
+        <label for="pf-impot">Taux d'imposition estim&#233; (%)</label>
+        <input type="number" id="pf-impot" min="0" max="100" step="1" inputmode="numeric" placeholder="ex. 38">
+      </div>
+    </div>
+    <p class="hint" style="margin:10px 0 0;">Estimation seulement. Le taux r&#233;el d&#233;pend de votre structure, de l'incorporation et de vos d&#233;ductions &#8212; ce n'est pas un avis fiscal.</p>
+  </div>
+
+  <div class="panel">
+    <div class="pf-actions">
+      <button class="btn btn-primary" id="st-save">Enregistrer mon profil</button>
+      <button class="btn btn-ghost" id="st-clear">R&#233;initialiser ce profil</button>
+    </div>
+    <div id="st-saved-msg" class="hint" style="margin-top:10px;color:var(--teal);font-weight:600;display:none;">&#10003; Profil enregistr&#233; &#8212; appliqu&#233; aux calculs.</div>
+  </div>
+</section>
+
+
+<!-- ============ PARAMÈTRES DE LA PRATIQUE ============ -->
 <section id="view-admin" class="view">
   <main style="padding-top:0;">
     <div class="view-header" style="margin-top:28px;">
@@ -636,10 +1267,9 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
     </div>
 
     <div class="disclaimer">
-      Données intégrées : <strong>214 codes et 291 tarifs contextuels</strong> du tableau-synthèse officiel de l'onglet B
-      (consultation, examen et visite), <strong>mis à jour le 6 août 2026</strong>.
-      <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/media/32176" target="_blank" rel="noopener">Consulter la source RAMQ</a>.
-      Les règles, notes, modificateurs et autres sections du manuel demeurent déterminants avant de facturer.
+      ⚠️ Les codes préfixés <strong>EX-</strong> sont des exemples fictifs livrés avec l'application. Remplacez-les par les tarifs exacts du
+      <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides" target="_blank" rel="noopener">manuel RAMQ officiel</a>,
+      qui change plusieurs fois par année. Cette base ne fait aucune vérification légale des tarifs saisis.
     </div>
 
     <div class="toolbar">
@@ -647,13 +1277,13 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
       <button class="btn btn-ghost btn-sm" id="ad-export">⤓ Exporter (JSON)</button>
       <button class="btn btn-ghost btn-sm" id="ad-import-btn">⤒ Importer (JSON)</button>
       <input type="file" id="ad-import" class="file-input" accept="application/json">
-      <button class="btn btn-danger btn-sm" id="ad-reset">↺ Réinitialiser aux données RAMQ</button>
+      <button class="btn btn-danger btn-sm" id="ad-reset">↺ Réinitialiser aux exemples</button>
     </div>
 
     <div class="panel admin-table-wrap">
       <table class="admin">
         <thead>
-          <tr><th>Code</th><th>Description</th><th>Contexte tarifaire</th><th>Catégorie</th><th>Mots-clés (virgule)</th><th>Tarif $</th><th>Min.</th><th>Pratiques (virgule)</th><th></th></tr>
+          <tr><th>Code</th><th>Description</th><th>Catégorie</th><th>Mots-clés (virgule)</th><th>Tarif $</th><th>Min.</th><th>Pratiques (virgule)</th><th></th></tr>
         </thead>
         <tbody id="ad-body"></tbody>
       </table>
@@ -661,13 +1291,39 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px 20p
   </main>
 </section>
 
-<footer>RAMQ Radar — application locale, aucune donnée envoyée à un serveur. Données de l'onglet B tirées du tableau RAMQ du 6 août 2026; vérifiez toujours les règles du manuel officiel.</footer>
 
-<script src="ramq-data.js"></script>
+</main>
+
+<footer>RAMQ Radar — application locale, aucune donnée envoyée à un serveur. Base de codes non officielle : vérifiez toujours au manuel RAMQ.</footer>
+
 <script>
 /* ============================================================
    RAMQ RADAR — APP.JS (inline)
    ============================================================ */
+
+/* ---------- Données d'exemple (préfixe EX-, À REMPLACER) ---------- */
+const DEFAULT_CODES = [
+  {code:"EX-00103", description:"Examen général (visite périodique)", category:"Visite", tags:["visite","examen","général","complet","périodique","bilan"], tariff:78.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00101", description:"Visite ordinaire au cabinet", tags:["visite","consultation","cabinet","suivi"], category:"Visite", tariff:38.10, duration_min:15, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00201", description:"Visite sans rendez-vous / sans inscription", tags:["sans rendez-vous","srv","gap","dépannage","visite courte"], category:"Visite", tariff:44.25, duration_min:12, practiceTypes:["Sans rendez-vous","GAP"]},
+  {code:"EX-00305", description:"Visite à domicile", tags:["domicile","maison","déplacement"], category:"Visite", tariff:96.00, duration_min:35, practiceTypes:["Domicile"]},
+  {code:"EX-00410", description:"Prélèvement sanguin veineux", tags:["prise de sang","prélèvement","sang","veineux","piqûre"], category:"Acte technique", tariff:14.30, duration_min:8, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00415", description:"Injection intramusculaire", tags:["injection","vaccin","piqûre","im"], category:"Acte technique", tariff:11.80, duration_min:6, practiceTypes:["Cabinet","GMF","Sans rendez-vous"]},
+  {code:"EX-00420", description:"Pansement complexe / soin de plaie", tags:["pansement","plaie","soin","bandage"], category:"Acte technique", tariff:26.75, duration_min:15, practiceTypes:["Cabinet","GMF","Urgence"]},
+  {code:"EX-00430", description:"Retrait de points de suture", tags:["points","suture","fils","retrait"], category:"Acte technique", tariff:16.20, duration_min:10, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-00512", description:"Électrocardiogramme (ECG) — interprétation", tags:["ecg","électrocardiogramme","coeur","tracé"], category:"Acte technique", tariff:22.40, duration_min:10, practiceTypes:["Cabinet","GMF","Urgence"]},
+  {code:"EX-00605", description:"Suivi de grossesse — visite prénatale", tags:["grossesse","prénatal","enceinte","obstétrique"], category:"Suivi", tariff:52.60, duration_min:20, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-00710", description:"Consultation en santé mentale", tags:["santé mentale","anxiété","dépression","psychologique","counseling"], category:"Consultation", tariff:88.90, duration_min:30, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-00810", description:"Suivi de maladie chronique (diabète, HTA)", tags:["chronique","diabète","hypertension","suivi","maladie"], category:"Suivi", tariff:64.15, duration_min:20, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-00905", description:"Examen pédiatrique (0-5 ans)", tags:["enfant","pédiatrie","bébé","nourrisson","vaccin enfant"], category:"Visite", tariff:58.30, duration_min:20, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-01010", description:"Garde en disponibilité — heure supplémentaire", tags:["garde","disponibilité","urgence","heures suppl"], category:"Garde", tariff:120.00, duration_min:60, practiceTypes:["Urgence","GAP"]},
+  {code:"EX-01110", description:"Visite en CHSLD / soins de longue durée", tags:["chsld","longue durée","hébergement","personne âgée"], category:"Visite", tariff:71.40, duration_min:25, practiceTypes:["CHSLD"]},
+  {code:"EX-01205", description:"Consultation urgence mineure", tags:["urgence","mineure","salle d'urgence","triage"], category:"Urgence", tariff:68.00, duration_min:18, practiceTypes:["Urgence"]},
+  {code:"EX-01310", description:"Bilan préopératoire", tags:["préopératoire","chirurgie","bilan","avant chirurgie"], category:"Consultation", tariff:82.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-01405", description:"Rédaction de rapport / formulaire médical", tags:["rapport","formulaire","paperasse","assurance","cnesst"], category:"Administratif", tariff:34.00, duration_min:15, practiceTypes:["Cabinet","GMF"]},
+  {code:"EX-01500", description:"Prime de vulnérabilité — patient inscrit", tags:["vulnérabilité","prime","complexité","inscription"], category:"Prime", tariff:12.50, duration_min:0, practiceTypes:["GMF","Cabinet"]},
+  {code:"EX-01610", description:"Téléconsultation", tags:["télémédecine","téléphone","virtuel","vidéo"], category:"Consultation", tariff:36.75, duration_min:12, practiceTypes:["Cabinet","GMF","Télémédecine"]},
+];
 
 /* Petit dictionnaire de synonymes pour la recherche par mots-clés */
 const SYNONYMS = {
@@ -684,31 +1340,219 @@ const SYNONYMS = {
 };
 
 const STORAGE_CODES = "ramqradar_codes";
-const STORAGE_DATA_VERSION = "ramqradar_data_version";
 const STORAGE_SCEN = "ramqradar_scenarios";
-const STORAGE_SETTINGS = "ramqradar_settings";
+const STORAGE_SETTINGS  = "ramqradar_settings";   // ancien format, conservé pour migration
+const STORAGE_PROFILES  = "ramqradar_profiles";
 
-const SETTINGS_FIELDS = ["type","patients","tarif","jours","semaines","inscrits","forfait","frais","impot"];
+/* Types de rendez-vous : les libellés correspondent aux actes réels de
+   l'onglet B du manuel, pour que les durées saisies puissent être
+   rattachées aux vrais tarifs. */
+const RDV_TYPES = [
+  { cle:"pec",        nom:"Prise en charge",          defaut:30, acte:"Visite de prise en charge" },
+  { cle:"suivi",      nom:"Suivi",                    defaut:15, acte:"Visite de suivi" },
+  { cle:"periodique", nom:"Examen périodique",        defaut:30, acte:"Visite périodique" },
+  { cle:"pediatrique",nom:"Périodique pédiatrique",   defaut:20, acte:"Visite périodique pédiatrique" },
+  { cle:"mineure",    nom:"Urgence mineure",          defaut:10, acte:"Visite ponctuelle mineure" },
+  { cle:"complexe",   nom:"Ponctuelle complexe",      defaut:20, acte:"Visite ponctuelle complexe" },
+  { cle:"sansRdv",    nom:"Sans rendez-vous",         defaut:12, acte:"" },
+  { cle:"domicile",   nom:"Visite à domicile",        defaut:40, acte:"" },
+  { cle:"grossesse",  nom:"Suivi de grossesse",       defaut:20, acte:"Visite de suivi de grossesse" }
+];
 
-function loadSettings(){
-  try{ return JSON.parse(localStorage.getItem(STORAGE_SETTINGS) || "null") || {}; }catch(e){ return {}; }
+const MILIEUX = ["Cabinet","GMF","GMF-U","CLSC","CHSLD","Domicile","Urgence","Sans rendez-vous","Télémédecine"];
+const ACTIVITES = ["Obstétrique","Soins palliatifs","Santé mentale","Pédiatrie","Gériatrie","Soins à domicile","Enseignement","Échographie ciblée","Petite chirurgie"];
+
+const PROFIL_CHAMPS = ["nom","milieuPrincipal","statutGmf","amp","inscrits","partVuln",
+  "patients","jours","semaines","tarif","fraisMode","frais","forfait","impot"];
+
+function profilVide(nom){
+  const d = {};
+  RDV_TYPES.forEach(t=> d[t.cle] = t.defaut);
+  return { id:"p"+Date.now()+Math.floor(Math.random()*1000), nom:nom||"Mon profil",
+    milieuPrincipal:"", milieux:[], statutGmf:"", amp:"", activites:[],
+    inscrits:"", partVuln:"", patients:"", jours:"", semaines:"", tarif:"",
+    fraisMode:"pct", frais:"", forfait:"", impot:"", durees:d, dureesSur:[] };
 }
-function saveSettingsFromForm(){
-  const s = {};
-  SETTINGS_FIELDS.forEach(f=>{ s[f] = $("#st-"+f).value; });
-  localStorage.setItem(STORAGE_SETTINGS, JSON.stringify(s));
-  return s;
+
+function loadProfiles(){
+  let box;
+  try{ box = JSON.parse(localStorage.getItem(STORAGE_PROFILES) || "null"); }catch(e){ box = null; }
+  if(box && Array.isArray(box.list) && box.list.length) return box;
+
+  // Migration : on récupère l'ancien jeu de paramètres unique s'il existe.
+  let ancien = null;
+  try{ ancien = JSON.parse(localStorage.getItem(STORAGE_SETTINGS) || "null"); }catch(e){}
+  const p = profilVide("Mon profil");
+  if(ancien){
+    p.milieuPrincipal = ancien.type || "";
+    ["patients","tarif","jours","semaines","inscrits","forfait","frais","impot"]
+      .forEach(k=>{ if(ancien[k]!==undefined) p[k] = ancien[k]; });
+  }
+  box = { active:p.id, list:[p] };
+  localStorage.setItem(STORAGE_PROFILES, JSON.stringify(box));
+  return box;
 }
+function saveProfiles(box){ localStorage.setItem(STORAGE_PROFILES, JSON.stringify(box)); }
+function profilActif(){
+  const box = loadProfiles();
+  return box.list.find(p=>p.id===box.active) || box.list[0];
+}
+
+/* Le seuil de clientèle n'est pas un champ à saisir : il découle du nombre de
+   patients inscrits, et il détermine quelle colonne de tarif s'applique. */
+function seuilDe(inscrits){
+  const n = parseFloat(inscrits);
+  if(!isFinite(n) || n<=0) return null;
+  return n < 500 ? "moins_de_500" : "500_ou_plus";
+}
+
+/* Sur téléphone, le profil complet fait plusieurs milliers de pixels.
+   On replie chaque panneau en <details> natif : accessible, sans JS de gestion
+   d'état, et le navigateur garde le comportement clavier attendu. */
+let profilPlie = false;
+function plierPanneauxProfil(){
+  if(profilPlie) return;
+  profilPlie = true;
+  const ouverts = ["Profils", "Durée habituelle de mes rendez-vous"];
+  $$("#view-settings .panel").forEach(panel=>{
+    const h = panel.querySelector("h4");
+    if(!h) return;                     // le bloc des boutons reste tel quel
+    const titre = h.textContent.trim();
+    const det = document.createElement("details");
+    det.className = "panel pf-fold";
+    if(ouverts.some(o=>titre.indexOf(o)===0)) det.open = true;
+    const sum = document.createElement("summary");
+    sum.textContent = titre;
+    det.appendChild(sum);
+    h.remove();
+    while(panel.firstChild) det.appendChild(panel.firstChild);
+    panel.replaceWith(det);
+  });
+}
+
+/* ---------- Rendu de la vue profil ---------- */
+function renderProfilSwitch(){
+  const box = loadProfiles();
+  $("#pf-switch").innerHTML = box.list.map(p=>
+    '<button class="pf-chip'+(p.id===box.active?" on":"")+'" data-pid="'+p.id+'">'+
+    '<span class="pf-ava">'+silhouetteSVG(14)+'</span>'+
+    (p.nom||"Sans nom")+'</button>').join("");
+  $$("#pf-switch .pf-chip").forEach(b=> b.addEventListener("click", ()=>{
+    const box2 = loadProfiles();
+    box2.active = b.dataset.pid;
+    saveProfiles(box2);
+    loadSettingsIntoForm();
+    applySettingsToRevenueDefaults();
+    computeRevenue();
+    activePracticeFilter = profilActif().milieuPrincipal || "";
+    renderSearchChips();
+  }));
+}
+
+function silhouetteSVG(size){
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" aria-hidden="true">'+
+    '<circle cx="12" cy="8" r="3.6" fill="currentColor"/>'+
+    '<path d="M4.6 21c0-4.1 3.3-7.4 7.4-7.4s7.4 3.3 7.4 7.4" fill="currentColor"/></svg>';
+}
+
+function renderChkGrid(id, options, selected){
+  $("#"+id).innerHTML = options.map(o=>
+    '<label class="chk"><input type="checkbox" value="'+o+'"'+
+    (selected.includes(o)?" checked":"")+'><span>'+o+'</span></label>').join("");
+}
+
+function renderDurees(){
+  const p = profilActif();
+  const sur = p.dureesSur || [];
+  const base = RDV_TYPES.map(t=>
+    '<div class="dur-row"><span class="dur-nom">'+t.nom+'</span>'+
+    '<input type="number" min="0" step="5" inputmode="numeric" class="dur-in" '+
+    'data-cle="'+t.cle+'" value="'+(p.durees && p.durees[t.cle]!==undefined ? p.durees[t.cle] : t.defaut)+'">'+
+    '<span class="dur-u">min</span></div>').join("");
+  const perso = sur.map((d,i)=>
+    '<div class="dur-row"><input type="text" class="dur-nom-in" data-i="'+i+'" '+
+    'value="'+(d.nom||"").replace(/"/g,"&quot;")+'" placeholder="Type personnalisé">'+
+    '<input type="number" min="0" step="5" inputmode="numeric" class="dur-in-sur" data-i="'+i+'" value="'+(d.min||0)+'">'+
+    '<span class="dur-u">min</span>'+
+    '<button class="dur-del" data-i="'+i+'" aria-label="Retirer">&#215;</button></div>').join("");
+  $("#pf-durees").innerHTML = base + perso;
+
+  $$(".dur-del").forEach(b=> b.addEventListener("click", ()=>{
+    const box = loadProfiles(); const pr = box.list.find(x=>x.id===box.active);
+    pr.dureesSur.splice(parseInt(b.dataset.i,10),1);
+    saveProfiles(box); renderDurees();
+  }));
+}
+
+function renderSeuil(){
+  const v = $("#pf-inscrits").value;
+  const s = seuilDe(v);
+  const el = $("#pf-seuil");
+  if(!s){ el.innerHTML = '<span class="muted">Entrez votre nombre de patients inscrits pour voir le seuil tarifaire applicable.</span>'; return; }
+  const lbl = s==="moins_de_500" ? "moins de 500 patients inscrits" : "500 patients inscrits ou plus";
+  el.innerHTML = 'Seuil tarifaire RAMQ applicable : <strong>'+lbl+'</strong>'+
+    '<span class="muted"> &#8212; c\'est ce seuil qui d&#233;termine la colonne de tarif utilis&#233;e pour vos visites.</span>';
+}
+
 function loadSettingsIntoForm(){
-  const s = loadSettings();
-  SETTINGS_FIELDS.forEach(f=>{ if(s[f]!==undefined) $("#st-"+f).value = s[f]; });
+  const p = profilActif();
+  PROFIL_CHAMPS.forEach(f=>{ const el = $("#pf-"+f); if(el) el.value = (p[f]!==undefined?p[f]:""); });
+  renderProfilSwitch();
+  renderChkGrid("pf-milieux", MILIEUX, p.milieux||[]);
+  renderChkGrid("pf-activites", ACTIVITES, p.activites||[]);
+  renderDurees();
+  renderSeuil();
+  majFraisLabel();
 }
+
+function majFraisLabel(){
+  const m = $("#pf-fraisMode").value;
+  $("#pf-fraisLabel").textContent =
+    m==="mois" ? "Frais de bureau ($ / mois)" :
+    m==="jour" ? "Frais de bureau ($ / journ\u00e9e travaill\u00e9e)" :
+                 "Frais de bureau (% du brut)";
+}
+
+function saveSettingsFromForm(){
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active) || box.list[0];
+  PROFIL_CHAMPS.forEach(f=>{ const el = $("#pf-"+f); if(el) p[f] = el.value; });
+  p.milieux   = $$("#pf-milieux input:checked").map(i=>i.value);
+  p.activites = $$("#pf-activites input:checked").map(i=>i.value);
+  p.durees = p.durees || {};
+  $$(".dur-in").forEach(i=>{ p.durees[i.dataset.cle] = parseFloat(i.value)||0; });
+  p.dureesSur = $$(".dur-nom-in").map((inp,i)=>({
+    nom: inp.value,
+    min: parseFloat($$(".dur-in-sur")[i] ? $$(".dur-in-sur")[i].value : 0)||0
+  })).filter(d=>d.nom.trim()!=="");
+  saveProfiles(box);
+  return p;
+}
+
+/* Rétrocompatibilité : le reste de l'app appelle encore loadSettings(). */
+function loadSettings(){
+  const p = profilActif();
+  return { type:p.milieuPrincipal, patients:p.patients, tarif:p.tarif, jours:p.jours,
+    semaines:p.semaines, inscrits:p.inscrits, forfait:p.forfait, frais:p.frais, impot:p.impot };
+}
+
 function applySettingsToRevenueDefaults(){
   const s = loadSettings();
-  const map = {patients:"rv-patients", tarif:"rv-tarif", jours:"rv-jours", semaines:"rv-semaines", inscrits:"rv-inscrits", forfait:"rv-forfait", frais:"rv-frais", impot:"rv-impot"};
+  const map = {patients:"rv-patients", tarif:"rv-tarif", jours:"rv-jours", semaines:"rv-semaines",
+               inscrits:"rv-inscrits", forfait:"rv-forfait", frais:"rv-frais", impot:"rv-impot"};
   Object.entries(map).forEach(([sf, id])=>{
-    if(s[sf]!==undefined && s[sf]!=="") $("#"+id).value = s[sf];
+    const el = $("#"+id);
+    if(el && s[sf]!==undefined && s[sf]!=="") el.value = s[sf];
   });
+}
+
+/* Durée personnalisée pour un acte donné : utilisée par le classement $/heure. */
+function dureePourActe(nomActe){
+  const p = profilActif();
+  const t = RDV_TYPES.find(t=> t.acte && nomActe && nomActe.indexOf(t.acte)===0);
+  if(!t) return null;
+  const v = p.durees ? p.durees[t.cle] : null;
+  return (v && v>0) ? v : t.defaut;
 }
 
 /* ---------- Utilitaires ---------- */
@@ -721,18 +1565,13 @@ const norm = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/[\u
 function loadCodes(){
   try{
     const raw = localStorage.getItem(STORAGE_CODES);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      const containsLegacyExamples = Array.isArray(parsed) && parsed.some(c=>/^EX-/.test(c.code||""));
-      if(Array.isArray(parsed) && !containsLegacyExamples) return parsed;
-    }
+    if(raw) return JSON.parse(raw);
   }catch(e){}
   saveCodes(DEFAULT_CODES);
   return JSON.parse(JSON.stringify(DEFAULT_CODES));
 }
 function saveCodes(codes){
   localStorage.setItem(STORAGE_CODES, JSON.stringify(codes));
-  localStorage.setItem(STORAGE_DATA_VERSION, RAMQ_DATA_META.version);
 }
 function loadScenarios(){
   try{ return JSON.parse(localStorage.getItem(STORAGE_SCEN) || "[]"); }catch(e){ return []; }
@@ -746,6 +1585,8 @@ let SELECTED_COMPARE = [];
 
 /* ---------- Navigation ---------- */
 function showView(name){
+  // La bannière se replie dès qu'on quitte le tableau de bord.
+  document.body.classList.toggle("vue-interne", name !== "dashboard");
   $$(".view").forEach(v=>v.classList.remove("active"));
   const el = document.getElementById("view-"+name);
   if(el) el.classList.add("active");
@@ -754,12 +1595,133 @@ function showView(name){
   if(name==="top") renderTop();
   if(name==="comparateur") renderComparateur();
   if(name==="admin") renderAdmin();
+  if(name==="vulnerabilite") renderVulnerabilite();
+  if(name==="settings"){ plierPanneauxProfil(); loadSettingsIntoForm(); }
 }
 $$(".tile").forEach(t=>t.addEventListener("click", ()=>showView(t.dataset.view)));
 $$("[data-back]").forEach(b=>b.addEventListener("click", ()=>showView("dashboard")));
 $("#brandHome").addEventListener("click", ()=>showView("dashboard"));
 $("#btnAdmin").addEventListener("click", ()=>showView("admin"));
-$("#btnSettings").addEventListener("click", ()=>{ loadSettingsIntoForm(); showView("settings"); });
+$("#btnSettings").addEventListener("click", ()=>{ plierPanneauxProfil(); loadSettingsIntoForm(); showView("settings"); });
+
+/* ============================================================
+   VULNÉRABILITÉ
+   ============================================================ */
+let VULN = null;
+
+async function loadVuln(){
+  if(VULN) return VULN;
+  try{
+    const r = await fetch("vulnerabilite.json");
+    VULN = await r.json();
+  }catch(e){ VULN = null; }
+  return VULN;
+}
+
+function money(n){ return n.toFixed(2).replace(".", ",") + " $"; }
+
+async function renderVulnerabilite(){
+  const d = await loadVuln();
+  const tableEl = $("#vu-table");
+  if(!d){
+    tableEl.innerHTML = '<p class="muted">Base de vuln&#233;rabilit&#233; introuvable (vulnerabilite.json).</p>';
+    return;
+  }
+
+  // Avertissement sur la portée — affiché en premier, jamais masqué.
+  const w = d.avertissement_critique;
+  $("#vu-warn").innerHTML =
+    '<h4>&#9888; ' + w.titre + '</h4><ul>' +
+    w.points.map(p=>"<li>"+p+"</li>").join("") + "</ul>";
+
+  // Exigences connues, regroupées par mesure.
+  const ex = d.exigences_connues;
+  const blocs = [
+    ["Qu'est-ce qu'un patient vuln&#233;rable ?", ex.definition_vulnerabilite],
+    ["Tarif major&#233; de visite &#8212; couvert par le tableau ci-dessous", ex.tarif_majore_de_visite],
+    ["Forfait annuel de prise en charge &#8212; montants non publi&#233;s ici", ex.forfait_annuel_prise_en_charge],
+    ["Forfait de responsabilit&#233; 15169 / 15170 / 15171 &#8212; montants non publi&#233;s ici", ex.forfait_responsabilite_15169_15170_15171],
+    ["Suppl&#233;ments &#8212; patient sans m&#233;decin de famille", ex.supplements_patient_sans_medecin_de_famille]
+  ].filter(b=>Array.isArray(b[1]) && b[1].length);
+  $("#vu-exigences").innerHTML =
+    blocs.map(([titre, pts]) =>
+      '<div class="vu-exi"><h5>'+titre+'</h5><ul>'+
+      pts.map(p=>"<li>"+p+"</li>").join("")+"</ul></div>").join("") +
+    '<p class="muted small">Source des r&#232;gles : '+ex.source+" &#8212; "+ex.statut+".</p>";
+
+  // Constat marquant : la prime est un supplément quasi fixe.
+  const ecarts = [];
+  d.paires.forEach(p=>Object.values(p.lieux).forEach(v=>ecarts.push(v.ecart)));
+  if(ecarts.length){
+    const cab = [], clsc = [];
+    d.paires.forEach(p=>{
+      if(p.lieux["Cabinet"]) cab.push(p.lieux["Cabinet"].ecart);
+      if(p.lieux["CLSC / GMF-U"]) clsc.push(p.lieux["CLSC / GMF-U"].ecart);
+    });
+    const rng = a => a.length ? (Math.min(...a)===Math.max(...a)
+        ? money(a[0]) : money(Math.min(...a))+" &#224; "+money(Math.max(...a))) : "&#8212;";
+    $("#vu-sub").innerHTML =
+      "La prime est un suppl&#233;ment quasi fixe, pas un pourcentage : "+
+      "<strong>"+rng(cab)+"</strong> en cabinet, <strong>"+rng(clsc)+
+      "</strong> en CLSC / GMF-U, quel que soit l'acte.";
+  }
+
+  renderVulnTable();
+  $("#vu-search").oninput = renderVulnTable;
+  $("#vu-lieu").onchange = renderVulnTable;
+
+  // Transparence sur ce qui a été écarté.
+  if(d.codes_ecartes && d.codes_ecartes.length){
+    $("#vu-ecartes-card").style.display = "";
+    $("#vu-ecartes").innerHTML = d.codes_ecartes.map(e=>
+      '<div class="vu-ec"><span class="code-pill">'+e.code+"</span> "+e.motif+
+      (e.montants_vus_dans_le_corpus ?
+        ' <span class="muted">(montants rep&#233;r&#233;s : '+
+        e.montants_vus_dans_le_corpus.map(x=>money(x)).join(" / ")+")</span>" : "")+
+      "</div>").join("");
+  }
+}
+
+function renderVulnTable(){
+  if(!VULN) return;
+  const q = ($("#vu-search").value||"").toLowerCase().trim();
+  const lieuF = $("#vu-lieu").value;
+  const rows = [];
+
+  VULN.paires.forEach(p=>{
+    const hay = (p.acte+" "+p.contexte+" "+p.seuil_clientele).toLowerCase();
+    if(q && !hay.includes(q)) return;
+    Object.entries(p.lieux).forEach(([lieu, v])=>{
+      if(lieuF && lieu !== lieuF) return;
+      rows.push({p, lieu, v});
+    });
+  });
+
+  if(!rows.length){
+    $("#vu-table").innerHTML = '<p class="muted">Aucun r&#233;sultat.</p>';
+    return;
+  }
+
+  rows.sort((a,b)=> b.v.ecart - a.v.ecart);
+
+  $("#vu-table").innerHTML =
+    '<table class="vu-tbl"><thead><tr>'+
+    "<th>Acte</th><th>Contexte</th><th>Lieu</th>"+
+    '<th class="num">Non vuln.</th><th class="num">Vuln&#233;rable</th><th class="num">&#201;cart</th>'+
+    "</tr></thead><tbody>"+
+    rows.map(({p,lieu,v})=>
+      "<tr><td><strong>"+p.acte+"</strong><br>"+
+      '<span class="code-pill">'+p.code_non_vulnerable+"</span> &#8594; "+
+      '<span class="code-pill vuln">'+p.code_vulnerable+"</span></td>"+
+      '<td class="small" data-lbl="Contexte">'+p.contexte+
+        (p.seuil_clientele ? "<br><span class='muted'>"+p.seuil_clientele+"</span>" : "")+"</td>"+
+      '<td class="small" data-lbl="Lieu">'+lieu+"</td>"+
+      '<td class="num" data-lbl="Non vuln&#233;rable">'+money(v.tarif_non_vulnerable)+"</td>"+
+      '<td class="num" data-lbl="Vuln&#233;rable">'+money(v.tarif_vulnerable)+"</td>"+
+      '<td class="num delta" data-lbl="&#201;cart">+'+money(v.ecart)+
+      "<br><span class='muted small'>+"+v.ecart_pct+" %</span></td></tr>"
+    ).join("")+"</tbody></table>";
+}
 
 /* ============================================================
    1. REVENU ANNUEL
@@ -802,9 +1764,56 @@ $("#st-save").addEventListener("click", ()=>{
   setTimeout(()=>{ msg.style.display = "none"; }, 3000);
 });
 $("#st-clear").addEventListener("click", ()=>{
-  if(!confirm("Effacer les paramètres de pratique enregistrés ?")) return;
-  localStorage.removeItem(STORAGE_SETTINGS);
-  SETTINGS_FIELDS.forEach(f=> $("#st-"+f).value = "");
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active);
+  if(!confirm("Réinitialiser le profil « "+(p.nom||"sans nom")+" » ? Les autres profils ne sont pas touchés.")) return;
+  const neuf = profilVide(p.nom);
+  neuf.id = p.id;
+  box.list[box.list.indexOf(p)] = neuf;
+  saveProfiles(box);
+  loadSettingsIntoForm();
+});
+
+/* ---------- Gestion des profils ---------- */
+$("#pf-add").addEventListener("click", ()=>{
+  const box = loadProfiles();
+  const p = profilVide("Profil "+(box.list.length+1));
+  box.list.push(p); box.active = p.id;
+  saveProfiles(box); loadSettingsIntoForm();
+});
+$("#pf-dup").addEventListener("click", ()=>{
+  const box = loadProfiles();
+  const src = box.list.find(x=>x.id===box.active);
+  const copie = JSON.parse(JSON.stringify(src));
+  copie.id = "p"+Date.now()+Math.floor(Math.random()*1000);
+  copie.nom = (src.nom||"Profil")+" (copie)";
+  box.list.push(copie); box.active = copie.id;
+  saveProfiles(box); loadSettingsIntoForm();
+});
+$("#pf-del").addEventListener("click", ()=>{
+  const box = loadProfiles();
+  if(box.list.length<2){ alert("Il faut garder au moins un profil."); return; }
+  const p = box.list.find(x=>x.id===box.active);
+  if(!confirm("Supprimer le profil « "+(p.nom||"sans nom")+" » ? Cette action est définitive.")) return;
+  box.list = box.list.filter(x=>x.id!==p.id);
+  box.active = box.list[0].id;
+  saveProfiles(box); loadSettingsIntoForm();
+  applySettingsToRevenueDefaults(); computeRevenue();
+});
+$("#pf-nom").addEventListener("input", ()=>{
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active);
+  p.nom = $("#pf-nom").value;
+  saveProfiles(box); renderProfilSwitch();
+});
+$("#pf-inscrits").addEventListener("input", renderSeuil);
+$("#pf-fraisMode").addEventListener("change", majFraisLabel);
+$("#pf-duree-add").addEventListener("click", ()=>{
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active);
+  p.dureesSur = p.dureesSur || [];
+  p.dureesSur.push({nom:"", min:15});
+  saveProfiles(box); renderDurees();
 });
 
 /* ============================================================
@@ -813,7 +1822,6 @@ $("#st-clear").addEventListener("click", ()=>{
 const ALL_PRACTICE_TYPES = () => Array.from(new Set(CODES.flatMap(c=>c.practiceTypes||[]))).sort();
 
 let activePracticeFilter = (loadSettings().type) || "";
-if(activePracticeFilter && !ALL_PRACTICE_TYPES().includes(activePracticeFilter)) activePracticeFilter = "";
 
 function renderSearchChips(){
   const wrap = $("#sr-chips");
@@ -837,18 +1845,11 @@ function scoreCode(query, code){
   const haystackTags = (code.tags||[]).map(norm);
   const haystackDesc = norm(code.description);
   const haystackCat = norm(code.category||"");
-  const haystackCode = norm(code.code||"");
-  const haystackContext = norm(code.context||"");
-  const haystackPractice = norm((code.practiceTypes||[]).join(" "));
   let score = 0;
   words.forEach(w=>{
-    if(haystackCode===w) score += 12;
-    else if(haystackCode.includes(w)) score += 7;
     if(haystackTags.some(t=>t.includes(w)||w.includes(t))) score += 3;
     if(haystackDesc.includes(w)) score += 2;
     if(haystackCat.includes(w)) score += 1;
-    if(haystackContext.includes(w)) score += 1;
-    if(haystackPractice.includes(w)) score += 1;
   });
   return score;
 }
@@ -856,7 +1857,7 @@ function scoreCode(query, code){
 function renderSearch(){
   const query = $("#sr-input").value.trim();
   let list = CODES.slice();
-  if(activePracticeFilter) list = list.filter(c=>(c.practiceTypes||[]).includes(activePracticeFilter) || (c.practiceTypes||[]).includes("Tout lieu"));
+  if(activePracticeFilter) list = list.filter(c=>(c.practiceTypes||[]).includes(activePracticeFilter));
 
   let results;
   if(!query){
@@ -864,7 +1865,7 @@ function renderSearch(){
   } else {
     results = list.map(c=>({code:c, score:scoreCode(query,c)})).filter(r=>r.score>0);
     results.sort((a,b)=>b.score-a.score);
-    results = results.slice(0,12);
+    results = results.slice(0,8);
   }
 
   const container = $("#sr-results");
@@ -876,21 +1877,19 @@ function renderSearch(){
   const maxScore = Math.max(...results.map(r=>r.score),1);
   results.forEach(r=>{
     const c = r.code;
-    const hasOfficialDuration = c.duration_min>0;
-    const rate = hasOfficialDuration ? (c.tariff/(c.duration_min/60)) : null;
+    const rate = c.duration_min>0 ? (c.tariff/(c.duration_min/60)) : c.tariff;
     const div = document.createElement("div");
     div.className = "code-card";
     div.innerHTML = `
       <div style="flex:1;min-width:220px;">
         <span class="code-id">${c.code}</span>
         <p class="desc">${c.description}</p>
-        <div class="meta">${c.category||""} · ${c.context||(c.practiceTypes||[]).join(", ")}${hasOfficialDuration?` · ${c.duration_min} min`:""}</div>
-        ${c.source_page?`<div class="hint">Source : tableau RAMQ, p. ${c.source_page} · ${c.data_version||RAMQ_DATA_META.version}</div>`:""}
+        <div class="meta">${c.category||""} · ${(c.practiceTypes||[]).join(", ")} · ${c.duration_min} min</div>
         ${r.score>0?`<div class="score-bar"><div class="score-fill" style="width:${Math.round(r.score/maxScore*100)}%"></div></div>`:""}
       </div>
       <div class="price">
         <div class="amt">${fmtMoney2(c.tariff)}</div>
-        <div class="rate">${hasOfficialDuration?`≈ ${fmtMoney(rate)}/h`:`Durée non publiée`}</div>
+        <div class="rate">≈ ${fmtMoney(rate)}/h</div>
       </div>`;
     container.appendChild(div);
   });
@@ -911,14 +1910,14 @@ function renderTop(){
   renderTopFilterOptions();
   const filter = $("#top-filter").value;
   let list = CODES.slice();
-  if(filter) list = list.filter(c=>(c.practiceTypes||[]).includes(filter) || (c.practiceTypes||[]).includes("Tout lieu"));
-  list = list.filter(c=>c.duration_min>0).map(c=>({...c, rate:c.tariff/(c.duration_min/60)}));
+  if(filter) list = list.filter(c=>(c.practiceTypes||[]).includes(filter));
+  list = list.map(c=>({...c, rate: c.duration_min>0 ? c.tariff/(c.duration_min/60) : c.tariff}));
   list.sort((a,b)=>b.rate-a.rate);
 
   const tbody = $("#top-body");
   tbody.innerHTML = "";
   if(!list.length){
-    tbody.innerHTML = `<tr><td colspan="6" class="empty">Aucun code avec une période de facturation explicitement publiée pour ce filtre.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">Aucun code pour ce filtre.</td></tr>`;
     return;
   }
   list.forEach((c,i)=>{
@@ -1045,7 +2044,6 @@ function renderAdmin(){
     tr.innerHTML = `
       <td><input value="${c.code}" data-f="code"></td>
       <td><input value="${c.description}" data-f="description"></td>
-      <td><input value="${c.context||''}" data-f="context"></td>
       <td><input value="${c.category||''}" data-f="category"></td>
       <td><input value="${(c.tags||[]).join(', ')}" data-f="tags"></td>
       <td><input type="number" step="0.01" value="${c.tariff}" data-f="tariff"></td>
@@ -1075,12 +2073,12 @@ function renderAdmin(){
   });
 }
 $("#ad-add").addEventListener("click", ()=>{
-  CODES.push({code:"NOUVEAU", description:"Nouvel acte", context:"Ajout local", category:"", tags:[], tariff:0, duration_min:0, practiceTypes:[]});
+  CODES.push({code:"EX-NOUVEAU", description:"Nouvel acte", category:"", tags:[], tariff:0, duration_min:10, practiceTypes:[]});
   saveCodes(CODES);
   renderAdmin();
 });
 $("#ad-reset").addEventListener("click", ()=>{
-  if(!confirm("Réinitialiser la base aux données RAMQ du 6 août 2026 ? Vos codes personnalisés seront perdus.")) return;
+  if(!confirm("Réinitialiser la base aux exemples de départ ? Vos codes personnalisés seront perdus.")) return;
   CODES = JSON.parse(JSON.stringify(DEFAULT_CODES));
   saveCodes(CODES);
   renderAdmin();
@@ -1117,22 +2115,6 @@ $("#ad-import").addEventListener("change", (e)=>{
 /* ============================================================
    INIT
    ============================================================ */
-function runLoadingProgress(cb){
-  const fill = document.getElementById("progressFill");
-  const pct = document.getElementById("progressPct");
-  let p = 0;
-  const steps = [12, 28, 44, 61, 77, 89, 100];
-  let i = 0;
-  const tick = ()=>{
-    p = steps[i];
-    fill.style.width = p+"%";
-    pct.textContent = "Chargement… "+p+" %";
-    i++;
-    if(i < steps.length){ setTimeout(tick, 130 + Math.random()*110); }
-    else { setTimeout(cb, 280); }
-  };
-  tick();
-}
 
 /* Raccourcis du manifest : ?vue=revenu, ?vue=recherche, ?vue=top, ?vue=comparateur */
 function openViewFromUrl(){
@@ -1157,15 +2139,13 @@ document.getElementById("btnInstall").addEventListener("click", async ()=>{
   document.getElementById("btnInstall").style.display = "none";
 });
 
-window.addEventListener("load", ()=>{
+window.addEventListener("load", async ()=>{
+  // Charger la base de codes d'abord
   applySettingsToRevenueDefaults();
   computeRevenue();
   renderSearchChips();
   loadSettingsIntoForm();
   openViewFromUrl();
-  runLoadingProgress(()=>{
-    document.getElementById("loading").classList.add("hide");
-  });
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").catch(()=>{ /* hors ligne indisponible, l'app fonctionne quand même */ });
   }

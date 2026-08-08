@@ -6,96 +6,83 @@ Aucune donnée n'est envoyée à un serveur : tout est stocké dans le navigateu
 
 ## Déploiement sur GitHub Pages
 
-1. Créer un dépôt (ou utiliser un dépôt existant).
-2. Téléverser **tous** les fichiers de ce dossier à la racine du dépôt.
-3. `Settings` → `Pages` → Source : `Deploy from a branch`, branche `main`, dossier `/ (root)`.
-4. Attendre une minute, puis ouvrir l'URL fournie.
+1. Téléverser **tous les fichiers de ce dossier à la racine** du dépôt.
+2. `Settings` → `Pages` → Source : `Deploy from a branch`, branche `main`,
+   dossier `/ (root)`.
+3. Attendre une minute, puis ouvrir l'URL fournie.
 
-Aucune étape de build. Aucune dépendance à installer.
+Aucune étape de build. Aucune dépendance.
 
-## Fichiers
+## Les 15 fichiers
 
-| Fichier | Rôle |
-|---|---|
-| `index.html` | L'application complète (HTML + CSS + JS en un seul fichier) |
-| `ramq-data.js` | Base officielle intégrée : onglet B, version du 6 août 2026 |
-| `manifest.json` | Manifeste PWA (installation, icônes, raccourcis) |
-| `sw.js` | Service worker — cache hors ligne |
-| `favicon.ico`, `icon-*.png`, `apple-touch-icon.png` | Icônes |
-| `logo-mark.png`, `logo-lockup.png` | Logo utilisé dans l'app |
-| `og-image.png` | Aperçu au partage (1200×630) |
+| Fichier | Rôle | Obligatoire |
+|---|---|---|
+| `index.html` | L'application entière (HTML + CSS + JS) | **oui** |
+| `vulnerabilite.json` | Données de vulnérabilité, chargées à l'ouverture de la vue | **oui** |
+| `manifest.json` | Manifeste PWA | oui (installation) |
+| `sw.js` | Service worker, mode hors ligne | oui (hors ligne) |
+| `favicon.ico`, `icon-16/32/48/180/192/512.png` | Icônes | oui |
+| `icon-maskable-192/512.png` | Icônes adaptatives Android | oui |
+| `apple-touch-icon.png` | Icône iOS | oui |
+| `og-image.png` | Aperçu au partage (1200×630) | non |
+| `README.md` | Ce fichier | non |
 
-## Maintenance
+Si un fichier non obligatoire manque, l'app fonctionne quand même : le service
+worker met chaque ressource en cache indépendamment et ignore celles qui
+échouent.
 
-### ⚠️ Incrémenter le cache à chaque déploiement
+## ⚠️ Incrémenter le cache à chaque déploiement
 
-Dans `sw.js`, en haut du fichier :
+Dans `sw.js`, première ligne de code :
 
 ```js
-const CACHE_NAME = "ramq-radar-v2";
+const CACHE_NAME = "ramq-radar-v4";
 ```
 
-**Passer à `v2`, `v3`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
-qui ont déjà installé l'application continueront de servir l'ancienne version
-depuis leur cache, et vos modifications seront invisibles.
-
-### Données RAMQ intégrées
-
-L'application est livrée avec 214 codes et 291 tarifs contextuels tirés des
-[tableaux-synthèses RAMQ de l'onglet B](https://www.ramq.gouv.qc.ca/fr/professionnels/media/32176),
-mis à jour le 6 août 2026. Le périmètre couvre les consultations, examens et
-visites. Les variantes de tarif sont séparées selon l'âge, le profil du patient,
-le nombre de patients inscrits et le lieu de service.
-
-Cette base ne remplace pas le manuel complet : les notes, règles, modificateurs,
-maxima et les codes des autres onglets doivent encore être vérifiés dans le
-[manuel des médecins omnipraticiens](https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides).
-
-Pour modifier ou compléter la base :
-
-1. Ouvrir l'app → icône ⚙ (à droite dans l'en-tête) → **Base de codes RAMQ**.
-2. Modifier les lignes directement, ou **Importer (JSON)** un fichier préparé.
-3. **Exporter (JSON)** pour se faire une sauvegarde.
-
-Les tarifs changent plusieurs fois par année : la base n'est pas synchronisée
-automatiquement et sa version est affichée dans l'application.
-
-Format d'un code :
-
-```json
-{
-  "code": "15803",
-  "description": "Suivi — patient non vulnérable de moins de 80 ans",
-  "context": "Cabinet/GMF, ou domicile lié aux activités du médecin en cabinet",
-  "category": "Visite sur rendez-vous",
-  "tags": ["visite", "rendez-vous", "patient inscrit"],
-  "tariff": 42.85,
-  "duration_min": 0,
-  "practiceTypes": ["Cabinet", "GMF"],
-  "source_page": 5,
-  "data_version": "2026-08-06"
-}
-```
-
-`tags`, `context` et `practiceTypes` alimentent la recherche. `duration_min`
-reste à `0` lorsque la RAMQ ne publie pas de période explicite; aucune durée
-clinique n'est inventée. Le classement en équivalent horaire ne retient que les
-codes facturés par périodes de 15 ou 30 minutes dans le document source.
+**Passer à `v5`, `v6`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
+qui ont déjà ouvert l'app continueront de servir l'ancienne version depuis leur
+cache, et vos modifications seront invisibles. C'est le piège le plus courant.
 
 ## Données locales
 
-Trois clés dans `localStorage` :
+Deux clés dans `localStorage` :
 
-- `ramqradar_codes` — la base de codes
-- `ramqradar_settings` — les paramètres de pratique
-- `ramqradar_scenarios` — les scénarios du comparateur
+- `ramqradar_profiles` — vos profils de pratique (milieux, clientèle, durées de
+  rendez-vous, frais, impôt). Plusieurs profils possibles, étanches entre eux.
+- `ramqradar_scenarios` — les scénarios du comparateur.
 
-Vider le cache du navigateur efface ces données. Exportez votre base de codes
-avant toute manipulation.
+Vider le cache du navigateur efface ces données.
+
+## État des données
+
+`vulnerabilite.json` contient l'écart tarifaire vulnérable / non vulnérable pour
+21 paires d'actes, extrait de l'onglet B du **Manuel des omnipraticiens —
+rémunération à l'acte, version 2026-06-05**. Chaque tarif a été confirmé par
+deux extractions indépendantes du même PDF.
+
+**Ce que la base ne contient pas encore**, faute d'accès au document :
+
+- la liste complète des catégories de problèmes de santé du paragraphe 5.01 de
+  l'EP 40;
+- la répartition des quatre groupes de vulnérabilité;
+- les montants du forfait annuel de prise en charge et des forfaits de
+  responsabilité 15169 / 15170 / 15171.
+
+Ces éléments sont dans l'**Entente particulière EP 40 (Brochure no 1)**. Un
+avertissement affiché en haut de la vue Vulnérabilité le dit explicitement.
+
+## Régénérer les données
+
+Les scripts d'extraction ne font pas partie du site et n'ont pas à être
+téléversés. Ils nécessitent le PDF officiel du manuel :
+
+- `extract_b.py` — extrait les tarifs de l'onglet B
+- `build_vuln.py` — construit `vulnerabilite.json` à partir de cette extraction
+- `dollars.py` — regénère le champ de symboles de la bannière
 
 ## Avertissement
 
-Outil personnel d'estimation. Les calculs de revenu sont des approximations
-(le taux d'imposition réel dépend de votre structure, de l'incorporation, des
-déductions, etc.). Ce n'est ni un avis fiscal ni une source officielle de
-tarification. Vérifiez toujours au manuel RAMQ avant de facturer.
+Outil personnel d'estimation. Les calculs de revenu sont des approximations : le
+taux d'imposition réel dépend de votre structure, de l'incorporation et de vos
+déductions. Ce n'est ni un avis fiscal ni une source officielle de tarification.
+Vérifiez toujours au manuel RAMQ avant de facturer.

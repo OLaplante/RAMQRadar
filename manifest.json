@@ -2,7 +2,7 @@
   "id": "/ramq-radar/",
   "name": "RAMQ Radar — Comprendre et optimiser sa facturation",
   "short_name": "RAMQ Radar",
-  "description": "Revenu annuel, recherche de codes RAMQ, tarifs avec période publiée et comparateur de scénarios. Tout reste dans votre navigateur.",
+  "description": "Revenu annuel, recherche d'acte, top actes rentables et comparateur de scénarios de facturation RAMQ. Tout reste dans votre navigateur.",
   "lang": "fr-CA",
   "dir": "ltr",
   "start_url": "./",
@@ -21,7 +21,7 @@
   "shortcuts": [
     { "name": "Revenu annuel", "short_name": "Revenu", "url": "./?vue=revenu" },
     { "name": "Recherche d'acte", "short_name": "Recherche", "url": "./?vue=recherche" },
-    { "name": "Tarifs par période", "short_name": "Par période", "url": "./?vue=top" },
+    { "name": "Top actes rentables", "short_name": "Top actes", "url": "./?vue=top" },
     { "name": "Comparateur", "short_name": "Comparer", "url": "./?vue=comparateur" }
   ]
 }
