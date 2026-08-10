@@ -469,6 +469,36 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
 .sr-inclus-warn li{margin:.15rem 0;}
 .link-btn{background:none;border:none;color:var(--blue);font-weight:600;
   font-size:.85rem;padding:0;cursor:pointer;font-family:inherit;}
+
+/* ---- Forfaits RAMQ (Revenu annuel) ---- */
+.forf-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);}
+.forf-row:last-of-type{border-bottom:none;}
+.forf-info{flex:1;min-width:200px;}
+.forf-titre{font-weight:600;font-size:.9rem;color:var(--ink);}
+.forf-code{font-size:.72rem;color:var(--ink-soft);margin-left:4px;}
+.forf-sub{font-size:.78rem;color:var(--ink-soft);margin-top:2px;line-height:1.4;}
+.forf-calc{display:flex;align-items:center;gap:6px;flex:none;}
+.forf-calc input[type="number"]{width:76px;padding:8px;text-align:right;
+  border:1px solid var(--line);border-radius:8px;font-family:var(--font-mono);font-size:.85rem;}
+.forf-calc span{color:var(--ink-soft);font-size:.85rem;}
+.forf-calc-solo input[type="number"]{width:96px;}
+.chk-inline{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--ink-soft);}
+.chk-inline input{width:16px;height:16px;accent-color:var(--blue);}
+.chk-inline input:disabled{opacity:.4;}
+.forf-total{display:flex;justify-content:space-between;align-items:center;
+  padding-top:14px;margin-top:4px;border-top:2px solid var(--navy);
+  font-weight:700;font-size:1rem;color:var(--navy);}
+@media(max-width:480px){
+  .forf-row{flex-direction:column;align-items:stretch;}
+  .forf-calc{justify-content:flex-end;}
+}
+
+/* ---- Salaire net visé ---- */
+.field input.champ-calcule{background:#F0F6FF;border-color:var(--blue);font-weight:700;color:var(--blue);}
+.cible-msg{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:.85rem;line-height:1.5;}
+.cible-msg.cible-ok{background:#EAFBF2;color:#0A6B3E;}
+.cible-msg.cible-warn{background:#FFF6E8;color:#8A5A00;}
 </style>
 </head>
 <body>
@@ -962,7 +992,8 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
   <section id="view-revenu" class="view">
     <div class="view-header">
       <button class="back-btn" data-back>←</button>
-      <div><h2>Revenu annuel</h2><div class="sub">Une estimation, pas un chiffre officiel — utile pour comparer des scénarios.</div></div>
+      <div><h2>Revenu annuel</h2><div class="sub">Une estimation, pas un chiffre officiel — sauvegardée automatiquement dans votre profil actif.</div></div>
+      <button class="btn btn-ghost btn-sm" id="rv-reset" style="margin-left:auto;flex:none;">R&#233;initialiser</button>
     </div>
 
     <div class="panel">
@@ -985,22 +1016,182 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
           <input type="number" id="rv-semaines" value="46" min="0" max="52" step="1">
         </div>
         <div class="field">
-          <label for="rv-inscrits">Patients inscrits (forfaits)</label>
-          <input type="number" id="rv-inscrits" value="1000" min="0" step="1">
-        </div>
-        <div class="field">
-          <label for="rv-forfait">Forfait annuel moyen / patient inscrit ($)</label>
-          <input type="number" id="rv-forfait" value="18" min="0" step="0.01">
-          <span class="hint">Inclut inscription, vulnérabilité, suivi — ajustez selon votre clientèle.</span>
-        </div>
-        <div class="field">
-          <label for="rv-frais">Frais de bureau (% du brut)</label>
-          <input type="number" id="rv-frais" value="30" min="0" max="100" step="1">
-        </div>
-        <div class="field">
           <label for="rv-impot">Taux d'imposition estimé (%)</label>
           <input type="number" id="rv-impot" value="38" min="0" max="65" step="1">
         </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>&#127919; Salaire net vis&#233;</h4>
+      <label class="chk-inline" style="margin-bottom:12px;">
+        <input type="checkbox" id="rv-cible-actif"> Activer &#8212; ajuster automatiquement un param&#232;tre pour atteindre un revenu net cible
+      </label>
+      <div id="rv-cible-champs" style="display:none;">
+        <div class="field-grid">
+          <div class="field">
+            <label for="rv-cible-montant">Revenu net vis&#233; ($/an)</label>
+            <input type="number" id="rv-cible-montant" value="150000" min="0" step="1000">
+          </div>
+          <div class="field">
+            <label for="rv-cible-var">Param&#232;tre &#224; ajuster</label>
+            <select id="rv-cible-var">
+              <option value="jours">Jours travaill&#233;s / semaine</option>
+              <option value="patients">Patients vus par jour</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint cible-msg" id="rv-cible-resultat"></p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Frais de bureau</h4>
+      <div class="field">
+        <label for="rv-fraisMode">Mode de calcul</label>
+        <select id="rv-fraisMode">
+          <option value="pct">Pourcentage du revenu brut</option>
+          <option value="jour">Montant fixe par journée travaillée</option>
+          <option value="mois">Montant fixe par mois</option>
+        </select>
+      </div>
+      <div class="field" id="rv-frais-pct-wrap">
+        <label for="rv-frais-pct">Frais de bureau (% du brut)</label>
+        <input type="number" id="rv-frais-pct" value="30" min="0" max="100" step="1">
+      </div>
+      <div class="field" id="rv-frais-jour-wrap" style="display:none;">
+        <label for="rv-frais-jour">Frais de bureau ($ / journée travaillée)</label>
+        <input type="number" id="rv-frais-jour" value="0" min="0" step="1">
+        <span class="hint" id="rv-frais-jour-hint"></span>
+      </div>
+      <div class="field" id="rv-frais-mois-wrap" style="display:none;">
+        <label for="rv-frais-mois">Frais de bureau ($ / mois)</label>
+        <input type="number" id="rv-frais-mois" value="0" min="0" step="1">
+        <span class="hint">Calculé sur 12 mois — un loyer continue de courir même pendant les vacances.</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Forfaits RAMQ</h4>
+      <p class="hint" style="margin:0 0 12px;">Aucun montant de forfait n'est publié par la RAMQ &#8212; ils sont fix&#233;s par l'Entente particulière EP 40, document non public. Les champs ci-dessous couvrent <strong>tous les forfaits qui peuvent s'appliquer</strong> &#224; un m&#233;decin de famille ; indiquez vos propres montants, visibles sur votre &#233;tat de compte RAMQ.</p>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Forfait d'inscription g&#233;n&#233;rale</div>
+          <div class="forf-sub">Par patient inscrit et actif au 1<sup>er</sup> janvier. Vers&#233; automatiquement, aucune facturation requise.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-inscrits" value="1000" min="0" step="1" title="Patients inscrits">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-inscrit-mnt" value="0" min="0" step="0.01" title="Montant par patient">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Montant suppl&#233;mentaire &#224; l'inscription</div>
+          <div class="forf-sub">Si seuil de 750 ou 1000 patients actifs atteint au 31 d&#233;cembre (EP 40, par. 4.15-4.18).</div>
+        </div>
+        <div class="forf-calc forf-calc-solo">
+          <label class="chk-inline"><input type="checkbox" id="rv-f-seuil-actif"> Seuil atteint</label>
+          <input type="number" id="rv-f-seuil-mnt" value="0" min="0" step="0.01" title="Montant total">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Forfait annuel &#8212; client&#232;le vuln&#233;rable</div>
+          <div class="forf-sub">Par patient vuln&#233;rable inscrit et actif. S'ajoute au forfait g&#233;n&#233;ral. Vers&#233; par trimestre.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-vuln-n" value="0" min="0" step="1" title="Patients vulnérables">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-vuln-mnt" value="0" min="0" step="0.01" title="Montant par patient vulnérable">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Forfait de prise en charge GMF <span class="mono forf-code">08875</span></div>
+          <div class="forf-sub">Une fois par ann&#233;e civile, par GMF, par patient inscrit. Seulement si vous pratiquez en GMF.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-gmf-n" value="0" min="0" step="1" title="Patients concernés">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-gmf-mnt" value="0" min="0" step="0.01" title="Montant par patient">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Suppl&#233;ment p&#233;riodique 0&#8211;5 ans <span class="mono forf-code">08877</span></div>
+          <div class="forf-sub">Par examen p&#233;riodique d'un enfant inscrit de 0 &#224; 5 ans, selon le calendrier ABCdaire.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-enf-n" value="0" min="0" step="1" title="Nombre d'examens par année">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-enf-mnt" value="0" min="0" step="0.01" title="Montant par examen">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Suppl&#233;ments grossesse <span class="mono forf-code">15144/15145/15159/15189</span></div>
+          <div class="forf-sub">Suivi, 1<sup>er</sup> trimestre, prise en charge temporaire &#8212; un montant par grossesse suivie.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-gross-n" value="0" min="0" step="1" title="Grossesses suivies par année">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-gross-mnt" value="0" min="0" step="0.01" title="Montant moyen par grossesse">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Patient sans m&#233;decin de famille <span class="mono forf-code">19957&#8211;19960</span></div>
+          <div class="forf-sub">Une fois par patient pris en charge, &#224; la 1<sup>re</sup> visite. Le code exact d&#233;pend du mode d'attribution (GAMF, transfert en bloc) et de la vuln&#233;rabilit&#233;.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-sansmd-n" value="0" min="0" step="1" title="Nouveaux patients pris en charge">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-sansmd-mnt" value="0" min="0" step="0.01" title="Montant moyen">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Frais de cabinet <span class="mono forf-code">19928/19929</span></div>
+          <div class="forf-sub">Par journ&#233;e avec 6 patients inscrits ou plus (19928) ou 12 ou plus (19929). Montant maximal par jour par m&#233;decin.</div>
+        </div>
+        <div class="forf-calc">
+          <input type="number" id="rv-f-cab-n" value="0" min="0" step="1" title="Journées admissibles par année">
+          <span>&#215;</span>
+          <input type="number" id="rv-f-cab-mnt" value="0" min="0" step="0.01" title="Montant par journée">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-row">
+        <div class="forf-info">
+          <div class="forf-titre">Autres forfaits ou suppl&#233;ments</div>
+          <div class="forf-sub">Cong&#233; en &#233;tablissement (15158), DM&#201;, majoration polyvalente, supplément au volume &#8212; montant total restant, si applicable.</div>
+        </div>
+        <div class="forf-calc forf-calc-solo">
+          <input type="number" id="rv-f-autres-mnt" value="0" min="0" step="0.01" title="Montant total">
+          <span>$</span>
+        </div>
+      </div>
+
+      <div class="forf-total">
+        <span>Total des forfaits</span>
+        <span class="mono" id="rv-f-total">0 $</span>
       </div>
     </div>
 
@@ -1432,7 +1623,80 @@ function profilVide(nom){
   return { id:"p"+Date.now()+Math.floor(Math.random()*1000), nom:nom||"Mon profil",
     milieuPrincipal:"", milieux:[], statutGmf:"", amp:"", activites:[],
     inscrits:"", partVuln:"", patients:"", jours:"", semaines:"", tarif:"",
-    fraisMode:"pct", frais:"", forfait:"", impot:"", durees:d, dureesSur:[] };
+    fraisMode:"pct", frais:"", forfait:"", impot:"", durees:d, dureesSur:[],
+    calc:{} };  // état complet du calculateur Revenu annuel — voir CALC_FIELDS
+}
+
+/* Champs du calculateur Revenu annuel qui doivent survivre à un
+   rechargement de page. Chaque profil garde son propre calc : un scénario
+   « GMF-U » et un scénario « CLSC » n'ont pas à partager les mêmes forfaits.
+   type "chk" pour une case à cocher, "num"/"text" pour un input classique. */
+const CALC_FIELDS = [
+  ["rv-patients","num"], ["rv-tarif","num"], ["rv-jours","num"], ["rv-semaines","num"], ["rv-impot","num"],
+  ["rv-fraisMode","text"], ["rv-frais-pct","num"], ["rv-frais-jour","num"], ["rv-frais-mois","num"],
+  ["rv-f-inscrit-mnt","num"],
+  ["rv-f-seuil-actif","chk"], ["rv-f-seuil-mnt","num"],
+  ["rv-f-vuln-mnt","num"],
+  ["rv-f-gmf-n","num"], ["rv-f-gmf-mnt","num"],
+  ["rv-f-enf-n","num"], ["rv-f-enf-mnt","num"],
+  ["rv-f-gross-n","num"], ["rv-f-gross-mnt","num"],
+  ["rv-f-sansmd-n","num"], ["rv-f-sansmd-mnt","num"],
+  ["rv-f-cab-n","num"], ["rv-f-cab-mnt","num"],
+  ["rv-f-autres-mnt","num"],
+  ["rv-cible-actif","chk"], ["rv-cible-montant","num"], ["rv-cible-var","text"],
+];
+// rv-patients/tarif/jours/semaines/impot sont désormais persistés ici, pas
+// seulement dans "Mon profil" : le solveur de salaire visé modifie ces
+// champs directement dans cette vue, et une modification qui ne survit pas
+// à un rechargement serait le même piège que celui déjà corrigé pour les
+// forfaits. applySettingsToRevenueDefaults() les préremplit d'abord depuis
+// le profil (utile pour un profil neuf) ; restaurerCalcProfil() les
+// écrase ensuite avec la dernière valeur réellement utilisée ici.
+// rv-f-inscrits et rv-f-vuln-n sont volontairement absents : ils dérivent en
+// direct du profil (patients inscrits × part vulnérable) via
+// applySettingsToRevenueDefaults(). Les persister ici créerait une valeur
+// figée qui pourrait un jour contredire le profil actif.
+
+function sauvegarderCalcProfil(){
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active);
+  if(!p) return;
+  p.calc = p.calc || {};
+  CALC_FIELDS.forEach(([id,type])=>{
+    const el = $("#"+id);
+    if(!el) return;
+    p.calc[id] = type==="chk" ? el.checked : el.value;
+  });
+  saveProfiles(box);
+}
+
+function restaurerCalcProfil(){
+  const p = profilActif();
+  const calc = p.calc || {};
+  CALC_FIELDS.forEach(([id,type])=>{
+    const el = $("#"+id);
+    if(!el) return;
+    const aUneValeur = calc[id]!==undefined && calc[id]!=="";
+    if(type==="chk"){
+      // defaultChecked = la valeur telle qu'écrite dans le HTML d'origine.
+      el.checked = aUneValeur ? !!calc[id] : el.defaultChecked;
+    } else if(el.tagName === "SELECT"){
+      // El.defaultValue n'est pas fiable sur un <select> : on retombe sur
+      // l'option marquée `selected` dans le HTML d'origine.
+      const opt = el.querySelector("option[selected]") || el.options[0];
+      el.value = aUneValeur ? calc[id] : (opt ? opt.value : "");
+    } else {
+      // Un profil sans valeur sauvegardée doit repartir du défaut du
+      // formulaire, pas garder ce qui traînait à l'écran pour le profil
+      // précédent — sinon changer de profil "contamine" le suivant.
+      el.value = aUneValeur ? calc[id] : el.defaultValue;
+    }
+  });
+  // Le sélecteur de mode a besoin de son événement change pour afficher
+  // le bon bloc de champs (pct / jour / mois).
+  $("#rv-fraisMode").dispatchEvent(new Event("change"));
+  majSeuilInscription();
+  resoudreCible();
 }
 
 function loadProfiles(){
@@ -1504,6 +1768,7 @@ function renderProfilSwitch(){
     saveProfiles(box2);
     loadSettingsIntoForm();
     applySettingsToRevenueDefaults();
+    restaurerCalcProfil();
     computeRevenue();
     activePracticeFilter = profilActif().milieuPrincipal || "";
     renderSearchChips();
@@ -1594,17 +1859,38 @@ function saveSettingsFromForm(){
 function loadSettings(){
   const p = profilActif();
   return { type:p.milieuPrincipal, patients:p.patients, tarif:p.tarif, jours:p.jours,
-    semaines:p.semaines, inscrits:p.inscrits, forfait:p.forfait, frais:p.frais, impot:p.impot };
+    semaines:p.semaines, inscrits:p.inscrits, partVuln:p.partVuln,
+    fraisMode:p.fraisMode, frais:p.frais, impot:p.impot };
 }
 
 function applySettingsToRevenueDefaults(){
   const s = loadSettings();
-  const map = {patients:"rv-patients", tarif:"rv-tarif", jours:"rv-jours", semaines:"rv-semaines",
-               inscrits:"rv-inscrits", forfait:"rv-forfait", frais:"rv-frais", impot:"rv-impot"};
+  const map = {patients:"rv-patients", tarif:"rv-tarif", jours:"rv-jours", semaines:"rv-semaines", impot:"rv-impot"};
   Object.entries(map).forEach(([sf, id])=>{
     const el = $("#"+id);
     if(el && s[sf]!==undefined && s[sf]!=="") el.value = s[sf];
   });
+
+  // Patients inscrits et part vulnérable du profil alimentent directement les
+  // deux premières lignes de forfaits (le nombre, pas le montant — celui-ci
+  // reste toujours saisi manuellement puisqu'il n'est pas publié).
+  if(s.inscrits!==undefined && s.inscrits!==""){
+    $("#rv-f-inscrits").value = s.inscrits;
+    majSeuilInscription();
+    const vulnPct = parseFloat(s.partVuln)||0;
+    if(vulnPct>0){
+      $("#rv-f-vuln-n").value = Math.round(parseFloat(s.inscrits) * vulnPct/100);
+    }
+  }
+
+  // Mode de frais choisi dans le profil : reporté sur le sélecteur du
+  // calculateur, avec le montant dans le bon champ selon le mode.
+  if(s.fraisMode){
+    $("#rv-fraisMode").value = s.fraisMode;
+    $("#rv-fraisMode").dispatchEvent(new Event("change"));
+    const cible = s.fraisMode==="jour" ? "#rv-frais-jour" : s.fraisMode==="mois" ? "#rv-frais-mois" : "#rv-frais-pct";
+    if(s.frais!==undefined && s.frais!=="") $(cible).value = s.frais;
+  }
 }
 
 /* Durée personnalisée pour un acte donné : utilisée par le classement $/heure. */
@@ -1687,6 +1973,7 @@ function showView(name){
   if(name==="admin") renderAdmin();
   if(name==="vulnerabilite") renderVulnerabilite();
   if(name==="inclus") renderInclus();
+  if(name==="revenu") restaurerCalcProfil();
   if(name==="settings"){ plierPanneauxProfil(); loadSettingsIntoForm(); }
 }
 $$(".tile").forEach(t=>t.addEventListener("click", ()=>showView(t.dataset.view)));
@@ -1856,20 +2143,53 @@ function renderVulnTable(){
 /* ============================================================
    1. REVENU ANNUEL
    ============================================================ */
+/* Somme des huit lignes de forfaits réelles — réutilisée par le calcul
+   normal ET par le solveur de salaire visé (qui doit connaître le revenu de
+   forfaits pour isoler le revenu d'actes nécessaire). */
+function forfaitsTotal(){
+  const n = id => parseFloat($(id).value)||0;
+  const fInscription = n("#rv-f-inscrits") * n("#rv-f-inscrit-mnt");
+  const fSeuil = $("#rv-f-seuil-actif").checked ? n("#rv-f-seuil-mnt") : 0;
+  const fVuln = n("#rv-f-vuln-n") * n("#rv-f-vuln-mnt");
+  const fGmf = n("#rv-f-gmf-n") * n("#rv-f-gmf-mnt");
+  const fEnfant = n("#rv-f-enf-n") * n("#rv-f-enf-mnt");
+  const fGrossesse = n("#rv-f-gross-n") * n("#rv-f-gross-mnt");
+  const fSansMd = n("#rv-f-sansmd-n") * n("#rv-f-sansmd-mnt");
+  const fCabinet = n("#rv-f-cab-n") * n("#rv-f-cab-mnt");
+  const fAutres = n("#rv-f-autres-mnt");
+  return fInscription + fSeuil + fVuln + fGmf + fEnfant + fGrossesse + fSansMd + fCabinet + fAutres;
+}
+
 function computeRevenue(){
   const patients = parseFloat($("#rv-patients").value)||0;
   const tarif = parseFloat($("#rv-tarif").value)||0;
   const jours = parseFloat($("#rv-jours").value)||0;
   const semaines = parseFloat($("#rv-semaines").value)||0;
-  const inscrits = parseFloat($("#rv-inscrits").value)||0;
-  const forfait = parseFloat($("#rv-forfait").value)||0;
-  const fraisPct = parseFloat($("#rv-frais").value)||0;
   const impotPct = parseFloat($("#rv-impot").value)||0;
 
   const revenuActes = patients * tarif * jours * semaines;
-  const revenuForfaits = inscrits * forfait;
+  const revenuForfaits = forfaitsTotal();
+  $("#rv-f-total").textContent = fmtMoney2(revenuForfaits);
+
   const brut = revenuActes + revenuForfaits;
-  const frais = brut * (fraisPct/100);
+
+  // Frais de bureau : 3 modes. Le loyer et l'équipement ne s'arrêtent pas
+  // pendant les vacances — le mode $/mois est donc calculé sur 12 mois pleins,
+  // pas sur les seules semaines travaillées.
+  const fraisMode = $("#rv-fraisMode").value;
+  const joursTravailles = jours * semaines;
+  const n = id => parseFloat($(id).value)||0;
+  let frais = 0;
+  if(fraisMode === "pct"){
+    frais = brut * (n("#rv-frais-pct")/100);
+  } else if(fraisMode === "jour"){
+    frais = n("#rv-frais-jour") * joursTravailles;
+  } else if(fraisMode === "mois"){
+    frais = n("#rv-frais-mois") * 12;
+  }
+  $("#rv-frais-jour-hint").textContent =
+    joursTravailles>0 ? `${joursTravailles.toFixed(0)} journées travaillées cette année (${jours} j × ${semaines} sem.).` : "";
+
   const netAvantImpot = brut - frais;
   const impot = Math.max(0, netAvantImpot) * (impotPct/100);
   const net = netAvantImpot - impot;
@@ -1883,11 +2203,164 @@ function computeRevenue(){
   const pct = brut>0 ? Math.max(0,Math.min(100, (net/brut)*100)) : 0;
   $("#rv-bar").style.width = pct+"%";
 }
-$$("#view-revenu input").forEach(i=>i.addEventListener("input", computeRevenue));
+$$("#view-revenu input, #view-revenu select").forEach(i=>i.addEventListener("input", ()=>{
+  resoudreCible();
+  computeRevenue();
+  sauvegarderCalcProfil();
+}));
+
+/* ============================================================
+   SALAIRE NET VISÉ — solveur inverse
+   Au lieu de (patients, jours) → net, l'utilisateur fixe le net visé et UN
+   des deux paramètres ; l'app calcule l'autre. L'algèbre dépend du mode de
+   frais choisi puisque le mode $/jour couple les frais aux jours travaillés.
+   ============================================================ */
+function afficherMessageCible(html, classe){
+  const el = $("#rv-cible-resultat");
+  el.innerHTML = html;
+  el.className = "hint cible-msg " + classe;
+}
+
+function basculerChampsCible(){
+  const actif = $("#rv-cible-actif").checked;
+  $("#rv-cible-champs").style.display = actif ? "" : "none";
+  const varCible = $("#rv-cible-var").value;
+  // Le paramètre résolu par l'app devient en lecture seule : le modifier à
+  // la main pendant que le solveur tourne créerait une contradiction
+  // silencieuse (quelle valeur a priorité ?).
+  $("#rv-jours").readOnly = actif && varCible === "jours";
+  $("#rv-patients").readOnly = actif && varCible === "patients";
+  $("#rv-jours").classList.toggle("champ-calcule", actif && varCible === "jours");
+  $("#rv-patients").classList.toggle("champ-calcule", actif && varCible === "patients");
+}
+
+function resoudreCible(){
+  basculerChampsCible();
+  if(!$("#rv-cible-actif").checked) return;
+
+  const cible = parseFloat($("#rv-cible-montant").value)||0;
+  const impotFrac = (parseFloat($("#rv-impot").value)||0)/100;
+  const tarif = parseFloat($("#rv-tarif").value)||0;
+  const semaines = parseFloat($("#rv-semaines").value)||0;
+  const varCible = $("#rv-cible-var").value;
+  const F = forfaitsTotal();
+
+  if(impotFrac>=1){ afficherMessageCible("Taux d'imposition &#8805; 100 % : impossible.", "cible-warn"); return; }
+  const netAvantImpotCible = cible/(1-impotFrac);
+
+  const appliquer = (champ, valeur)=>{
+    if(!isFinite(valeur) || valeur<0){
+      afficherMessageCible("Impossible d'atteindre ce montant avec ces param&#232;tres &#8212; v&#233;rifiez le tarif moyen et les semaines travaill&#233;es.", "cible-warn");
+      return;
+    }
+    if(champ==="jours"){
+      if(valeur>7){
+        $("#rv-jours").value = 7;
+        afficherMessageCible(`&#9888; M&#234;me &#224; <strong>7 jours / semaine</strong> (le maximum possible), ce salaire n'est pas atteint avec vos autres param&#232;tres. Augmentez le tarif moyen ou les patients par jour.`, "cible-warn");
+      } else {
+        $("#rv-jours").value = Math.round(valeur*10)/10;
+        afficherMessageCible(`Pour atteindre <strong>${fmtMoney(cible)}</strong> net par ann&#233;e, il faut environ <strong>${$("#rv-jours").value} jours / semaine</strong> &#224; ${$("#rv-patients").value || 0} patients/jour.`, "cible-ok");
+      }
+    } else {
+      if(valeur>55){
+        $("#rv-patients").value = Math.round(valeur);
+        afficherMessageCible(`&#9888; Il faudrait voir environ <strong>${Math.round(valeur)} patients / jour</strong> &#8212; rythme difficilement soutenable. Augmentez les jours travaill&#233;s ou le tarif moyen.`, "cible-warn");
+      } else {
+        $("#rv-patients").value = Math.round(valeur);
+        afficherMessageCible(`Pour atteindre <strong>${fmtMoney(cible)}</strong> net par ann&#233;e, il faut environ <strong>${Math.round(valeur)} patients / jour</strong> &#224; ${$("#rv-jours").value || 0} jours/semaine.`, "cible-ok");
+      }
+    }
+  };
+
+  const fraisMode = $("#rv-fraisMode").value;
+
+  if(fraisMode === "pct"){
+    const fraisFrac = (parseFloat($("#rv-frais-pct").value)||0)/100;
+    if(fraisFrac>=1){ afficherMessageCible("Frais de bureau &#8805; 100 % du brut : impossible.", "cible-warn"); return; }
+    const brutCible = netAvantImpotCible/(1-fraisFrac);
+    const V = brutCible - F;  // revenu d'actes requis, une fois les forfaits retirés
+    if(varCible==="jours"){
+      const patients = parseFloat($("#rv-patients").value)||0;
+      if(patients<=0 || tarif<=0 || semaines<=0){ afficherMessageCible("Pr&#233;cisez patients/jour, tarif et semaines d'abord.", "cible-warn"); return; }
+      appliquer("jours", V/(tarif*semaines*patients));
+    } else {
+      const jours = parseFloat($("#rv-jours").value)||0;
+      if(jours<=0 || tarif<=0 || semaines<=0){ afficherMessageCible("Pr&#233;cisez jours/semaine, tarif et semaines d'abord.", "cible-warn"); return; }
+      appliquer("patients", V/(tarif*semaines*jours));
+    }
+
+  } else if(fraisMode === "mois"){
+    const fraisAn = (parseFloat($("#rv-frais-mois").value)||0)*12;
+    const V = netAvantImpotCible - F + fraisAn;
+    if(varCible==="jours"){
+      const patients = parseFloat($("#rv-patients").value)||0;
+      if(patients<=0 || tarif<=0 || semaines<=0){ afficherMessageCible("Pr&#233;cisez patients/jour, tarif et semaines d'abord.", "cible-warn"); return; }
+      appliquer("jours", V/(tarif*semaines*patients));
+    } else {
+      const jours = parseFloat($("#rv-jours").value)||0;
+      if(jours<=0 || tarif<=0 || semaines<=0){ afficherMessageCible("Pr&#233;cisez jours/semaine, tarif et semaines d'abord.", "cible-warn"); return; }
+      appliquer("patients", V/(tarif*semaines*jours));
+    }
+
+  } else { // fraisMode === "jour" : les frais dépendent eux-mêmes des jours travaillés
+    const fraisJour = parseFloat($("#rv-frais-jour").value)||0;
+    if(varCible==="jours"){
+      const patients = parseFloat($("#rv-patients").value)||0;
+      if(semaines<=0){ afficherMessageCible("Pr&#233;cisez le nombre de semaines travaill&#233;es.", "cible-warn"); return; }
+      const coeff = patients*tarif - fraisJour;
+      if(coeff<=0){
+        afficherMessageCible("Avec ce nombre de patients/jour, les frais quotidiens d&#233;passent le revenu quotidien d'actes &#8212; impossible, quel que soit le nombre de jours.", "cible-warn");
+        return;
+      }
+      const joursSemaines = (netAvantImpotCible - F)/coeff;
+      appliquer("jours", joursSemaines/semaines);
+    } else {
+      const jours = parseFloat($("#rv-jours").value)||0;
+      if(jours<=0 || semaines<=0 || tarif<=0){ afficherMessageCible("Pr&#233;cisez jours/semaine, semaines et tarif d'abord.", "cible-warn"); return; }
+      const patients = ((netAvantImpotCible - F)/(jours*semaines) + fraisJour)/tarif;
+      appliquer("patients", patients);
+    }
+  }
+}
+
+$("#rv-cible-actif").addEventListener("change", ()=>{ resoudreCible(); computeRevenue(); sauvegarderCalcProfil(); });
+$("#rv-cible-var").addEventListener("change", ()=>{ resoudreCible(); computeRevenue(); sauvegarderCalcProfil(); });
+
+$("#rv-fraisMode").addEventListener("change", ()=>{
+  const m = $("#rv-fraisMode").value;
+  $("#rv-frais-pct-wrap").style.display = m==="pct" ? "" : "none";
+  $("#rv-frais-jour-wrap").style.display = m==="jour" ? "" : "none";
+  $("#rv-frais-mois-wrap").style.display = m==="mois" ? "" : "none";
+  computeRevenue();
+});
+
+// La ligne "montant supplémentaire à l'inscription" n'a de sens qu'au-delà
+// du seuil RAMQ de 750 patients actifs : la case à cocher reste désactivée
+// et décochée en dessous, pour ne pas suggérer un montant non applicable.
+function majSeuilInscription(){
+  const inscrits = parseFloat($("#rv-f-inscrits").value)||0;
+  const chk = $("#rv-f-seuil-actif");
+  const admissible = inscrits >= 750;
+  chk.disabled = !admissible;
+  if(!admissible) chk.checked = false;
+}
+$("#rv-f-inscrits").addEventListener("input", majSeuilInscription);
+
+$("#rv-reset").addEventListener("click", ()=>{
+  if(!confirm("Réinitialiser ce calcul aux valeurs par défaut ? Vos montants de forfaits saisis seront effacés pour ce profil.")) return;
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active);
+  if(p) p.calc = {};
+  saveProfiles(box);
+  applySettingsToRevenueDefaults();
+  restaurerCalcProfil();
+  computeRevenue();
+});
 
 $("#st-save").addEventListener("click", ()=>{
   saveSettingsFromForm();
   applySettingsToRevenueDefaults();
+  restaurerCalcProfil();
   computeRevenue();
   const msg = $("#st-saved-msg");
   msg.style.display = "block";
@@ -1928,7 +2401,7 @@ $("#pf-del").addEventListener("click", ()=>{
   box.list = box.list.filter(x=>x.id!==p.id);
   box.active = box.list[0].id;
   saveProfiles(box); loadSettingsIntoForm();
-  applySettingsToRevenueDefaults(); computeRevenue();
+  applySettingsToRevenueDefaults(); restaurerCalcProfil(); computeRevenue();
 });
 $("#pf-nom").addEventListener("input", ()=>{
   const box = loadProfiles();
@@ -2323,6 +2796,7 @@ document.getElementById("btnInstall").addEventListener("click", async ()=>{
 window.addEventListener("load", async ()=>{
   // Charger la base de codes d'abord
   applySettingsToRevenueDefaults();
+  restaurerCalcProfil();
   computeRevenue();
   renderSearchChips();
   loadSettingsIntoForm();

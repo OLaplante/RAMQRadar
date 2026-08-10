@@ -37,7 +37,7 @@ worker met chaque ressource en cache indépendamment et ignore celles qui
 Dans `sw.js`, première ligne de code :
 
 ```js
-const CACHE_NAME = "ramq-radar-v7";
+const CACHE_NAME = "ramq-radar-v10";
 ```
 
 **Passer à `v7`, `v8`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
@@ -53,6 +53,27 @@ Deux clés dans `localStorage` :
 - `ramqradar_scenarios` — les scénarios du comparateur.
 
 Vider le cache du navigateur efface ces données.
+
+## Calculateur de revenu annuel
+
+Reconstruit pour être transparent sur ce qui est connu vs saisi par
+l'utilisateur :
+
+- **Frais de bureau** : 3 modes (% du brut, $/journée travaillée,
+  $/mois). Le mode $/mois est calculé sur 12 mois pleins — un loyer continue
+  de courir pendant les vacances.
+- **Forfaits** : décomposés en 8 lignes réelles (inscription générale,
+  montant supplémentaire au seuil de 750/1000 patients, vulnérabilité,
+  GMF 08875, supplément 0-5 ans 08877, suppléments grossesse, patient sans
+  médecin de famille 19957-19960, frais de cabinet 19928/19929), chacune avec
+  son vrai code RAMQ et ses conditions. **Aucun montant de forfait n'est
+  publié par la RAMQ** — ils sont fixés par l'Entente particulière EP 40,
+  document non public. L'utilisateur saisit ses propres montants depuis son
+  état de compte RAMQ plutôt que l'app n'en invente un composite.
+
+Le profil (patients inscrits, part vulnérable, mode de frais) préremplit
+automatiquement ce qui peut l'être ; le reste reste à la discrétion du
+médecin.
 
 ## État des données
 
