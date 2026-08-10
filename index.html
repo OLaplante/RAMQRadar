@@ -459,6 +459,16 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
 .inc-acte{font-size:.92rem;font-weight:600;color:var(--ink);line-height:1.4;}
 .inc-details{margin:.4rem 0 0;padding-left:1.1rem;font-size:.82rem;color:var(--ink-soft);}
 .inc-details li{margin:.15rem 0;}
+
+.ad-auto-hint{font-size:.68rem;color:var(--ink-soft);margin-top:2px;font-style:italic;}
+
+.sr-inclus-warn{background:#FFFDF5;border-left:4px solid var(--accent);
+  border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.86rem;
+  line-height:1.5;color:#5A4600;}
+.sr-inclus-warn ul{margin:.4rem 0;padding-left:1.2rem;}
+.sr-inclus-warn li{margin:.15rem 0;}
+.link-btn{background:none;border:none;color:var(--blue);font-weight:600;
+  font-size:.85rem;padding:0;cursor:pointer;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -1990,8 +2000,34 @@ function renderSearch(){
 
   const container = $("#sr-results");
   container.innerHTML = "";
+
+  // Lien croisé : si la recherche correspond à un acte de l'Annexe I (compris
+  // dans la visite, jamais facturable séparément), le signaler ici plutôt que
+  // de laisser l'utilisateur croire qu'aucun résultat ne veut dire "code
+  // inexistant" — la vraie réponse est parfois "déjà payé par la visite".
+  if(query.length>=4 && ACTES_INCLUS && ACTES_INCLUS.length){
+    const nq = norm(query);
+    const correspond = ACTES_INCLUS.filter(a=>{
+      const hay = norm(a.acte + " " + (a.details||[]).join(" "));
+      return hay.includes(nq);
+    }).slice(0,2);
+    if(correspond.length){
+      const warn = document.createElement("div");
+      warn.className = "sr-inclus-warn";
+      warn.innerHTML = `&#9888; <strong>${correspond.length>1?'Ces gestes semblent':'Ce geste semble'}</strong> compris dans les honoraires de la visite, pas facturable séparément&nbsp;:
+        <ul>${correspond.map(a=>`<li>${a.acte}</li>`).join("")}</ul>
+        <button class="link-btn" id="sr-see-inclus">Voir la liste complète des actes inclus &#8594;</button>`;
+      container.appendChild(warn);
+      warn.querySelector("#sr-see-inclus").addEventListener("click", ()=>{
+        showView("inclus");
+        $("#in-search").value = query;
+        renderInclus();
+      });
+    }
+  }
+
   if(!results.length){
-    container.innerHTML = `<div class="empty">Aucun code ne correspond. Essayez d'autres mots-clés, ou vérifiez directement au manuel RAMQ.</div>`;
+    container.innerHTML += `<div class="empty">Aucun code ne correspond. Essayez d'autres mots-clés, ou vérifiez directement au manuel RAMQ.</div>`;
     return;
   }
   const maxScore = Math.max(...results.map(r=>r.score),1);
@@ -2166,14 +2202,21 @@ function renderAdmin(){
   const tbody = $("#ad-body");
   tbody.innerHTML = "";
   CODES.forEach((c, idx)=>{
+    const auto = !!(c.variantes || c.acteRef);
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><input value="${c.code}" data-f="code"></td>
       <td><input value="${c.description}" data-f="description"></td>
       <td><input value="${c.category||''}" data-f="category"></td>
       <td><input value="${(c.tags||[]).join(', ')}" data-f="tags"></td>
-      <td><input type="number" step="0.01" value="${c.tariff}" data-f="tariff"></td>
-      <td><input type="number" step="1" value="${c.duration_min}" data-f="duration_min"></td>
+      <td>
+        <input type="number" step="0.01" value="${c.tariff}" data-f="tariff">
+        ${auto?'<div class="ad-auto-hint" title="Tarif calculé selon votre profil actif (lieu, seuil de clientèle). Modifier cette valeur détache le code du profil.">selon profil actif</div>':''}
+      </td>
+      <td>
+        <input type="number" step="1" value="${c.duration_min}" data-f="duration_min">
+        ${auto?'<div class="ad-auto-hint">selon profil actif</div>':''}
+      </td>
       <td><input value="${(c.practiceTypes||[]).join(', ')}" data-f="practiceTypes"></td>
       <td><button class="btn btn-danger btn-sm" data-del>✕</button></td>`;
     tr.querySelectorAll("input").forEach(inp=>{
@@ -2183,6 +2226,18 @@ function renderAdmin(){
           CODES[idx][f] = inp.value.split(",").map(s=>s.trim()).filter(Boolean);
         } else if(f==="tariff" || f==="duration_min"){
           CODES[idx][f] = parseFloat(inp.value)||0;
+          // Un code réel (visite ou acte technique validé) porte `variantes`
+          // et/ou `acteRef` : effectiveTariff()/effectiveDuration() les
+          // consultent EN PRIORITÉ et ignoreraient silencieusement une
+          // modification manuelle ici. Éditer la valeur doit donc détacher
+          // le code de son profil pour que le changement soit visible —
+          // sinon on donne l'illusion d'une modification qui ne s'applique
+          // jamais nulle part dans l'app.
+          if(CODES[idx].variantes || CODES[idx].acteRef){
+            delete CODES[idx].variantes;
+            delete CODES[idx].acteRef;
+            renderAdmin();
+          }
         } else {
           CODES[idx][f] = inp.value;
         }
@@ -2272,6 +2327,7 @@ window.addEventListener("load", async ()=>{
   renderSearchChips();
   loadSettingsIntoForm();
   openViewFromUrl();
+  loadActesInclus();  // préchargé pour le lien croisé synchrone dans la recherche
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").catch(()=>{ /* hors ligne indisponible, l'app fonctionne quand même */ });
   }

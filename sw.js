@@ -2,7 +2,7 @@
    Cache versionné : incrémentez CACHE_NAME à chaque déploiement,
    sinon les navigateurs qui ont déjà installé l'app garderont l'ancienne version. */
 
-const CACHE_NAME = "ramq-radar-v6";
+const CACHE_NAME = "ramq-radar-v7";
 
 const ASSETS = [
   "./",

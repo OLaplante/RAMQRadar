@@ -37,7 +37,7 @@ worker met chaque ressource en cache indépendamment et ignore celles qui
 Dans `sw.js`, première ligne de code :
 
 ```js
-const CACHE_NAME = "ramq-radar-v6";
+const CACHE_NAME = "ramq-radar-v7";
 ```
 
 **Passer à `v7`, `v8`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
