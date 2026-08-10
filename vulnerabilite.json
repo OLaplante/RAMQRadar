@@ -298,7 +298,7 @@
       }
     },
     {
-      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, avec",
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, avec référence à un autre médecin pour assurer le suivi",
       "contexte": "Sur rendez-vous — moins de 80 ans",
       "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
       "code_non_vulnerable": "15808",
@@ -319,7 +319,7 @@
       }
     },
     {
-      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, avec",
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, avec référence à un autre médecin pour assurer le suivi",
       "contexte": "Sur rendez-vous — moins de 80 ans",
       "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
       "code_non_vulnerable": "15807",
@@ -340,7 +340,7 @@
       }
     },
     {
-      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, sans",
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, sans référence à un autre médecin pour assurer le suivi",
       "contexte": "Sur rendez-vous — moins de 80 ans",
       "seuil_clientele": "Clientèle de 500 patients inscrits ou plus",
       "code_non_vulnerable": "15806",
@@ -361,7 +361,7 @@
       }
     },
     {
-      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, sans",
+      "acte": "Visite de prise en charge de grossesse durant le premier trimestre, sans référence à un autre médecin pour assurer le suivi",
       "contexte": "Sur rendez-vous — moins de 80 ans",
       "seuil_clientele": "Clientèle de moins de 500 patients inscrits",
       "code_non_vulnerable": "15805",

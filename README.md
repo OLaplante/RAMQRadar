@@ -13,12 +13,13 @@ Aucune donnée n'est envoyée à un serveur : tout est stocké dans le navigateu
 
 Aucune étape de build. Aucune dépendance.
 
-## Les 15 fichiers
+## Les 16 fichiers
 
 | Fichier | Rôle | Obligatoire |
 |---|---|---|
 | `index.html` | L'application entière (HTML + CSS + JS) | **oui** |
-| `vulnerabilite.json` | Données de vulnérabilité, chargées à l'ouverture de la vue | **oui** |
+| `vulnerabilite.json` | Écarts tarifaires vulnérable / non vulnérable | **oui** |
+| `actes_inclus.json` | Actes compris dans la visite, non facturables séparément | **oui** |
 | `manifest.json` | Manifeste PWA | oui (installation) |
 | `sw.js` | Service worker, mode hors ligne | oui (hors ligne) |
 | `favicon.ico`, `icon-16/32/48/180/192/512.png` | Icônes | oui |
@@ -36,10 +37,10 @@ worker met chaque ressource en cache indépendamment et ignore celles qui
 Dans `sw.js`, première ligne de code :
 
 ```js
-const CACHE_NAME = "ramq-radar-v4";
+const CACHE_NAME = "ramq-radar-v6";
 ```
 
-**Passer à `v5`, `v6`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
+**Passer à `v7`, `v8`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
 qui ont déjà ouvert l'app continueront de servir l'ancienne version depuis leur
 cache, et vos modifications seront invisibles. C'est le piège le plus courant.
 
@@ -60,24 +61,35 @@ Vider le cache du navigateur efface ces données.
 rémunération à l'acte, version 2026-06-05**. Chaque tarif a été confirmé par
 deux extractions indépendantes du même PDF.
 
-**Ce que la base ne contient pas encore**, faute d'accès au document :
+`actes_inclus.json` contient 128 actes (Préambule général, Annexe I) qui sont
+compris dans les honoraires de la visite et ne se facturent jamais séparément
+— utile pour éviter une réclamation refusée.
 
+La recherche d'acte couvre les visites de l'onglet B et 9 actes techniques
+courants (biopsies, stérilet, circoncision, ECG en établissement), chacun
+confirmé par recoupement avec un corpus d'extraction indépendant du même
+document.
+
+**Ce que la base ne contient pas** :
+
+- les sections spécialisées du manuel (chirurgie, anesthésie, ophtalmologie,
+  ORL, radiologie, cardiologie invasive…) — hors du champ d'un GMF-U dans
+  l'immense majorité des cas, et volontairement exclues plutôt qu'ajoutées
+  sans discernement;
 - la liste complète des catégories de problèmes de santé du paragraphe 5.01 de
-  l'EP 40;
-- la répartition des quatre groupes de vulnérabilité;
-- les montants du forfait annuel de prise en charge et des forfaits de
-  responsabilité 15169 / 15170 / 15171.
-
-Ces éléments sont dans l'**Entente particulière EP 40 (Brochure no 1)**. Un
-avertissement affiché en haut de la vue Vulnérabilité le dit explicitement.
+  l'EP 40, la répartition des quatre groupes de vulnérabilité, et les montants
+  du forfait annuel de prise en charge et des forfaits 15169/15170/15171 —
+  ces éléments sont dans l'**Entente particulière EP 40 (Brochure no 1)**,
+  document distinct non encore disponible.
 
 ## Régénérer les données
 
 Les scripts d'extraction ne font pas partie du site et n'ont pas à être
 téléversés. Ils nécessitent le PDF officiel du manuel :
 
-- `extract_b.py` — extrait les tarifs de l'onglet B
-- `build_vuln.py` — construit `vulnerabilite.json` à partir de cette extraction
+- `extract_b.py` — extrait les tarifs de visite de l'onglet B
+- `build_vuln.py` — construit `vulnerabilite.json`
+- `build_technical.py` — construit `actes_inclus.json` et les actes techniques
 - `dollars.py` — regénère le champ de symboles de la bannière
 
 ## Avertissement

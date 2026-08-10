@@ -1,0 +1,556 @@
+{
+  "metadata": {
+    "titre": "Actes inclus dans la visite — non facturables séparément",
+    "source": "Manuel des omnipraticiens, Préambule général, Annexe I",
+    "version_source": "2026-06-05",
+    "note": "Ces actes, effectués au cours d'un examen, d'une consultation ou d'une visite, sont compris dans les honoraires de cette visite. Aucun tarif n'existe pour eux : ce n'est pas un oubli, c'est la règle.",
+    "total": 128
+  },
+  "actes": [
+    {
+      "acte": "ablation des points de suture ou des agrafes",
+      "details": []
+    },
+    {
+      "acte": "ablation de shunt artérioveineux (hémodialyse)",
+      "details": []
+    },
+    {
+      "acte": "administration et interprétation des tests diagnostiques suivants",
+      "details": [
+        "analyse d'urine, sans microscopie",
+        "glycémie, par méthode simple qualitative",
+        "hémoglobine, par méthode simple qualitative",
+        "mycose test",
+        "P.P.D. (purified protein derivative)",
+        "test à la tuberculine",
+        "toute autre analyse par méthode simple, sauf celle spécifiquement prévue au tarif"
+      ]
+    },
+    {
+      "acte": "allongement du frein du prépuce",
+      "details": []
+    },
+    {
+      "acte": "androscopie",
+      "details": []
+    },
+    {
+      "acte": "application de pâte d'unna",
+      "details": []
+    },
+    {
+      "acte": "appréciation simple de l'acuité visuelle et auditive",
+      "details": []
+    },
+    {
+      "acte": "aspiration de la trachée sous vision directe",
+      "details": []
+    },
+    {
+      "acte": "aspiration pour otite séreuse, unilatérale",
+      "details": []
+    },
+    {
+      "acte": "biomicroscopie oculaire",
+      "details": []
+    },
+    {
+      "acte": "biopsie du pénis",
+      "details": []
+    },
+    {
+      "acte": "biopsie du scrotum",
+      "details": []
+    },
+    {
+      "acte": "blocage nerf honteux, uni ou bilatéral",
+      "details": []
+    },
+    {
+      "acte": "blocage paracervical",
+      "details": []
+    },
+    {
+      "acte": "botte d'unna",
+      "details": []
+    },
+    {
+      "acte": "brûlure simple (1er degré), traitement et débridement",
+      "details": []
+    },
+    {
+      "acte": "calibrage de l'urètre",
+      "details": []
+    },
+    {
+      "acte": "cannulation de canaux galactophores pour reperméabilisation",
+      "details": []
+    },
+    {
+      "acte": "cardioversion chimique",
+      "details": []
+    },
+    {
+      "acte": "cathétérisme vésical, sauf autrement prévu au tarif",
+      "details": []
+    },
+    {
+      "acte": "cautérisation du cordon ombilical",
+      "details": []
+    },
+    {
+      "acte": "changement de canule de trachéotomie",
+      "details": []
+    },
+    {
+      "acte": "changement de cathéter de gastrostomie",
+      "details": []
+    },
+    {
+      "acte": "changement de cathéter suprapubien ou de sonde de cystostomie",
+      "details": []
+    },
+    {
+      "acte": "changement de sonde d'urétérostomie cutanée",
+      "details": []
+    },
+    {
+      "acte": "changement de sonde de néphrostomie",
+      "details": []
+    },
+    {
+      "acte": "chimiothérapie d'une lésion cutanée",
+      "details": []
+    },
+    {
+      "acte": "correction de symphyse des grandes et petites lèvres sans anesthésie générale",
+      "details": []
+    },
+    {
+      "acte": "cure d'hyposensibilisation, sauf celle spécifiquement prévue au tarif",
+      "details": []
+    },
+    {
+      "acte": "cryothérapie d'une lésion",
+      "details": []
+    },
+    {
+      "acte": "culdoscopie",
+      "details": []
+    },
+    {
+      "acte": "débimétrie (débit de pointe)",
+      "details": []
+    },
+    {
+      "acte": "détorsion manuelle de cordon spermatique",
+      "details": []
+    },
+    {
+      "acte": "dilatation d'urètre chez la femme",
+      "details": []
+    },
+    {
+      "acte": "dilatation du col",
+      "details": []
+    },
+    {
+      "acte": "dilatation du prépuce",
+      "details": []
+    },
+    {
+      "acte": "dilatation du sphincter anal sans anesthésie",
+      "details": []
+    },
+    {
+      "acte": "dilatation du vagin sous anesthésie",
+      "details": []
+    },
+    {
+      "acte": "dilatation ou irrigation de la voie lacrymale",
+      "details": []
+    },
+    {
+      "acte": "électrorétinographie, technique simple",
+      "details": []
+    },
+    {
+      "acte": "enlèvement de mèches vaginales",
+      "details": []
+    },
+    {
+      "acte": "enlèvement de plâtre (sans fracture ni luxation)",
+      "details": []
+    },
+    {
+      "acte": "épilation des cils",
+      "details": []
+    },
+    {
+      "acte": "épreuve de Schirmer (hyposécrétion lacrymale)",
+      "details": []
+    },
+    {
+      "acte": "épreuve pour pacemaker implanté sous électrocardiogramme",
+      "details": []
+    },
+    {
+      "acte": "épreuves de fonction respiratoire",
+      "details": [
+        "analyse de gaz artériels et de l'équilibre acidobase, toute technique",
+        "analyse des tensions gazeuses de l'air alvéolaire",
+        "bronchospirométrie (volumes, ventilation en oxygène pour chaque poumon ou chaque lobe)",
+        "évaluation régionale de la ventilation et de la perfusion au moyen de substances inhalées ou injectées",
+        "oxymétrie et saturation en oxygène toute technique",
+        "ventilation et consommation d'oxygène"
+      ]
+    },
+    {
+      "acte": "épreuves orthostatiques",
+      "details": []
+    },
+    {
+      "acte": "étude de la transmission neuromusculaire",
+      "details": []
+    },
+    {
+      "acte": "étude du chimisme gastrique (intubation et interprétation)",
+      "details": []
+    },
+    {
+      "acte": "étude du sperme",
+      "details": []
+    },
+    {
+      "acte": "étude simple de la vision des couleurs",
+      "details": []
+    },
+    {
+      "acte": "évaluation de la motilité oculaire intrinsèque et extrinsèque",
+      "details": []
+    },
+    {
+      "acte": "examen à la lampe à fente",
+      "details": []
+    },
+    {
+      "acte": "examen externe du globe oculaire et de ses annexes, détermination simple du champ visuel",
+      "details": []
+    },
+    {
+      "acte": "examen gynécologique avec cautérisation ou conisation ou électroconisation avec anesthésie",
+      "details": []
+    },
+    {
+      "acte": "examens vestibulaires (bilatéral)",
+      "details": [
+        "épreuves cervicales",
+        "épreuves de la poursuite",
+        "épreuves positionnelles",
+        "épreuves rotatoires (angulaires, pendulaires, cupulométrie)"
+      ]
+    },
+    {
+      "acte": "exérèse de cathéter de dissection veineuse",
+      "details": []
+    },
+    {
+      "acte": "exérèse de cérumen",
+      "details": []
+    },
+    {
+      "acte": "exérèse de tube de drainage, oreille moyenne",
+      "details": []
+    },
+    {
+      "acte": "exérèse de varicocèle par voie scrotale",
+      "details": []
+    },
+    {
+      "acte": "exérèse d'un corps étranger intra-vaginal",
+      "details": []
+    },
+    {
+      "acte": "exophtalmométrie",
+      "details": []
+    },
+    {
+      "acte": "exploration du contenu scrotal",
+      "details": []
+    },
+    {
+      "acte": "extraction de bague (acte simple)",
+      "details": []
+    },
+    {
+      "acte": "extraction simple de stérilet",
+      "details": []
+    },
+    {
+      "acte": "fixation d'un drain",
+      "details": []
+    },
+    {
+      "acte": "fracture d'apophyse épineuse ou transverse, traitement conservateur",
+      "details": []
+    },
+    {
+      "acte": "fracture du crâne, traitement conservateur",
+      "details": []
+    },
+    {
+      "acte": "funduscopie, sauf autrement prévu au tarif",
+      "details": []
+    },
+    {
+      "acte": "grattage, pelage, taillage de callosités (lorsqu'effectué en établissement ou au bénéfice d'un patient âgé de moins de soixante-dix (70) ans)",
+      "details": []
+    },
+    {
+      "acte": "immobilisation par appareil ou orthèse préfabriqués commercialement incluant notamment : collet cervical, bandage élastique ou adhésif, écharpe, etc.",
+      "details": []
+    },
+    {
+      "acte": "incision latérale ou dorsale du prépuce",
+      "details": []
+    },
+    {
+      "acte": "inhalothérapie",
+      "details": []
+    },
+    {
+      "acte": "injection de substance de contraste",
+      "details": [
+        "cholangiographie par injection intraveineuse",
+        "cholangiographie par tube en T",
+        "déférentographie",
+        "échographie",
+        "gynécographie",
+        "orbitographie",
+        "pariétographie",
+        "pelvigraphie",
+        "pyélographie I.V.",
+        "tomographie axiale",
+        "vaginographie",
+        "voies urinaires pour urétérographie"
+      ]
+    },
+    {
+      "acte": "injection intracaverneuse de papaverine",
+      "details": []
+    },
+    {
+      "acte": "injection pour prurit anal",
+      "details": []
+    },
+    {
+      "acte": "injection sous-cutanée, intradermique, intramusculaire ou intraveineuse, sauf celle spécifiquement prévue au tarif",
+      "details": []
+    },
+    {
+      "acte": "insertion de pessaire",
+      "details": []
+    },
+    {
+      "acte": "insertion de prothèse testiculaire",
+      "details": []
+    },
+    {
+      "acte": "insertion naso-gastrique de tubes (Levine, alimentation, etc.)",
+      "details": []
+    },
+    {
+      "acte": "insertion de tiges laminaires",
+      "details": []
+    },
+    {
+      "acte": "installation de l'équipement de l'inhalothérapie",
+      "details": []
+    },
+    {
+      "acte": "installation et contrôle de phonographie et de l'ECG du foetus",
+      "details": []
+    },
+    {
+      "acte": "installation d'un tube de gavage à long terme",
+      "details": []
+    },
+    {
+      "acte": "insufflation tubaire",
+      "details": []
+    },
+    {
+      "acte": "irrigation de l'oeil",
+      "details": []
+    },
+    {
+      "acte": "irrigation et enlèvement du drain",
+      "details": []
+    },
+    {
+      "acte": "laryngoscopie à suspension, sans anesthésie ou sous anesthésie locale",
+      "details": []
+    },
+    {
+      "acte": "laryngoscopie au microscope sans anesthésie ou sous anesthésie locale",
+      "details": []
+    },
+    {
+      "acte": "laryngoscopie directe (rigide), sans anesthésie ou sous anesthésie locale",
+      "details": []
+    },
+    {
+      "acte": "laryngoscopie indirecte sans biopsie",
+      "details": []
+    },
+    {
+      "acte": "lavage bronchique",
+      "details": []
+    },
+    {
+      "acte": "libération du frein de la langue pour un patient de deux (2) ans et moins",
+      "details": []
+    },
+    {
+      "acte": "manipulation pour épicondylite (tennis elbow)",
+      "details": []
+    },
+    {
+      "acte": "manoeuvre d'Epley",
+      "details": []
+    },
+    {
+      "acte": "manométrie ano-rectale (sauf pour une pathologie digestive)",
+      "details": []
+    },
+    {
+      "acte": "massage prostatique",
+      "details": []
+    },
+    {
+      "acte": "mesure de la tension veineuse centrale",
+      "details": []
+    },
+    {
+      "acte": "mesure de la vitesse circulatoire",
+      "details": []
+    },
+    {
+      "acte": "mise en place d'une mèche dans un kyste déjà drainé",
+      "details": []
+    },
+    {
+      "acte": "myringotomie avec mise en place d'un tube de drainage sans microscopie",
+      "details": []
+    },
+    {
+      "acte": "nettoyage de l'oreille externe et moyenne",
+      "details": []
+    },
+    {
+      "acte": "ophtalmoscopie",
+      "details": []
+    },
+    {
+      "acte": "orbitographie avec substance de contraste",
+      "details": []
+    },
+    {
+      "acte": "pansement de moins de vingt (20) centimètres carrés",
+      "details": []
+    },
+    {
+      "acte": "pharyngogramme avec substance de contraste",
+      "details": []
+    },
+    {
+      "acte": "phonocardiographie",
+      "details": []
+    },
+    {
+      "acte": "ponction ou aspiration biopsique d'hydrocèle",
+      "details": []
+    },
+    {
+      "acte": "ponction de sang dans un cathéter",
+      "details": []
+    },
+    {
+      "acte": "pose d'une mèche dans le conduit auditif externe",
+      "details": []
+    },
+    {
+      "acte": "prélèvement d'une homogreffe pour remplacement au système cardiovasculaire et thoracique",
+      "details": []
+    },
+    {
+      "acte": "prélèvement de sécrétions",
+      "details": []
+    },
+    {
+      "acte": "prélèvement sanguin capillaire",
+      "details": []
+    },
+    {
+      "acte": "réduction manuelle de torsion testiculaire",
+      "details": []
+    },
+    {
+      "acte": "réduction manuelle d'hernie inguinale",
+      "details": []
+    },
+    {
+      "acte": "réduction manuelle de paraphimosis (toute technique) sans anesthésie",
+      "details": []
+    },
+    {
+      "acte": "réflexogramme achilien avec kinomètre",
+      "details": []
+    },
+    {
+      "acte": "réfraction",
+      "details": []
+    },
+    {
+      "acte": "taillage des ongles d'orteil",
+      "details": []
+    },
+    {
+      "acte": "tamponnement nasal antérieur par compression simple",
+      "details": []
+    },
+    {
+      "acte": "test à la lampe de Wood",
+      "details": []
+    },
+    {
+      "acte": "test de confrontation",
+      "details": []
+    },
+    {
+      "acte": "test de tolérance à l'eau",
+      "details": []
+    },
+    {
+      "acte": "tomographie simple",
+      "details": []
+    },
+    {
+      "acte": "tonométrie simple",
+      "details": []
+    },
+    {
+      "acte": "traction pour scoliose, type Cotrel",
+      "details": []
+    },
+    {
+      "acte": "vectocardiogramme",
+      "details": []
+    },
+    {
+      "acte": "ventriculoscopie",
+      "details": []
+    }
+  ]
+}

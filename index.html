@@ -450,6 +450,15 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
   -webkit-text-fill-color:transparent;color:#3FD7C9;
   font-weight:600;
 }
+
+/* ---- Actes inclus ---- */
+.inc-row{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line);}
+.inc-row:last-child{border-bottom:none;}
+.inc-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-soft);
+  flex:none;margin-top:7px;opacity:.5;}
+.inc-acte{font-size:.92rem;font-weight:600;color:var(--ink);line-height:1.4;}
+.inc-details{margin:.4rem 0 0;padding-left:1.1rem;font-size:.82rem;color:var(--ink-soft);}
+.inc-details li{margin:.15rem 0;}
 </style>
 </head>
 <body>
@@ -912,6 +921,18 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
         <span class="tile-arrow">&#8594;</span>
       </button>
 
+      <button class="tile" data-view="inclus">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <rect x="8" y="6" width="36" height="40" rx="4" stroke="url(#g1)" stroke-width="3" fill="none"/>
+          <path d="M16 18h20M16 26h20M16 34h12" stroke="url(#g1)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="38" cy="38" r="9" fill="#07AE70"/>
+          <path d="M34 38l3 3 5-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <h3>Actes inclus</h3>
+        <p>Ce qui semble facturable mais est d&#233;j&#224; compris dans la visite &#8212; pour ne pas se faire retourner une r&#233;clamation.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+
       <button class="tile tile-wide" data-view="vulnerabilite">
         <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
           <path d="M26 6 L44 12 v16 c0 10-8 15.5-18 18-10-2.5-18-8-18-18 V12 Z"
@@ -1068,6 +1089,27 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
 
 
 <!-- ============ VULNÉRABILITÉ ============ -->
+<!-- ============ ACTES INCLUS ============ -->
+<section id="view-inclus" class="view">
+  <div class="view-header">
+    <button class="back-btn" data-back aria-label="Retour">&#8592;</button>
+    <div>
+      <h2>Actes inclus dans la visite</h2>
+      <div class="sub">Ces actes semblent facturables, mais sont compris dans les honoraires de l'examen ou de la visite. Aucun tarif n'existe pour eux : ce n'est pas un oubli.</div>
+    </div>
+  </div>
+
+  <div class="card vu-warn">
+    <h4>&#9888; Pourquoi cette liste existe</h4>
+    <p style="margin:0;font-size:.9rem;line-height:1.5;">Source : Manuel des omnipraticiens, Pr&#233;ambule g&#233;n&#233;ral, Annexe I (version 2026-06-05). Si vous avez fait l'un de ces gestes pendant une visite, il ne s'ajoute pas &#224; votre facturation &#8212; il est d&#233;j&#224; pay&#233; par les honoraires de la visite elle-m&#234;me.</p>
+  </div>
+
+  <div class="card">
+    <input type="search" id="in-search" placeholder="Filtrer&#8230; (ex. st&#233;rilet, pl&#226;tre, pansement)" style="margin-bottom:14px;">
+    <div id="in-list"></div>
+  </div>
+</section>
+
 <section id="view-vulnerabilite" class="view">
   <div class="view-header">
     <button class="back-btn" data-back aria-label="Retour">&#8592;</button>
@@ -1267,9 +1309,9 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
     </div>
 
     <div class="disclaimer">
-      ⚠️ Les codes préfixés <strong>EX-</strong> sont des exemples fictifs livrés avec l'application. Remplacez-les par les tarifs exacts du
+      &#8505;&#65039; Les 10 codes fournis viennent de l'onglet B du manuel RAMQ (version 2026-06-05), tarif <strong>non vulnérable</strong> uniquement &#8212; le suppl&#233;ment de vuln&#233;rabilit&#233; a sa propre vue. Le tarif affich&#233; est celui du profil actif (lieu et seuil de client&#232;le) ; d'autres actes du manuel n'y figurent pas encore. V&#233;rifiez toujours au
       <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/medecin-omnipraticien-omnipraticienne/manuels-guides" target="_blank" rel="noopener">manuel RAMQ officiel</a>,
-      qui change plusieurs fois par année. Cette base ne fait aucune vérification légale des tarifs saisis.
+      qui change plusieurs fois par ann&#233;e. Cette base ne fait aucune v&#233;rification l&#233;gale des tarifs saisis.
     </div>
 
     <div class="toolbar">
@@ -1301,28 +1343,37 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
    RAMQ RADAR — APP.JS (inline)
    ============================================================ */
 
-/* ---------- Données d'exemple (préfixe EX-, À REMPLACER) ---------- */
+/* ---------- Codes réels, Manuel RAMQ onglet B, version 2026-06-05 ----------
+   Tarif « non vulnérable » uniquement — le supplément de vulnérabilité a sa
+   propre vue dédiée pour éviter de dupliquer chaque acte en deux lignes.
+   Chaque fiche porte un objet `variantes` (lieu × seuil de clientèle × tranche
+   d'âge) : la fonction effectiveTariff() choisit la bonne colonne selon le
+   profil actif, au lieu d'un tarif unique figé. */
 const DEFAULT_CODES = [
-  {code:"EX-00103", description:"Examen général (visite périodique)", category:"Visite", tags:["visite","examen","général","complet","périodique","bilan"], tariff:78.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00101", description:"Visite ordinaire au cabinet", tags:["visite","consultation","cabinet","suivi"], category:"Visite", tariff:38.10, duration_min:15, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00201", description:"Visite sans rendez-vous / sans inscription", tags:["sans rendez-vous","srv","gap","dépannage","visite courte"], category:"Visite", tariff:44.25, duration_min:12, practiceTypes:["Sans rendez-vous","GAP"]},
-  {code:"EX-00305", description:"Visite à domicile", tags:["domicile","maison","déplacement"], category:"Visite", tariff:96.00, duration_min:35, practiceTypes:["Domicile"]},
-  {code:"EX-00410", description:"Prélèvement sanguin veineux", tags:["prise de sang","prélèvement","sang","veineux","piqûre"], category:"Acte technique", tariff:14.30, duration_min:8, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00415", description:"Injection intramusculaire", tags:["injection","vaccin","piqûre","im"], category:"Acte technique", tariff:11.80, duration_min:6, practiceTypes:["Cabinet","GMF","Sans rendez-vous"]},
-  {code:"EX-00420", description:"Pansement complexe / soin de plaie", tags:["pansement","plaie","soin","bandage"], category:"Acte technique", tariff:26.75, duration_min:15, practiceTypes:["Cabinet","GMF","Urgence"]},
-  {code:"EX-00430", description:"Retrait de points de suture", tags:["points","suture","fils","retrait"], category:"Acte technique", tariff:16.20, duration_min:10, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-00512", description:"Électrocardiogramme (ECG) — interprétation", tags:["ecg","électrocardiogramme","coeur","tracé"], category:"Acte technique", tariff:22.40, duration_min:10, practiceTypes:["Cabinet","GMF","Urgence"]},
-  {code:"EX-00605", description:"Suivi de grossesse — visite prénatale", tags:["grossesse","prénatal","enceinte","obstétrique"], category:"Suivi", tariff:52.60, duration_min:20, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-00710", description:"Consultation en santé mentale", tags:["santé mentale","anxiété","dépression","psychologique","counseling"], category:"Consultation", tariff:88.90, duration_min:30, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-00810", description:"Suivi de maladie chronique (diabète, HTA)", tags:["chronique","diabète","hypertension","suivi","maladie"], category:"Suivi", tariff:64.15, duration_min:20, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-00905", description:"Examen pédiatrique (0-5 ans)", tags:["enfant","pédiatrie","bébé","nourrisson","vaccin enfant"], category:"Visite", tariff:58.30, duration_min:20, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-01010", description:"Garde en disponibilité — heure supplémentaire", tags:["garde","disponibilité","urgence","heures suppl"], category:"Garde", tariff:120.00, duration_min:60, practiceTypes:["Urgence","GAP"]},
-  {code:"EX-01110", description:"Visite en CHSLD / soins de longue durée", tags:["chsld","longue durée","hébergement","personne âgée"], category:"Visite", tariff:71.40, duration_min:25, practiceTypes:["CHSLD"]},
-  {code:"EX-01205", description:"Consultation urgence mineure", tags:["urgence","mineure","salle d'urgence","triage"], category:"Urgence", tariff:68.00, duration_min:18, practiceTypes:["Urgence"]},
-  {code:"EX-01310", description:"Bilan préopératoire", tags:["préopératoire","chirurgie","bilan","avant chirurgie"], category:"Consultation", tariff:82.50, duration_min:25, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-01405", description:"Rédaction de rapport / formulaire médical", tags:["rapport","formulaire","paperasse","assurance","cnesst"], category:"Administratif", tariff:34.00, duration_min:15, practiceTypes:["Cabinet","GMF"]},
-  {code:"EX-01500", description:"Prime de vulnérabilité — patient inscrit", tags:["vulnérabilité","prime","complexité","inscription"], category:"Prime", tariff:12.50, duration_min:0, practiceTypes:["GMF","Cabinet"]},
-  {code:"EX-01610", description:"Téléconsultation", tags:["télémédecine","téléphone","virtuel","vidéo"], category:"Consultation", tariff:36.75, duration_min:12, practiceTypes:["Cabinet","GMF","Télémédecine"]},
+  {code:"15782", description:"Visite d'un patient en perte sévère d'autonomie — patient non inscrit", category:"Visite à domicile", tags:["visite d'un patient en perte sévère d'autonomie","perte d'autonomie","domicile","psa","soins de longue durée"], tariff:102.55, duration_min:0, practiceTypes:["Domicile"], acteRef:"Visite d'un patient en perte sévère d'autonomie", variantes:{"Cabinet|500_ou_plus|80+":{tarif:102.55,code:"15782"}}},
+  {code:"15801", description:"Visite de prise en charge", category:"Visite", tags:["visite de prise en charge","prise en charge","pec","nouveau patient","inscription"], tariff:85.75, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite de prise en charge", variantes:{"Cabinet|moins_de_500|std":{tarif:85.75,code:"15801"},"CLSC/GMF-U|moins_de_500|std":{tarif:64.5,code:"15801"},"Cabinet|500_ou_plus|std":{tarif:99.4,code:"15802"},"CLSC/GMF-U|500_ou_plus|std":{tarif:74.75,code:"15802"},"Cabinet|moins_de_500|80+":{tarif:101.8,code:"15815"},"CLSC/GMF-U|moins_de_500|80+":{tarif:76.55,code:"15815"},"Cabinet|500_ou_plus|80+":{tarif:118.5,code:"15816"},"CLSC/GMF-U|500_ou_plus|80+":{tarif:89.15,code:"15816"}}},
+  {code:"15809", description:"Visite de prise en charge de grossesse au-delà du premier trimestre", category:"Visite", tags:["visite de prise en charge de grossesse au-delà du premier trimestre","grossesse","prise en charge","prénatal"], tariff:85.75, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite de prise en charge de grossesse au-delà du premier trimestre", variantes:{"Cabinet|moins_de_500|std":{tarif:85.75,code:"15809"},"CLSC/GMF-U|moins_de_500|std":{tarif:64.5,code:"15809"},"Cabinet|500_ou_plus|std":{tarif:97.75,code:"15810"},"CLSC/GMF-U|500_ou_plus|std":{tarif:73.55,code:"15810"}}},
+  {code:"15807", description:"Visite de prise en charge de grossesse durant le premier trimestre, avec référence à un autre médecin pour assurer le suivi", category:"Visite", tags:["visite de prise en charge de grossesse durant le premier trimestre, avec référence à un autre médecin pour assurer le suivi"], tariff:85.75, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite de prise en charge de grossesse durant le premier trimestre, avec référence à un autre médecin pour assurer le suivi", variantes:{"Cabinet|moins_de_500|std":{tarif:85.75,code:"15807"},"CLSC/GMF-U|moins_de_500|std":{tarif:64.5,code:"15807"},"Cabinet|500_ou_plus|std":{tarif:97.75,code:"15808"},"CLSC/GMF-U|500_ou_plus|std":{tarif:73.55,code:"15808"}}},
+  {code:"15805", description:"Visite de prise en charge de grossesse durant le premier trimestre, sans référence à un autre médecin pour assurer le suivi", category:"Visite", tags:["visite de prise en charge de grossesse durant le premier trimestre, sans référence à un autre médecin pour assurer le suivi"], tariff:132.8, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite de prise en charge de grossesse durant le premier trimestre, sans référence à un autre médecin pour assurer le suivi", variantes:{"Cabinet|moins_de_500|std":{tarif:132.8,code:"15805"},"CLSC/GMF-U|moins_de_500|std":{tarif:99.9,code:"15805"},"Cabinet|500_ou_plus|std":{tarif:151.15,code:"15806"},"CLSC/GMF-U|500_ou_plus|std":{tarif:113.65,code:"15806"}}},
+  {code:"15803", description:"Visite de suivi", category:"Visite", tags:["visite de suivi","suivi","visite","contrôle"], tariff:42.85, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite de suivi", variantes:{"Cabinet|moins_de_500|std":{tarif:42.85,code:"15803"},"CLSC/GMF-U|moins_de_500|std":{tarif:32.25,code:"15803"},"Cabinet|500_ou_plus|std":{tarif:49.15,code:"15804"},"CLSC/GMF-U|500_ou_plus|std":{tarif:36.95,code:"15804"},"Cabinet|moins_de_500|80+":{tarif:50.65,code:"15817"},"CLSC/GMF-U|moins_de_500|80+":{tarif:38.15,code:"15817"},"Cabinet|500_ou_plus|80+":{tarif:58.25,code:"15818"},"CLSC/GMF-U|500_ou_plus|80+":{tarif:43.8,code:"15818"}}},
+  {code:"15811", description:"Visite de suivi de grossesse", category:"Visite", tags:["visite de suivi de grossesse","grossesse","suivi","prénatal","enceinte"], tariff:50.2, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite de suivi de grossesse", variantes:{"Cabinet|moins_de_500|std":{tarif:50.2,code:"15811"},"CLSC/GMF-U|moins_de_500|std":{tarif:37.75,code:"15811"},"Cabinet|500_ou_plus|std":{tarif:57.0,code:"15812"},"CLSC/GMF-U|500_ou_plus|std":{tarif:42.85,code:"15812"}}},
+  {code:"15777", description:"Visite ponctuelle complexe — patient non inscrit", category:"Urgence mineure", tags:["visite ponctuelle complexe","ponctuelle","complexe","sans rendez-vous","srv"], tariff:48.5, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite ponctuelle complexe", variantes:{"Cabinet|moins_de_500|80+":{tarif:48.5,code:"15777"},"CLSC/GMF-U|moins_de_500|80+":{tarif:36.45,code:"15777"},"Cabinet|500_ou_plus|80+":{tarif:56.05,code:"15778"},"CLSC/GMF-U|500_ou_plus|80+":{tarif:42.15,code:"15778"}}},
+  {code:"15769", description:"Visite ponctuelle mineure — patient non inscrit", category:"Urgence mineure", tags:["visite ponctuelle mineure","ponctuelle","mineure","sans rendez-vous","urgence mineure","srv"], tariff:24.25, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite ponctuelle mineure", variantes:{"Cabinet|moins_de_500|80+":{tarif:24.25,code:"15769"},"CLSC/GMF-U|moins_de_500|80+":{tarif:18.25,code:"15769"},"Cabinet|500_ou_plus|80+":{tarif:28.05,code:"15770"},"CLSC/GMF-U|500_ou_plus|80+":{tarif:21.05,code:"15770"}}},
+  {code:"15813", description:"Visite périodique pédiatrique", category:"Visite", tags:["visite périodique pédiatrique","pédiatrique","enfant","bébé","périodique","vaccin"], tariff:66.9, duration_min:0, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], acteRef:"Visite périodique pédiatrique", variantes:{"Cabinet|moins_de_500|std":{tarif:66.9,code:"15813"},"CLSC/GMF-U|moins_de_500|std":{tarif:50.3,code:"15813"},"Cabinet|500_ou_plus|std":{tarif:75.85,code:"15814"},"CLSC/GMF-U|500_ou_plus|std":{tarif:57.0,code:"15814"}}},
+
+
+  /* Actes techniques — Annexe I exclue, tarifs confirmés par recoupement
+     avec le corpus indépendant. Voir actes_inclus.json pour ce qui est
+     déjà compris dans les honoraires de la visite. */
+  {code:"00215", description:"Biopsie de la peau et des tissus sous-cutanés", category:"Acte technique", tags:["biopsie","peau","lésion","grain de beauté","punch"], tariff:24.55, duration_min:10, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], restrictions:[]},
+  {code:"00172", description:"Biopsie du col utérin ou curetage endocervical", category:"Acte technique", tags:["biopsie","col utérin","endocol","gynécologie","pap"], tariff:7.95, duration_min:10, practiceTypes:["Cabinet","GMF","GMF-U","CLSC"], restrictions:[]},
+  {code:"00177", description:"Biopsie de l'endomètre", category:"Acte technique", tags:["biopsie","endomètre","pipelle","gynécologie"], tariff:20.35, duration_min:15, practiceTypes:["Cabinet","GMF","GMF-U"], restrictions:["Voir P.G. 2.4.7.7 B — supplément possible en cabinet."]},
+  {code:"00186", description:"Biopsie de la glande de Bartholin", category:"Acte technique", tags:["biopsie","bartholin","gynécologie"], tariff:15.0, duration_min:10, practiceTypes:["Cabinet","GMF","GMF-U"], restrictions:[]},
+  {code:"00184", description:"Biopsie de ganglion (cervical, axillaire ou inguinal)", category:"Acte technique", tags:["biopsie","ganglion","adénopathie"], tariff:41.15, duration_min:15, practiceTypes:["Cabinet","GMF","GMF-U"], restrictions:[]},
+  {code:"00205", description:"Insertion de stérilet (incluant l'examen ou la visite associée)", category:"Acte technique", tags:["stérilet","diu","contraception","insertion"], tariff:63.8, duration_min:20, practiceTypes:["Cabinet","GMF","GMF-U"], restrictions:["63,80 $ en cabinet (P.G. 2.4.7.7 A) ; 55,95 $ en établissement.","Utiliser l'élément de contexte « Séance différente » si l'examen ou la visite a eu lieu à une séance distincte de l'insertion."]},
+  {code:"20025", description:"Extraction de stérilet — acte compliqué", category:"Acte technique", tags:["stérilet","diu","extraction","retrait"], tariff:58.75, duration_min:15, practiceTypes:["Cabinet","GMF","GMF-U"], restrictions:["L'extraction SIMPLE d'un stérilet n'est pas facturable séparément — elle est incluse dans les honoraires de la visite (Annexe I)."]},
+  {code:"06258", description:"Circoncision, ou plastie des petites lèvres", category:"Acte technique", tags:["circoncision","plastie","petites lèvres"], tariff:84.9, duration_min:25, practiceTypes:["Cabinet","GMF","GMF-U"], restrictions:["Code unique pour les deux actes — un seul est facturable par séance."]},
+  {code:"30010", description:"Interprétation d'un électrocardiogramme — en établissement", category:"Acte technique", tags:["ecg","électrocardiogramme","interprétation"], tariff:1.95, duration_min:5, practiceTypes:["CHSLD"], restrictions:["⚠️ Exige un statut et des privilèges d'interprétation ECG en établissement (formulaire RAMQ 3051). Ne s'applique PAS à un ECG interprété en cabinet GMF-U — celui-ci est généralement compris dans les honoraires de la visite."]},
 ];
 
 /* Petit dictionnaire de synonymes pour la recherche par mots-clés */
@@ -1581,6 +1632,35 @@ function saveScenarios(list){
 }
 
 let CODES = loadCodes();
+
+/* Choisit le bon tarif d'une fiche selon le profil actif (lieu de pratique,
+   seuil de clientèle inscrite). Retombe sur le tarif générique si la fiche
+   n'a pas de variantes détaillées (cas des codes ajoutés manuellement dans
+   la base d'administration). */
+function effectiveTariff(c){
+  if(!c.variantes) return c.tariff;
+  const p = profilActif();
+  const lieu = (p.milieuPrincipal==="CLSC" || p.milieuPrincipal==="GMF-U") ? "CLSC/GMF-U" : "Cabinet";
+  const seuil = seuilDe(p.inscrits) || "moins_de_500";
+  const essais = [
+    `${lieu}|${seuil}|std`, `${lieu}|${seuil}|80+`,
+    `${lieu}|unique|std`, `${lieu}|unique|80+`,
+    `Cabinet|${seuil}|std`, `Cabinet|unique|std`,
+  ];
+  for(const k of essais){ if(c.variantes[k]) return c.variantes[k].tarif; }
+  const premier = Object.values(c.variantes)[0];
+  return premier ? premier.tarif : c.tariff;
+}
+
+/* Durée : celle du profil actif pour ce type d'acte, sinon un repli correct. */
+function effectiveDuration(c){
+  if(c.acteRef){
+    const d = dureePourActe(c.acteRef);
+    if(d) return d;
+  }
+  return c.duration_min > 0 ? c.duration_min : 15;
+}
+
 let SELECTED_COMPARE = [];
 
 /* ---------- Navigation ---------- */
@@ -1596,6 +1676,7 @@ function showView(name){
   if(name==="comparateur") renderComparateur();
   if(name==="admin") renderAdmin();
   if(name==="vulnerabilite") renderVulnerabilite();
+  if(name==="inclus") renderInclus();
   if(name==="settings"){ plierPanneauxProfil(); loadSettingsIntoForm(); }
 }
 $$(".tile").forEach(t=>t.addEventListener("click", ()=>showView(t.dataset.view)));
@@ -1603,6 +1684,45 @@ $$("[data-back]").forEach(b=>b.addEventListener("click", ()=>showView("dashboard
 $("#brandHome").addEventListener("click", ()=>showView("dashboard"));
 $("#btnAdmin").addEventListener("click", ()=>showView("admin"));
 $("#btnSettings").addEventListener("click", ()=>{ plierPanneauxProfil(); loadSettingsIntoForm(); showView("settings"); });
+
+/* ============================================================
+   ACTES INCLUS DANS LA VISITE (Annexe I du préambule général)
+   ============================================================ */
+let ACTES_INCLUS = null;
+
+async function loadActesInclus(){
+  if(ACTES_INCLUS) return ACTES_INCLUS;
+  try{
+    const r = await fetch("actes_inclus.json");
+    const d = await r.json();
+    ACTES_INCLUS = d.actes;
+  }catch(e){ ACTES_INCLUS = []; }
+  return ACTES_INCLUS;
+}
+
+async function renderInclus(){
+  const data = await loadActesInclus();
+  const q = ($("#in-search").value || "").toLowerCase().trim();
+  const filtres = data.filter(a=>{
+    if(!q) return true;
+    const hay = (a.acte + " " + (a.details||[]).join(" ")).toLowerCase();
+    return hay.includes(q);
+  });
+  const list = $("#in-list");
+  if(!filtres.length){
+    list.innerHTML = '<p class="muted">Aucun résultat.</p>';
+    return;
+  }
+  list.innerHTML = filtres.map(a=>
+    '<div class="inc-row"><div class="inc-dot"></div><div>'+
+    '<div class="inc-acte">'+a.acte+'</div>'+
+    (a.details && a.details.length
+      ? '<ul class="inc-details">'+a.details.map(d=>'<li>'+d+'</li>').join("")+'</ul>'
+      : '')+
+    '</div></div>'
+  ).join("");
+}
+$("#in-search").addEventListener("input", renderInclus);
 
 /* ============================================================
    VULNÉRABILITÉ
@@ -1877,18 +1997,20 @@ function renderSearch(){
   const maxScore = Math.max(...results.map(r=>r.score),1);
   results.forEach(r=>{
     const c = r.code;
-    const rate = c.duration_min>0 ? (c.tariff/(c.duration_min/60)) : c.tariff;
+    const tarif = effectiveTariff(c);
+    const duree = effectiveDuration(c);
+    const rate = duree>0 ? (tarif/(duree/60)) : tarif;
     const div = document.createElement("div");
     div.className = "code-card";
     div.innerHTML = `
       <div style="flex:1;min-width:220px;">
         <span class="code-id">${c.code}</span>
         <p class="desc">${c.description}</p>
-        <div class="meta">${c.category||""} · ${(c.practiceTypes||[]).join(", ")} · ${c.duration_min} min</div>
+        <div class="meta">${c.category||""} · ${(c.practiceTypes||[]).join(", ")} · ${duree} min</div>
         ${r.score>0?`<div class="score-bar"><div class="score-fill" style="width:${Math.round(r.score/maxScore*100)}%"></div></div>`:""}
       </div>
       <div class="price">
-        <div class="amt">${fmtMoney2(c.tariff)}</div>
+        <div class="amt">${fmtMoney2(tarif)}</div>
         <div class="rate">≈ ${fmtMoney(rate)}/h</div>
       </div>`;
     container.appendChild(div);
@@ -1911,7 +2033,11 @@ function renderTop(){
   const filter = $("#top-filter").value;
   let list = CODES.slice();
   if(filter) list = list.filter(c=>(c.practiceTypes||[]).includes(filter));
-  list = list.map(c=>({...c, rate: c.duration_min>0 ? c.tariff/(c.duration_min/60) : c.tariff}));
+  list = list.map(c=>{
+    const tarif = effectiveTariff(c);
+    const duree = effectiveDuration(c);
+    return {...c, tarifEff:tarif, dureeEff:duree, rate: duree>0 ? tarif/(duree/60) : tarif};
+  });
   list.sort((a,b)=>b.rate-a.rate);
 
   const tbody = $("#top-body");
@@ -1927,8 +2053,8 @@ function renderTop(){
       <td class="rank-num ${rankClass}">${i+1}</td>
       <td class="mono">${c.code}</td>
       <td>${c.description}</td>
-      <td class="mono">${fmtMoney2(c.tariff)}</td>
-      <td class="mono">${c.duration_min} min</td>
+      <td class="mono">${fmtMoney2(c.tarifEff)}</td>
+      <td class="mono">${c.dureeEff} min</td>
       <td class="rate-cell">${fmtMoney(c.rate)}/h</td>`;
     tbody.appendChild(tr);
   });
@@ -2073,7 +2199,7 @@ function renderAdmin(){
   });
 }
 $("#ad-add").addEventListener("click", ()=>{
-  CODES.push({code:"EX-NOUVEAU", description:"Nouvel acte", category:"", tags:[], tariff:0, duration_min:10, practiceTypes:[]});
+  CODES.push({code:"NOUVEAU", description:"Nouvel acte", category:"", tags:[], tariff:0, duration_min:10, practiceTypes:[]});
   saveCodes(CODES);
   renderAdmin();
 });
