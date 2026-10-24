@@ -499,6 +499,104 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
 .cible-msg{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:.85rem;line-height:1.5;}
 .cible-msg.cible-ok{background:#EAFBF2;color:#0A6B3E;}
 .cible-msg.cible-warn{background:#FFF6E8;color:#8A5A00;}
+/* ---- GMF-U enseignement ---- */
+/* Deux séries seulement : bleu pour le mixte, orange pour l'horaire.
+   Paire validée (daltonisme et contraste) sur le fond blanc des panneaux. */
+#view-gmfu{--gu-mixte:#0055AB;--gu-horaire:#EB6834;}
+.gu-hero{align-items:flex-start;}
+.gu-hero > div{min-width:170px;}
+.gu-hero .big{color:#fff;}
+.gu-hero .label{display:flex;align-items:center;gap:7px;}
+.gu-sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none;}
+.gu-sw.mixte{background:var(--gu-mixte);}
+.gu-sw.horaire{background:var(--gu-horaire);}
+.gu-hero .gu-sw{box-shadow:0 0 0 1px rgba(255,255,255,.55);}
+.gu-hero-sub{font-size:.8rem;color:#b9c6dd;margin-top:4px;line-height:1.4;}
+.gu-verdict{display:inline-flex;align-items:center;gap:7px;margin-top:8px;padding:4px 10px;
+  border-radius:999px;background:rgba(255,255,255,.10);font-size:.8rem;color:#fff;}
+.gu-verdict .dot{width:8px;height:8px;border-radius:50%;flex:none;}
+.gu-seuil{margin:4px 0 0;padding:12px 14px;border-radius:10px;background:#F0F6FF;
+  font-size:.88rem;line-height:1.5;color:var(--ink);}
+.gu-note{font-size:.85rem;color:var(--ink-soft);margin:10px 0 16px;}
+.gu-mix-row{display:grid;grid-template-columns:minmax(0,1fr) auto 84px;gap:10px;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--line);}
+.gu-mix-nom{font-size:.9rem;font-weight:500;}
+.gu-mix-nom .code-pill{margin-right:6px;}
+.gu-mix-tarif{font-family:var(--font-mono);font-size:.86rem;color:var(--ink-soft);text-align:right;white-space:nowrap;}
+.gu-mix-in{display:flex;align-items:center;gap:4px;}
+.gu-mix-in input{width:62px;padding:8px;text-align:right;border:1px solid var(--line);border-radius:8px;
+  font-family:var(--font-mono);font-size:.85rem;}
+.gu-mix-in span{font-size:.82rem;color:var(--ink-soft);}
+.gu-mix-total{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;align-items:baseline;
+  padding-top:12px;margin-top:2px;border-top:2px solid var(--navy);font-weight:700;color:var(--navy);}
+.gu-mix-total .mono{font-size:1.05rem;}
+.gu-mix-warn{font-size:.8rem;color:#8A5A00;font-weight:500;width:100%;}
+.gu-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.84rem;color:var(--ink-soft);margin-bottom:8px;}
+.gu-legend span{display:inline-flex;align-items:center;gap:6px;}
+.gu-chart{position:relative;width:100%;min-width:0;}
+.gu-chart svg{display:block;overflow:visible;}
+.gu-chart .grid{stroke:#E1E7F0;stroke-width:1;shape-rendering:crispEdges;}
+.gu-chart .base{stroke:#B9C3D3;stroke-width:1;shape-rendering:crispEdges;}
+.gu-chart .tick{fill:var(--ink-soft);font:400 11px var(--font-body);font-variant-numeric:tabular-nums;}
+.gu-chart .xlab{fill:var(--ink-soft);font:500 13px var(--font-body);}
+.gu-chart .xlab.sel{fill:var(--navy);font-weight:700;}
+.gu-chart .xtitle{fill:var(--ink-soft);font:400 12px var(--font-body);}
+.gu-chart .b-mixte{fill:var(--gu-mixte);}
+.gu-chart .b-horaire{fill:var(--gu-horaire);}
+.gu-chart .selband{fill:#EEF4FF;}
+.gu-chart .hit{fill:transparent;cursor:pointer;}
+.gu-chart .hit:focus-visible{outline:none;stroke:#07AE70;stroke-width:2;}
+.gu-tip{position:absolute;top:0;left:0;pointer-events:none;z-index:3;background:#fff;border:1px solid var(--line);
+  border-radius:10px;box-shadow:var(--shadow);padding:10px 12px;font-size:.8rem;min-width:215px;
+  display:flex;flex-direction:column;gap:5px;}
+.gu-tip[hidden]{display:none;}
+.gu-tip-titre{color:var(--ink-soft);font-size:.76rem;}
+.gu-tip-row{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;}
+.gu-tip-row strong{min-width:92px;font-family:var(--font-mono);}
+.gu-tip-row .key{width:12px;height:2px;border-radius:1px;flex:none;}
+.gu-tip-row .lab{color:var(--ink-soft);}
+.gu-table-wrap{overflow-x:auto;margin-top:16px;}
+table.gu-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+table.gu-table th{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);
+  padding:8px 10px;border-bottom:2px solid var(--line);text-align:right;white-space:nowrap;}
+table.gu-table td{padding:10px;border-bottom:1px solid var(--line);font-size:.9rem;text-align:right;white-space:nowrap;
+  font-family:var(--font-mono);}
+table.gu-table th:first-child,table.gu-table td:first-child{text-align:left;}
+table.gu-table tbody tr{cursor:pointer;}
+table.gu-table tbody tr:hover td{background:var(--bg);}
+table.gu-table tr.sel td{background:#EEF4FF;font-weight:600;}
+table.gu-table tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--blue);}
+table.gu-table td.pos{color:#0A6B3E;}
+table.gu-table td.neg{color:#B4441A;}
+.gu-heat-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.82rem;color:var(--ink-soft);margin-bottom:10px;}
+.gu-heat-legend span{display:inline-flex;align-items:center;gap:6px;}
+.gu-heat-legend .gu-sw.m{background:color-mix(in oklab, var(--gu-mixte) 45%, #fff);}
+.gu-heat-legend .gu-sw.h{background:color-mix(in oklab, var(--gu-horaire) 45%, #fff);}
+table.gu-heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabular-nums;}
+table.gu-heat th{font-size:.78rem;font-weight:600;color:var(--ink-soft);padding:4px 6px;white-space:nowrap;}
+table.gu-heat th.sel{color:var(--navy);}
+table.gu-heat tbody th{text-align:right;}
+table.gu-heat td{min-width:52px;padding:7px 6px;border-radius:6px;text-align:center;font-family:var(--font-mono);
+  font-size:.8rem;color:var(--ink);cursor:pointer;}
+table.gu-heat td.cur{outline:2px solid var(--navy);outline-offset:-2px;font-weight:700;}
+.gu-par-dj{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px;}
+.gu-detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;}
+@media(max-width:640px){ .gu-par-dj,.gu-detail{grid-template-columns:1fr;} }
+.gu-detail h5{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:.95rem;color:var(--navy);}
+.gu-ligne{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:8px 0;border-bottom:1px solid var(--line);}
+.gu-ligne .quoi{font-size:.88rem;}
+.gu-ligne .comment{grid-column:1 / 2;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);overflow-wrap:anywhere;}
+.gu-ligne .mnt{grid-row:1 / 3;grid-column:2;align-self:center;font-family:var(--font-mono);font-weight:600;}
+.gu-ligne.total{border-bottom:none;border-top:2px solid var(--navy);}
+.gu-ligne.total .quoi,.gu-ligne.total .mnt{font-weight:700;color:var(--navy);}
+.gu-sources{margin:0;padding-left:1.15rem;font-size:.86rem;color:var(--ink-soft);line-height:1.5;}
+.gu-sources li{margin:.3rem 0;}
+.gu-sources a{color:var(--blue);}
+@media(max-width:480px){
+  .gu-mix-row{grid-template-columns:minmax(0,1fr) 84px;}
+  .gu-mix-tarif{grid-column:1;grid-row:2;text-align:left;}
+  .gu-mix-in{grid-row:1 / 3;grid-column:2;}
+}
 </style>
 </head>
 <body>
@@ -973,6 +1071,19 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
         <span class="tile-arrow">&#8594;</span>
       </button>
 
+      <button class="tile" data-view="gmfu">
+        <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <path d="M5 15 L26 6 L47 15 L26 24 Z" fill="url(#g1)"/>
+          <path d="M14 19 V26 c0 3.5 5.5 6 12 6 s12-2.5 12-6 V19" stroke="url(#g1)" stroke-width="3" fill="none" stroke-linejoin="round"/>
+          <path d="M43 17 V27" stroke="#07AE70" stroke-width="2.6" stroke-linecap="round"/>
+          <rect x="15" y="38" width="9" height="10" rx="2" fill="#0055AB"/>
+          <rect x="28" y="34" width="9" height="14" rx="2" fill="#07AE70"/>
+        </svg>
+        <h3>GMF-U enseignement</h3>
+        <p>Taux mixte ou taux horaire&#8239;: comparez votre revenu selon vos demi-journ&#233;es d'enseignement et de clinique.</p>
+        <span class="tile-arrow">&#8594;</span>
+      </button>
+
       <button class="tile tile-wide" data-view="vulnerabilite">
         <svg class="tile-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
           <path d="M26 6 L44 12 v16 c0 10-8 15.5-18 18-10-2.5-18-8-18-18 V12 Z"
@@ -1344,6 +1455,187 @@ body.vue-interne .app-header .icon-btn{width:36px;height:36px;border-radius:10px
     <h4>Codes volontairement non publi&#233;s</h4>
     <p class="muted small">Ces codes ont une mise en page atypique dans le manuel. Plut&#244;t que d'afficher une valeur potentiellement d&#233;cal&#233;e, ils sont &#233;cart&#233;s.</p>
     <div id="vu-ecartes"></div>
+  </div>
+</section>
+
+<!-- ============ GMF-U ENSEIGNEMENT ============ -->
+<section id="view-gmfu" class="view">
+  <div class="view-header">
+    <button class="back-btn" data-back aria-label="Retour">&#8592;</button>
+    <div><h2>GMF-U enseignement</h2><div class="sub">Taux mixte ou taux horaire&#8239;: revenu brut RAMQ selon vos demi-journ&#233;es. Sauvegard&#233; dans votre profil actif.</div></div>
+    <button class="btn btn-ghost btn-sm" id="gu-reset" style="margin-left:auto;flex:none;">R&#233;initialiser</button>
+  </div>
+
+  <div class="disclaimer">
+    Les tarifs de visite viennent de l'onglet B de la RAMQ (6 ao&#251;t 2026, colonne CLSC / GMF-U). Le forfait horaire du mixte, son pourcentage et l'acte de supervision sont les derniers montants publi&#233;s trouv&#233;s (2013 &#224; 2022)&#8239;: faites-les confirmer par l'agente de facturation de votre GMF-U.
+  </div>
+
+  <div class="result-hero gu-hero">
+    <div>
+      <div class="label"><span class="gu-sw mixte"></span>Taux mixte</div>
+      <div class="big" id="gu-r-mixte">&#8212;</div>
+      <div class="gu-hero-sub" id="gu-r-mixte-h"></div>
+    </div>
+    <div>
+      <div class="label"><span class="gu-sw horaire"></span>Taux horaire</div>
+      <div class="big" id="gu-r-horaire">&#8212;</div>
+      <div class="gu-hero-sub" id="gu-r-horaire-h"></div>
+    </div>
+    <div>
+      <div class="label">&#201;cart mixte &#8722; horaire</div>
+      <div class="big" id="gu-r-ecart">&#8212;</div>
+      <div class="gu-verdict" id="gu-r-verdict"><span class="dot"></span><span></span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>Votre semaine</h4>
+    <div class="field">
+      <label id="gu-n-label">Demi-journ&#233;es par semaine, enseignement inclus</label>
+      <div class="chips" id="gu-n-chips" role="group" aria-labelledby="gu-n-label" style="margin-top:4px;"></div>
+    </div>
+    <p class="gu-note" id="gu-n-note"></p>
+    <div class="field-grid">
+      <div class="field">
+        <label for="gu-T">Demi-journ&#233;es d'enseignement / semaine</label>
+        <input type="number" id="gu-T" data-gu="T" min="0" max="8" step="1">
+      </div>
+      <div class="field">
+        <label for="gu-P">Patients vus par demi-journ&#233;e clinique</label>
+        <input type="number" id="gu-P" data-gu="P" min="0" max="20" step="0.5">
+      </div>
+      <div class="field">
+        <label for="gu-H">Heures par demi-journ&#233;e</label>
+        <input type="number" id="gu-H" data-gu="H" min="1" max="6" step="0.25">
+      </div>
+      <div class="field">
+        <label for="gu-W">Semaines travaill&#233;es / ann&#233;e</label>
+        <input type="number" id="gu-W" data-gu="W" min="0" max="52" step="1">
+      </div>
+      <div class="field">
+        <label for="gu-R">R&#233;sidents supervis&#233;s par demi-journ&#233;e</label>
+        <input type="number" id="gu-R" data-gu="R" min="0" max="6" step="1">
+      </div>
+      <div class="field">
+        <label for="gu-Pself">Patients vus vous-m&#234;me pendant la supervision</label>
+        <input type="number" id="gu-Pself" data-gu="Pself" min="0" max="10" step="0.5">
+        <span class="hint">Au taux mixte seulement, ces visites ajoutent le pourcentage du tarif.</span>
+      </div>
+    </div>
+    <p class="gu-seuil" id="gu-seuil"></p>
+  </div>
+
+  <div class="panel">
+    <h4>Vos types de visites</h4>
+    <p class="hint" id="gu-mix-hint" style="margin:0 0 6px;"></p>
+    <div id="gu-mix"></div>
+    <div class="gu-mix-total">
+      <span>Tarif moyen d'une visite &#224; 100&#8239;%</span>
+      <span class="mono" id="gu-mix-moyen"></span>
+      <span class="gu-mix-warn" id="gu-mix-warn"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>Taux</h4>
+    <div class="field-grid">
+      <div class="field">
+        <label for="gu-TH">Tarif horaire ($ / h)</label>
+        <input type="number" id="gu-TH" data-gu="TH" min="0" step="0.01">
+        <span class="hint">EP 42, section II. Toutes les heures sont pay&#233;es au m&#234;me tarif, sans actes.</span>
+      </div>
+      <div class="field">
+        <label for="gu-FH">Mixte&#8239;: forfait horaire ($ / h)</label>
+        <input type="number" id="gu-FH" data-gu="FH" min="0" step="0.01">
+        <span class="hint">Annexe XXIII, annexe I, section B-2. &#192; valider.</span>
+      </div>
+      <div class="field">
+        <label for="gu-s">Mixte&#8239;: pourcentage du tarif des visites (%)</label>
+        <input type="number" id="gu-s" data-gu="s" min="0" max="100" step="1">
+        <span class="hint">La FMOQ parle de 55&#8239;% &#224; 65&#8239;% en g&#233;n&#233;ral. &#192; valider.</span>
+      </div>
+      <div class="field">
+        <label for="gu-SUP">Mixte&#8239;: acte de supervision, tarif &#224; 100&#8239;% ($ / h)</label>
+        <input type="number" id="gu-SUP" data-gu="SUP" min="0" step="0.01">
+        <span class="hint">Pay&#233; pour au plus 3,5&#8239;h par demi-journ&#233;e d'enseignement. &#192; valider.</span>
+      </div>
+      <div class="field">
+        <label for="gu-supPct">Mixte&#8239;: part vers&#233;e de l'acte de supervision (%)</label>
+        <input type="number" id="gu-supPct" data-gu="supPct" min="0" max="100" step="1">
+        <span class="hint">Hypoth&#232;se&#8239;: le m&#234;me pourcentage que les visites. Mettez 100 s'il est pay&#233; en entier.</span>
+      </div>
+      <div class="field">
+        <label for="gu-perDiem">Demi-per diem de supervision, par r&#233;sident ($)</label>
+        <input type="number" id="gu-perDiem" data-gu="perDiem" min="0" step="0.01">
+        <label class="chk-inline" style="margin-top:4px;"><input type="checkbox" id="gu-designe"> Territoire d&#233;sign&#233; (EP 42, par. 5.03)</label>
+        <span class="hint">Pay&#233; dans les deux modes. 39,65&#8239;$ ou 62,35&#8239;$ en territoire d&#233;sign&#233; (montants de 2013).</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>Forfaits d'inscription</h4>
+    <p class="hint" style="margin:0 0 12px;">Identiques dans les deux modes&#8239;: ils s'ajoutent au total sans changer l'&#233;cart. Montants fix&#233;s par l'EP 40, non publi&#233;s&#8239;: prenez ceux de votre &#233;tat de compte.</p>
+    <div class="field-grid">
+      <div class="field">
+        <label for="gu-inscrits">Patients inscrits</label>
+        <input type="number" id="gu-inscrits" data-gu="inscrits" min="0" step="10">
+      </div>
+      <div class="field">
+        <label for="gu-vuln">Patients vuln&#233;rables (%)</label>
+        <input type="number" id="gu-vuln" data-gu="vuln" min="0" max="100" step="1">
+      </div>
+      <div class="field">
+        <label for="gu-fInsc">Forfait d'inscription g&#233;n&#233;rale ($ / patient)</label>
+        <input type="number" id="gu-fInsc" data-gu="fInsc" min="0" step="0.05">
+      </div>
+      <div class="field">
+        <label for="gu-fVuln">Forfait annuel moyen, patient vuln&#233;rable ($)</label>
+        <input type="number" id="gu-fVuln" data-gu="fVuln" min="0" step="0.05">
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>Revenu brut annuel par sc&#233;nario</h4>
+    <div class="gu-legend"><span><span class="gu-sw mixte"></span>Taux mixte</span><span><span class="gu-sw horaire"></span>Taux horaire</span></div>
+    <div class="gu-chart" id="gu-chart"></div>
+    <div class="gu-table-wrap">
+      <table class="gu-table" id="gu-table">
+        <thead><tr><th>Demi-journ&#233;es</th><th>Cliniques</th><th>Heures / sem.</th><th>Taux horaire</th><th>Taux mixte</th><th>&#201;cart</th><th>&#201;cart %</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>&#201;cart selon votre rythme clinique</h4>
+    <p class="hint" style="margin:0 0 10px;">&#201;cart annuel mixte &#8722; horaire, en milliers de dollars. Touchez une case pour l'appliquer.</p>
+    <div class="gu-heat-legend"><span><span class="gu-sw m"></span>Le mixte paie plus</span><span><span class="gu-sw h"></span>L'horaire paie plus</span><span>Cadre&#8239;: votre sc&#233;nario</span></div>
+    <div class="gu-table-wrap" style="margin-top:0;">
+      <table class="gu-heat" id="gu-heat"><thead></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>D&#233;tail du calcul</h4>
+    <div class="gu-par-dj" id="gu-par-dj"></div>
+    <div class="gu-detail">
+      <div id="gu-detail-mixte"></div>
+      <div id="gu-detail-horaire"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>Sources et limites</h4>
+    <ul class="gu-sources">
+      <li>Tarifs de visite&#8239;: <a href="https://www.ramq.gouv.qc.ca/fr/professionnels/media/32176" target="_blank" rel="noopener">RAMQ, tableaux de l'onglet B (6 ao&#251;t 2026)</a>, colonne CLSC / GMF-U.</li>
+      <li>Tarif horaire et forfait horaire du mixte&#8239;: <a href="https://www.amclscq.org/remuneration/remuneration-mixte/" target="_blank" rel="noopener">AMCLSCQ (mai 2022)</a>&#8239;; pourcentage du mixte&#8239;: <a href="https://lemedecinduquebec.org/archives/2022/5/en-fin-la-facturation/mode-mixte-et-honoraires-fixes/" target="_blank" rel="noopener">Le M&#233;decin du Qu&#233;bec (mai 2022)</a>.</li>
+      <li>Acte d'intervention de supervision et mode mixte en GMF-U&#8239;: <a href="https://lemedecinduquebec.org/archives/2021/5/en-fin-la-facturation/remuneration-de-l-enseignement/" target="_blank" rel="noopener">Le M&#233;decin du Qu&#233;bec, R&#233;mun&#233;ration de l'enseignement</a>.</li>
+      <li>Demi-per diem de supervision&#8239;: EP 42, section I (Brochure no 1).</li>
+      <li>Mode compos&#233; 2026 (capitation 50&#8239;%, actes 30&#8239;%, horaire 20&#8239;%)&#8239;: les m&#233;decins enseignants peuvent s'en exclure. <a href="https://fmoq.s3.us-east-1.amazonaws.com/affaires-syndicales/PL2/Entente-de-principe_11122025_vulgarisee.pdf" target="_blank" rel="noopener">FMOQ, entente du 10 d&#233;cembre 2025</a>. Il n'est pas mod&#233;lis&#233; ici.</li>
+      <li>Non inclus&#8239;: garde, hospitalisation, heures m&#233;dico-administratives GMF, majorations d'horaire d&#233;favorable, activit&#233;s hors GMF-U, imp&#244;t. Au taux horaire, les heures payables sont limit&#233;es par les banques d'heures du GMF-U.</li>
+    </ul>
   </div>
 </section>
 
@@ -1974,6 +2266,7 @@ function showView(name){
   if(name==="vulnerabilite") renderVulnerabilite();
   if(name==="inclus") renderInclus();
   if(name==="revenu") restaurerCalcProfil();
+  if(name==="gmfu") renderGmfu();
   if(name==="settings"){ plierPanneauxProfil(); loadSettingsIntoForm(); }
 }
 $$(".tile").forEach(t=>t.addEventListener("click", ()=>showView(t.dataset.view)));
@@ -2767,13 +3060,431 @@ $("#ad-import").addEventListener("change", (e)=>{
 });
 
 /* ============================================================
+   GMF-U ENSEIGNEMENT — taux mixte ou taux horaire
+   ============================================================
+   Compare, pour un médecin enseignant en GMF-U, le revenu brut au tarif
+   horaire (EP 42, section II) et au mode mixte (annexe XXIII). Le tarif
+   moyen d'une visite est calculé à partir des vrais tarifs de l'onglet B ;
+   les taux du mixte et de la supervision restent modifiables, puisque
+   leurs montants courants ne sont pas publiés en ligne. */
+
+const GU_NS = [4,5,6,7,8,9,10,11];
+const GU_PS = [3,4,5,6,7,8,9,10,11,12];
+const GU_SUP_MAX_H = 3.5;                              // acte de supervision : au plus 3,5 h par demi-journée
+const GU_PER_DIEM = { standard:39.65, designe:62.35 }; // EP 42, par. 5.01 et 5.02 (juin 2013)
+
+/* Onglet B, 6 août 2026, colonne CLSC / GMF-U, patient de moins de 80 ans.
+   tarifs[0] : médecin avec moins de 500 inscrits ; tarifs[1] : 500 ou plus. */
+const GU_VISITES = [
+  { cle:"suivi",  nom:"Suivi",                                 codes:["15803","15804"], tarifs:[32.25,36.95] },
+  { cle:"suiviV", nom:"Suivi, patient vulnérable",             codes:["15823","15824"], tarifs:[40.50,45.20] },
+  { cle:"pec",    nom:"Prise en charge",                       codes:["15801","15802"], tarifs:[64.50,74.75] },
+  { cle:"pecV",   nom:"Prise en charge, patient vulnérable",   codes:["15821","15822"], tarifs:[72.65,82.90] },
+  { cle:"perioV", nom:"Visite périodique, patient vulnérable", codes:["15819","15820"], tarifs:[72.65,84.80] },
+  { cle:"pedia",  nom:"Visite périodique pédiatrique",         codes:["15813","15814"], tarifs:[50.30,57.00] },
+  { cle:"gross",  nom:"Suivi de grossesse",                    codes:["15811","15812"], tarifs:[37.75,42.85] },
+];
+
+const GU_DEFAUTS = {
+  N:9, T:3, H:4, W:46, P:5, R:2, Pself:0,
+  TH:99.48, FH:59.68, s:60, SUP:114.20, supPct:60, perDiem:GU_PER_DIEM.standard, designe:false,
+  inscrits:500, vuln:15, fInsc:10, fVuln:55,
+  mix:{ suivi:70, suiviV:15, pec:5, pecV:0, perioV:5, pedia:5, gross:0 },
+};
+
+let GU = null;
+
+/* État du profil actif. Un profil sans valeurs GMF-U part de sa propre
+   clientèle (inscrits, part vulnérable, semaines) plutôt que des exemples. */
+function guEtat(){
+  const p = profilActif();
+  const g = JSON.parse(JSON.stringify(GU_DEFAUTS));
+  if(parseFloat(p.inscrits) > 0) g.inscrits = parseFloat(p.inscrits);
+  if(p.partVuln !== "" && isFinite(parseFloat(p.partVuln))) g.vuln = parseFloat(p.partVuln);
+  if(parseFloat(p.semaines) > 0) g.W = parseFloat(p.semaines);
+  const s = p.gmfu || {};
+  Object.keys(g).forEach(k=>{
+    if(k === "mix"){
+      Object.keys(g.mix).forEach(m=>{ if(s.mix && isFinite(s.mix[m])) g.mix[m] = s.mix[m]; });
+    } else if(s[k] !== undefined && typeof s[k] === typeof g[k]){
+      g[k] = s[k];
+    }
+  });
+  if(!GU_NS.includes(g.N)) g.N = GU_DEFAUTS.N;
+  return g;
+}
+
+function guSauver(){
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active) || box.list[0];
+  p.gmfu = GU;
+  saveProfiles(box);
+}
+
+function guTarifMoyen(g){
+  const i = seuilDe(g.inscrits) === "500_ou_plus" ? 1 : 0;
+  let somme = 0, poids = 0;
+  GU_VISITES.forEach(v=>{
+    const w = Math.max(0, g.mix[v.cle] || 0);
+    somme += w * v.tarifs[i];
+    poids += w;
+  });
+  return { moyen: poids > 0 ? somme/poids : 0, total: poids, i };
+}
+
+/* Un scénario : N demi-journées dont T d'enseignement, P patients par
+   demi-journée clinique. Le demi-per diem et les forfaits d'inscription
+   sont payés dans les deux modes. */
+function guCalc(g, N, P){
+  if(P === undefined) P = g.P;
+  const T = Math.min(g.T, N), C = Math.max(N - T, 0);
+  const hs = Math.min(g.H, GU_SUP_MAX_H);
+  const F = guTarifMoyen(g).moyen;
+  const heures = g.W * N * g.H;
+  const ep42 = g.W * T * g.R * g.perDiem;
+  const insc = g.inscrits * g.fInsc + g.inscrits * (g.vuln/100) * g.fVuln;
+  const horaire = { heures: heures * g.TH, ep42, insc };
+  horaire.total = horaire.heures + ep42 + insc;
+  const mixte = {
+    forfait: heures * g.FH,
+    visites: g.W * (C*P + T*g.Pself) * F * g.s/100,
+    supervision: g.W * T * hs * g.SUP * g.supPct/100,
+    ep42, insc,
+  };
+  mixte.total = mixte.forfait + mixte.visites + mixte.supervision + ep42 + insc;
+  const ecart = mixte.total - horaire.total;
+  return { N, T, C, P, hs, F, heures, horaire, mixte, ecart, pct: horaire.total > 0 ? ecart/horaire.total : 0 };
+}
+
+const guNum = (v, d=2) => (isFinite(v) ? v : 0).toLocaleString("fr-CA", { maximumFractionDigits:d });
+const guSigne = v => (v >= 0 ? "+" : "−") + fmtMoney(Math.abs(v));
+const guPct = v => (v >= 0 ? "+" : "−") + guNum(Math.abs(v)*100, 1) + " %";
+
+/* Remplit les champs à l'ouverture de la vue ou après une réinitialisation. */
+function guRemplir(){
+  $$("#view-gmfu [data-gu]").forEach(el=>{ el.value = GU[el.dataset.gu]; });
+  $("#gu-designe").checked = !!GU.designe;
+
+  const chips = $("#gu-n-chips");
+  chips.innerHTML = "";
+  GU_NS.forEach(n=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = String(n);
+    b.setAttribute("aria-label", n + " demi-journées par semaine");
+    b.addEventListener("click", ()=>{ GU.N = n; guSauver(); guAfficher(); });
+    chips.appendChild(b);
+  });
+
+  const mix = $("#gu-mix");
+  mix.innerHTML = "";
+  GU_VISITES.forEach(v=>{
+    const row = document.createElement("div"); row.className = "gu-mix-row";
+    const nom = document.createElement("div"); nom.className = "gu-mix-nom";
+    const pill = document.createElement("span"); pill.className = "code-pill"; pill.dataset.cle = v.cle;
+    nom.appendChild(pill); nom.appendChild(document.createTextNode(v.nom));
+    const tarif = document.createElement("div"); tarif.className = "gu-mix-tarif"; tarif.dataset.cle = v.cle;
+    const wrap = document.createElement("div"); wrap.className = "gu-mix-in";
+    const inp = document.createElement("input");
+    inp.type = "number"; inp.min = "0"; inp.max = "100"; inp.step = "1";
+    inp.id = "gu-mix-" + v.cle; inp.value = GU.mix[v.cle];
+    inp.setAttribute("aria-label", "Part des visites : " + v.nom);
+    inp.addEventListener("input", ()=>{
+      const x = parseFloat(inp.value);
+      GU.mix[v.cle] = isFinite(x) && x > 0 ? x : 0;
+      guSauver(); guAfficher();
+    });
+    const u = document.createElement("span"); u.textContent = "%";
+    wrap.appendChild(inp); wrap.appendChild(u);
+    row.appendChild(nom); row.appendChild(tarif); row.appendChild(wrap);
+    mix.appendChild(row);
+  });
+}
+
+$$("#view-gmfu [data-gu]").forEach(el=>el.addEventListener("input", ()=>{
+  if(!GU) return;
+  const x = parseFloat(el.value);
+  if(!isFinite(x)) return;
+  GU[el.dataset.gu] = Math.max(0, x);
+  guSauver(); guAfficher();
+}));
+$("#gu-designe").addEventListener("change", e=>{
+  GU.designe = e.target.checked;
+  GU.perDiem = GU.designe ? GU_PER_DIEM.designe : GU_PER_DIEM.standard;
+  $("#gu-perDiem").value = GU.perDiem;
+  guSauver(); guAfficher();
+});
+$("#gu-reset").addEventListener("click", ()=>{
+  const box = loadProfiles();
+  const p = box.list.find(x=>x.id===box.active) || box.list[0];
+  delete p.gmfu;
+  saveProfiles(box);
+  renderGmfu();
+});
+
+function renderGmfu(){
+  GU = guEtat();
+  guRemplir();
+  guAfficher();
+}
+
+function guAfficher(){
+  const g = GU;
+  const rows = GU_NS.map(n=>guCalc(g, n));
+  const r = rows[GU_NS.indexOf(g.N)];
+  const tm = guTarifMoyen(g);
+
+  // Sommaire
+  $("#gu-r-mixte").textContent = fmtMoney(r.mixte.total);
+  $("#gu-r-horaire").textContent = fmtMoney(r.horaire.total);
+  $("#gu-r-ecart").textContent = guSigne(r.ecart);
+  $("#gu-r-mixte-h").textContent = r.heures > 0 ? `${fmtMoney2(r.mixte.total / r.heures)} par heure travaillée` : "";
+  $("#gu-r-horaire-h").textContent = r.heures > 0 ? `${fmtMoney2(r.horaire.total / r.heures)} par heure travaillée` : "";
+  const verdict = $("#gu-r-verdict"), dot = verdict.querySelector(".dot"), txt = verdict.querySelector("span:last-child");
+  if(Math.abs(r.pct) < 0.01){ dot.style.background = "#B9C3D3"; txt.textContent = `Équivalent (${guPct(r.pct)})`; }
+  else if(r.ecart > 0){ dot.style.background = "var(--gu-mixte)"; txt.textContent = `Le mixte paie plus (${guPct(r.pct)})`; }
+  else { dot.style.background = "var(--gu-horaire)"; txt.textContent = `L'horaire paie plus (${guPct(r.pct)})`; }
+
+  $$("#gu-n-chips .chip").forEach(b=>{
+    const on = parseInt(b.textContent,10) === g.N;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+  const pl = (n, un, plusieurs) => n + " " + (n === 1 ? un : plusieurs);
+  $("#gu-n-note").textContent = `${pl(r.N,"demi-journée","demi-journées")} : ${pl(r.C,"clinique","cliniques")} et ${r.T} d'enseignement, soit ${guNum(r.N*g.H)} h par semaine et ${guNum(r.heures,0)} h par année.`;
+
+  // Seuil de rentabilité
+  const ecartHeure = (g.TH - g.FH) * g.H;
+  const parVisite = tm.moyen * g.s/100;
+  const ens = r.hs * g.SUP * g.supPct/100 + g.Pself * parVisite - ecartHeure;
+  let seuil;
+  if(parVisite <= 0) seuil = "Sans pourcentage sur les visites, une demi-journée clinique paie toujours moins au mixte qu'au tarif horaire.";
+  else if(ecartHeure <= 0) seuil = "Avec ces taux, le forfait horaire du mixte égale ou dépasse le tarif horaire : le mixte l'emporte dès le premier patient.";
+  else seuil = `En clinique, le mixte devient plus payant au-delà de ${guNum(ecartHeure/parVisite,1)} patients par demi-journée (vous en voyez ${guNum(g.P,1)}). Chaque demi-journée d'enseignement rapporte ${guSigne(ens)} au mixte par rapport à l'horaire.`;
+  $("#gu-seuil").textContent = seuil;
+
+  // Types de visites : tarifs selon le seuil de clientèle
+  const libSeuil = tm.i === 1 ? "500 patients inscrits ou plus" : "moins de 500 patients inscrits";
+  $("#gu-mix-hint").textContent = `Répartition de vos visites en clinique. Tarifs CLSC / GMF-U pour un médecin avec ${libSeuil}, patient de moins de 80 ans.`;
+  GU_VISITES.forEach(v=>{
+    $(`#gu-mix .code-pill[data-cle="${v.cle}"]`).textContent = v.codes[tm.i];
+    $(`#gu-mix .gu-mix-tarif[data-cle="${v.cle}"]`).textContent = fmtMoney2(v.tarifs[tm.i]);
+  });
+  $("#gu-mix-moyen").textContent = fmtMoney2(tm.moyen);
+  $("#gu-mix-warn").textContent = Math.abs(tm.total - 100) < 0.01 ? "" :
+    tm.total > 0 ? `Le total fait ${guNum(tm.total,1)} % : la moyenne est calculée sur ces proportions ramenées à 100 %.`
+                 : "Indiquez au moins un type de visite.";
+
+  guGraphique(rows);
+  guTableau(rows);
+  guChaleur();
+  guDetail(r, tm);
+}
+
+/* ---- Graphique : colonnes groupées, une paire par scénario ---- */
+let GU_ROWS = [];
+function guPas(x){
+  if(x <= 0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(x))), n = x/p;
+  return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+}
+function guBarre(x, yHaut, w, yBas){
+  const h = yBas - yHaut;
+  if(h <= 0) return "";
+  const r = Math.min(4, h, w/2);
+  return `M${x},${yBas}V${yHaut+r}Q${x},${yHaut} ${x+r},${yHaut}H${x+w-r}Q${x+w},${yHaut} ${x+w},${yHaut+r}V${yBas}Z`;
+}
+function guGraphique(rows){
+  GU_ROWS = rows;
+  const box = $("#gu-chart");
+  const W = Math.max(280, box.clientWidth || 600), H = 290;
+  const m = { l:54, r:6, t:12, b:50 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  let max = 0;
+  rows.forEach(r=>{ max = Math.max(max, r.mixte.total, r.horaire.total); });
+  const pas = guPas(max/4), haut = Math.max(pas, Math.ceil(max/pas)*pas);
+  const y = v => m.t + ih - (v/haut)*ih;
+  const bande = iw / rows.length;
+  const bw = Math.max(6, Math.min(24, (bande*0.64 - 2)/2));
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Revenu brut annuel au taux mixte et au taux horaire, de 4 à 11 demi-journées par semaine">`;
+  for(let v = 0; v <= haut + 1e-6; v += pas){
+    const yy = Math.round(y(v)) + 0.5;
+    if(v > 0) s += `<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${yy}" y2="${yy}"/>`;
+    s += `<text class="tick" x="${m.l-8}" y="${yy}" dy="0.32em" text-anchor="end">${guNum(v/1000,0)} k$</text>`;
+  }
+  rows.forEach((r,i)=>{
+    const cx = m.l + bande*(i + 0.5);
+    if(r.N === GU.N) s += `<rect class="selband" x="${cx-bande/2+2}" y="${m.t}" width="${bande-4}" height="${ih}" rx="6"/>`;
+    s += `<path class="b-mixte" d="${guBarre(cx-bw-1, y(r.mixte.total), bw, y(0))}"/>`;
+    s += `<path class="b-horaire" d="${guBarre(cx+1, y(r.horaire.total), bw, y(0))}"/>`;
+    s += `<text class="xlab${r.N === GU.N ? " sel" : ""}" x="${cx}" y="${m.t+ih+20}" text-anchor="middle">${r.N}</text>`;
+  });
+  const yb = Math.round(y(0)) + 0.5;
+  s += `<line class="base" x1="${m.l}" x2="${W-m.r}" y1="${yb}" y2="${yb}"/>`;
+  s += `<text class="xtitle" x="${m.l+iw/2}" y="${H-8}" text-anchor="middle">Demi-journées par semaine, dont ${Math.round(GU.T)} d'enseignement</text>`;
+  rows.forEach((r,i)=>{
+    s += `<rect class="hit" data-i="${i}" x="${m.l+bande*i}" y="${m.t}" width="${bande}" height="${ih+30}" tabindex="0" aria-label="${r.N} demi-journées : mixte ${fmtMoney(r.mixte.total)}, horaire ${fmtMoney(r.horaire.total)}"/>`;
+  });
+  s += "</svg>";
+  box.innerHTML = s;
+  const tip = document.createElement("div");
+  tip.className = "gu-tip"; tip.hidden = true;
+  box.appendChild(tip);
+  $$("#gu-chart .hit").forEach(el=>{
+    const i = +el.dataset.i;
+    const montrer = ()=>guBulle(tip, i, m.l + bande*(i + 0.5), W);
+    el.addEventListener("pointerenter", montrer);
+    el.addEventListener("focus", montrer);
+    el.addEventListener("pointerleave", ()=>{ tip.hidden = true; });
+    el.addEventListener("blur", ()=>{ tip.hidden = true; });
+    el.addEventListener("click", ()=>{ GU.N = GU_ROWS[i].N; guSauver(); guAfficher(); });
+    el.addEventListener("keydown", e=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); GU.N = GU_ROWS[i].N; guSauver(); guAfficher(); }
+    });
+  });
+}
+function guBulle(tip, i, cx, W){
+  const r = GU_ROWS[i];
+  tip.textContent = "";
+  const t = document.createElement("div"); t.className = "gu-tip-titre";
+  t.textContent = `${r.N} demi-journées (${r.C} cliniques + ${r.T} d'enseignement)`;
+  tip.appendChild(t);
+  [["var(--gu-mixte)", fmtMoney(r.mixte.total), "Taux mixte"],
+   ["var(--gu-horaire)", fmtMoney(r.horaire.total), "Taux horaire"],
+   ["transparent", guSigne(r.ecart), `Écart (${guPct(r.pct)})`]].forEach(([c, val, lab])=>{
+    const row = document.createElement("div"); row.className = "gu-tip-row";
+    const k = document.createElement("span"); k.className = "key"; k.style.background = c;
+    const st = document.createElement("strong"); st.textContent = val;
+    const l = document.createElement("span"); l.className = "lab"; l.textContent = lab;
+    row.appendChild(k); row.appendChild(st); row.appendChild(l);
+    tip.appendChild(row);
+  });
+  tip.hidden = false;
+  const tw = tip.offsetWidth;
+  let gauche = cx + 14;
+  if(gauche + tw > W) gauche = cx - tw - 14;
+  tip.style.transform = `translate(${Math.max(0, Math.round(gauche))}px, 8px)`;
+}
+if(typeof ResizeObserver !== "undefined"){
+  let largeur = 0;
+  new ResizeObserver(()=>{
+    const w = $("#gu-chart").clientWidth;
+    if(GU && GU_ROWS.length && Math.abs(w - largeur) > 2){ largeur = w; guGraphique(GU_ROWS); }
+  }).observe($("#gu-chart"));
+}
+
+function guTableau(rows){
+  const tb = $("#gu-table tbody");
+  tb.innerHTML = "";
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    if(r.N === GU.N) tr.className = "sel";
+    [String(r.N), String(r.C), guNum(r.N*GU.H) + " h", fmtMoney(r.horaire.total), fmtMoney(r.mixte.total), guSigne(r.ecart), guPct(r.pct)]
+      .forEach((v,j)=>{
+        const td = document.createElement("td"); td.textContent = v;
+        if(j >= 5) td.className = r.ecart >= 0 ? "pos" : "neg";
+        tr.appendChild(td);
+      });
+    tr.addEventListener("click", ()=>{ GU.N = r.N; guSauver(); guAfficher(); });
+    tb.appendChild(tr);
+  });
+}
+
+/* ---- Carte de chaleur : écart selon patients / demi-journée × demi-journées ---- */
+function guChaleur(){
+  const t = $("#gu-heat"), th = t.tHead, tb = t.tBodies[0];
+  th.innerHTML = ""; tb.innerHTML = "";
+  const hr = document.createElement("tr");
+  const c0 = document.createElement("th"); c0.textContent = "Patients / d.-j.  ·  Demi-journées →"; hr.appendChild(c0);
+  GU_NS.forEach(n=>{
+    const c = document.createElement("th"); c.textContent = String(n);
+    if(n === GU.N) c.className = "sel";
+    hr.appendChild(c);
+  });
+  th.appendChild(hr);
+  const grille = GU_PS.map(p=>GU_NS.map(n=>guCalc(GU, n, p).ecart));
+  let maxAbs = 1;
+  grille.forEach(l=>l.forEach(d=>{ maxAbs = Math.max(maxAbs, Math.abs(d)); }));
+  const pCourant = Math.round(GU.P);
+  GU_PS.forEach((p,i)=>{
+    const tr = document.createElement("tr");
+    const h = document.createElement("th"); h.textContent = String(p);
+    if(p === pCourant) h.className = "sel";
+    tr.appendChild(h);
+    GU_NS.forEach((n,j)=>{
+      const d = grille[i][j];
+      const td = document.createElement("td");
+      const a = Math.round(Math.min(1, Math.abs(d)/maxAbs) * 52);
+      td.style.background = `color-mix(in oklab, ${d >= 0 ? "var(--gu-mixte)" : "var(--gu-horaire)"} ${a}%, #fff)`;
+      // Sous 50 $, l'écart s'arrondit à 0,0 k$ : on n'affiche pas de signe trompeur.
+      td.textContent = Math.abs(d) < 50 ? "0" : (d >= 0 ? "+" : "−") + guNum(Math.abs(d)/1000, 1);
+      td.title = `${p} patients par demi-journée, ${n} demi-journées : écart ${guSigne(d)}`;
+      td.tabIndex = 0;
+      if(p === pCourant && n === GU.N) td.className = "cur";
+      const appliquer = ()=>{ GU.P = p; GU.N = n; $("#gu-P").value = p; guSauver(); guAfficher(); };
+      td.addEventListener("click", appliquer);
+      td.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); appliquer(); } });
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+}
+
+/* ---- Détail ligne par ligne du scénario choisi ---- */
+function guLigne(quoi, comment, montant, total){
+  const d = document.createElement("div"); d.className = "gu-ligne" + (total ? " total" : "");
+  const a = document.createElement("span"); a.className = "quoi"; a.textContent = quoi;
+  const b = document.createElement("span"); b.className = "mnt"; b.textContent = fmtMoney(montant);
+  d.appendChild(a); d.appendChild(b);
+  if(comment){ const c = document.createElement("span"); c.className = "comment"; c.textContent = comment; d.appendChild(c); }
+  return d;
+}
+function guTitre(cls, texte){
+  const h = document.createElement("h5");
+  const sw = document.createElement("span"); sw.className = "gu-sw " + cls;
+  h.appendChild(sw); h.appendChild(document.createTextNode(texte));
+  return h;
+}
+function guDetail(r, tm){
+  const g = GU, x = " × ", sem = guNum(g.W,0) + " sem.";
+  const parVisite = tm.moyen * g.s/100;
+  const cliM = g.H*g.FH + g.P*parVisite, cliH = g.H*g.TH;
+  const ensM = g.H*g.FH + r.hs*g.SUP*g.supPct/100 + g.Pself*parVisite, ensH = g.H*g.TH;
+  const par = $("#gu-par-dj"); par.innerHTML = "";
+  [["Une demi-journée clinique", cliM, cliH], ["Une demi-journée d'enseignement, sans le per diem", ensM, ensH]].forEach(([titre, m, h])=>{
+    const bx = document.createElement("div"); bx.className = "bd-item";
+    const l = document.createElement("div"); l.className = "label"; l.textContent = titre;
+    const v = document.createElement("div"); v.className = "val"; v.textContent = guSigne(m - h);
+    const s = document.createElement("div"); s.className = "small muted"; s.textContent = `Mixte ${fmtMoney(m)} · Horaire ${fmtMoney(h)}`;
+    bx.appendChild(l); bx.appendChild(v); bx.appendChild(s); par.appendChild(bx);
+  });
+  const inscComment = `${guNum(g.inscrits,0)}${x}${fmtMoney2(g.fInsc)} + ${guNum(g.inscrits*g.vuln/100,0)} vuln.${x}${fmtMoney2(g.fVuln)}`;
+  const ep42Comment = `${r.T} d.-j.${x}${guNum(g.R,0)} rés.${x}${sem}${x}${fmtMoney2(g.perDiem)}`;
+
+  const dm = $("#gu-detail-mixte"); dm.innerHTML = "";
+  dm.appendChild(guTitre("mixte", "Taux mixte"));
+  dm.appendChild(guLigne("Forfait horaire", `${guNum(r.N*g.H)} h/sem.${x}${sem}${x}${fmtMoney2(g.FH)}`, r.mixte.forfait));
+  dm.appendChild(guLigne("Pourcentage sur les visites", `${guNum(r.C*r.P + r.T*g.Pself,1)} visites/sem.${x}${sem}${x}${fmtMoney2(tm.moyen)}${x}${guNum(g.s,1)} %`, r.mixte.visites));
+  dm.appendChild(guLigne("Acte de supervision", `${r.T} d.-j.${x}${guNum(r.hs)} h${x}${sem}${x}${fmtMoney2(g.SUP)}${x}${guNum(g.supPct,1)} %`, r.mixte.supervision));
+  dm.appendChild(guLigne("Demi-per diem EP 42", ep42Comment, r.mixte.ep42));
+  dm.appendChild(guLigne("Forfaits d'inscription", inscComment, r.mixte.insc));
+  dm.appendChild(guLigne("Total brut annuel", "", r.mixte.total, true));
+
+  const dh = $("#gu-detail-horaire"); dh.innerHTML = "";
+  dh.appendChild(guTitre("horaire", "Taux horaire"));
+  dh.appendChild(guLigne("Heures au tarif horaire", `${guNum(r.N*g.H)} h/sem.${x}${sem}${x}${fmtMoney2(g.TH)}`, r.horaire.heures));
+  dh.appendChild(guLigne("Demi-per diem EP 42", ep42Comment, r.horaire.ep42));
+  dh.appendChild(guLigne("Forfaits d'inscription", inscComment, r.horaire.insc));
+  dh.appendChild(guLigne("Total brut annuel", "", r.horaire.total, true));
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 
-/* Raccourcis du manifest : ?vue=revenu, ?vue=recherche, ?vue=top, ?vue=comparateur */
+/* Raccourcis du manifest : ?vue=revenu, ?vue=recherche, ?vue=top, ?vue=comparateur, ?vue=gmfu */
 function openViewFromUrl(){
   const v = new URLSearchParams(location.search).get("vue");
-  const allowed = ["revenu","recherche","top","comparateur","settings","admin"];
+  const allowed = ["revenu","recherche","top","comparateur","gmfu","settings","admin"];
   if(v && allowed.includes(v)) showView(v);
 }
 

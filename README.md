@@ -37,7 +37,7 @@ worker met chaque ressource en cache indépendamment et ignore celles qui
 Dans `sw.js`, première ligne de code :
 
 ```js
-const CACHE_NAME = "ramq-radar-v10";
+const CACHE_NAME = "ramq-radar-v11";
 ```
 
 **Passer à `v7`, `v8`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
@@ -74,6 +74,25 @@ l'utilisateur :
 Le profil (patients inscrits, part vulnérable, mode de frais) préremplit
 automatiquement ce qui peut l'être ; le reste reste à la discrétion du
 médecin.
+
+## GMF-U enseignement
+
+Vue `?vue=gmfu`. Compare, pour un médecin enseignant en GMF-U, le revenu brut
+au **tarif horaire** (EP 42, section II) et au **mode mixte** (annexe XXIII),
+de 4 à 11 demi-journées par semaine, enseignement inclus.
+
+- **Tarif moyen d'une visite** : calculé à partir de la répartition de vos
+  visites et des tarifs de l'onglet B (6 août 2026, colonne CLSC / GMF-U,
+  seuil de 500 patients inscrits selon le profil).
+- **Taux du mixte et supervision** : forfait horaire (59,68 $/h), pourcentage
+  des visites (60 %), acte d'intervention de supervision (114,20 $/h, au plus
+  3,5 h par demi-journée) et demi-per diem EP 42 (39,65 $ ou 62,35 $ en
+  territoire désigné). Ce sont les derniers montants publiés trouvés (2013 à
+  2022) : tous modifiables, à faire confirmer.
+- **Forfaits d'inscription** : payés dans les deux modes, ils s'ajoutent au
+  total sans changer l'écart.
+- Les valeurs sont gardées dans le profil actif (`gmfu`), comme le
+  calculateur de revenu.
 
 ## État des données
 
