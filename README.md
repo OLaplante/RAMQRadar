@@ -37,7 +37,7 @@ worker met chaque ressource en cache indépendamment et ignore celles qui
 Dans `sw.js`, première ligne de code :
 
 ```js
-const CACHE_NAME = "ramq-radar-v11";
+const CACHE_NAME = "ramq-radar-v12";
 ```
 
 **Passer à `v7`, `v8`, etc. à chaque mise en ligne.** Sans ça, les navigateurs
@@ -78,8 +78,9 @@ médecin.
 ## GMF-U enseignement
 
 Vue `?vue=gmfu`. Compare, pour un médecin enseignant en GMF-U, le revenu brut
-au **tarif horaire** (EP 42, section II) et au **mode mixte** (annexe XXIII),
-de 4 à 11 demi-journées par semaine, enseignement inclus.
+au **tarif horaire** (EP 42, section II), au **mode mixte** (annexe XXIII) et
+au **mode composé** projeté, de 4 à 11 demi-journées par semaine, enseignement
+inclus.
 
 - **Tarif moyen d'une visite** : calculé à partir de la répartition de vos
   visites et des tarifs de l'onglet B (6 août 2026, colonne CLSC / GMF-U,
@@ -89,8 +90,15 @@ de 4 à 11 demi-journées par semaine, enseignement inclus.
   3,5 h par demi-journée) et demi-per diem EP 42 (39,65 $ ou 62,35 $ en
   territoire désigné). Ce sont les derniers montants publiés trouvés (2013 à
   2022) : tous modifiables, à faire confirmer.
-- **Forfaits d'inscription** : payés dans les deux modes, ils s'ajoutent au
-  total sans changer l'écart.
+- **Forfaits d'inscription** : payés au mixte et à l'horaire. Le mode composé
+  les remplace par la capitation.
+- **Mode composé** (capitation, actes, taux horaire) : pas encore en vigueur.
+  Taux par défaut de la grille présentée par le ministère le 5 novembre 2025
+  (taux horaire de base 26,81 $, supervision de résidents 67,97 $/h,
+  interaction 16 $, intervention clinique 34,97 $, capitation de 9,16 $ à
+  164,76 $ par patient selon la complexité), avant l'entente FMOQ du
+  10 décembre 2025. Répartition par défaut des patients : moyenne de la
+  population (51,5 / 9,0 / 24,7 / 14,8 %). Tout est modifiable.
 - Les valeurs sont gardées dans le profil actif (`gmfu`), comme le
   calculateur de revenu.
 
