@@ -22,6 +22,7 @@
     { "name": "Revenu annuel", "short_name": "Revenu", "url": "./?vue=revenu" },
     { "name": "Recherche d'acte", "short_name": "Recherche", "url": "./?vue=recherche" },
     { "name": "Top actes rentables", "short_name": "Top actes", "url": "./?vue=top" },
-    { "name": "Comparateur", "short_name": "Comparer", "url": "./?vue=comparateur" }
+    { "name": "Comparateur", "short_name": "Comparer", "url": "./?vue=comparateur" },
+    { "name": "GMF-U enseignement", "short_name": "GMF-U", "url": "./?vue=gmfu" }
   ]
 }
